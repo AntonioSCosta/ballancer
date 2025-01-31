@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import CreatePlayer from "./pages/CreatePlayer";
-import PlayersList from "./pages/PlayersList";
 import TeamGenerator from "./pages/TeamGenerator";
 import GeneratedTeams from "./pages/GeneratedTeams";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
+// Initialize React Query client
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -25,7 +25,6 @@ const App = () => (
         <div className="pt-16">
           <Routes>
             <Route path="/" element={<CreatePlayer />} />
-            <Route path="/players" element={<PlayersList />} />
             <Route path="/generator" element={<TeamGenerator />} />
             <Route path="/generated-teams" element={<GeneratedTeams />} />
             <Route path="/help" element={<Help />} />

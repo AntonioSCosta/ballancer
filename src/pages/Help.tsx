@@ -6,90 +6,95 @@ const Help = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container max-w-3xl py-8"
+      className="container max-w-3xl py-8 space-y-8"
     >
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Help & FAQ</h1>
+      {/* Main title */}
+      <h1 className="text-3xl font-bold text-primary mb-8 text-center">
+        Help & Guide
+      </h1>
 
-      <div className="space-y-8">
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            How to Create a Player
+      <div className="space-y-12">
+        {/* Player Creation Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-primary mb-4">
+            Creating Players
           </h2>
-          <p className="text-gray-600 leading-relaxed">
-            1. Navigate to the Create Player page from the menu
-            <br />
-            2. Fill in the player's name and select their position
-            <br />
-            3. Set the player's attributes (0-100)
-            <br />
-            4. Click "Create Player" to save
-          </p>
+          <div className="space-y-4">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              To create a new player, follow these steps:
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
+              <li>Navigate to the Create Player page from the menu</li>
+              <li>Enter the player's full name</li>
+              <li>Select their preferred position on the field</li>
+              <li>Rate their attributes on a scale of 0-100:</li>
+            </ol>
+          </div>
         </section>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Generating Teams
+        {/* Attributes Explanation Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-primary mb-4">
+            Understanding Player Attributes
           </h2>
-          <p className="text-gray-600 leading-relaxed">
-            1. Go to the Team Generator page
-            <br />
-            2. Select at least 10 players for two teams
-            <br />
-            3. Click "Generate Teams" to create balanced teams
-            <br />
-            4. Use "Regenerate" for different combinations
-            <br />
-            5. Share the teams via WhatsApp using the share button
-          </p>
-        </section>
-
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Player Attributes
-          </h2>
-          <p className="text-gray-600 leading-relaxed mb-4">
-            Each position has specific attributes that affect the player's overall
-            rating:
-          </p>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">
-                Outfield Players
+            <div className="space-y-4">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                Physical Attributes
               </h3>
-              <ul className="text-gray-600 space-y-1">
-                <li>Speed</li>
-                <li>Physical</li>
-                <li>Mental</li>
-                <li>Passing</li>
-                <li>Dribbling</li>
-                <li>Shooting</li>
-                <li>Heading</li>
-                <li>Defending</li>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li><span className="font-medium">Speed:</span> Player's acceleration and sprint speed</li>
+                <li><span className="font-medium">Physical:</span> Strength and stamina</li>
+                <li><span className="font-medium">Mental:</span> Decision making and positioning</li>
               </ul>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Goalkeepers</h3>
-              <ul className="text-gray-600 space-y-1">
-                <li>Handling</li>
-                <li>Diving</li>
-                <li>Positioning</li>
-                <li>Reflexes</li>
-                <li>Mental</li>
-                <li>Passing</li>
-                <li>Speed</li>
+            <div className="space-y-4">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                Technical Attributes
+              </h3>
+              <ul className="space-y-2 text-gray-600 dark:text-gray-300">
+                <li><span className="font-medium">Passing:</span> Short and long passing accuracy</li>
+                <li><span className="font-medium">Dribbling:</span> Ball control and dribbling skills</li>
+                <li><span className="font-medium">Shooting:</span> Shot power and accuracy</li>
+                <li><span className="font-medium">Heading:</span> Aerial ability</li>
+                <li><span className="font-medium">Defending:</span> Tackling and marking ability</li>
               </ul>
             </div>
           </div>
         </section>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Need More Help?
+        {/* Team Generation Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-primary mb-4">
+            Generating Balanced Teams
           </h2>
-          <p className="text-gray-600 leading-relaxed">
-            If you need additional assistance or have suggestions for improvement,
-            please contact our support team.
-          </p>
+          <div className="space-y-4">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              Our team generator uses a sophisticated algorithm to create balanced teams:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+              <li>Select at least 10 players from your squad</li>
+              <li>The algorithm considers all player attributes</li>
+              <li>Teams are balanced based on overall player ratings</li>
+              <li>You can regenerate teams until you're satisfied</li>
+              <li>Share the generated teams via WhatsApp</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Tips Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-primary mb-4">
+            Pro Tips
+          </h2>
+          <div className="space-y-4">
+            <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+              <li>Rate players honestly for the best team balance</li>
+              <li>Consider creating multiple players for those who play different positions</li>
+              <li>Update player ratings regularly to maintain accuracy</li>
+              <li>Use the search function to quickly find specific players</li>
+            </ul>
+          </div>
         </section>
       </div>
     </motion.div>

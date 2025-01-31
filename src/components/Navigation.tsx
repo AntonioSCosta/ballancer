@@ -10,9 +10,9 @@ import { Link, useLocation } from "react-router-dom";
 export const Navigation = () => {
   const location = useLocation();
 
+  // Define navigation menu items
   const menuItems = [
     { path: "/", label: "Create Player" },
-    { path: "/players", label: "Players List" },
     { path: "/generator", label: "Team Generator" },
     { path: "/help", label: "Help" },
   ];
