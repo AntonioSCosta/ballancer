@@ -2,35 +2,60 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { PlayerCard, Player } from "@/components/PlayerCard";
 import { toast } from "sonner";
 import { Share2, RefreshCw, ArrowLeft } from "lucide-react";
 
-const mockPlayers: Player[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    position: "Forward",
-    photo: "https://via.placeholder.com/300",
-    attributes: {
-      speed: 85,
-      physical: 75,
-      mental: 80,
-      passing: 70,
-      dribbling: 88,
-      shooting: 90,
-      heading: 65,
-      defending: 45,
-    },
-    rating: 85,
-  },
-  // Add more mock players as needed
-];
+interface PlayerAttributes {
+  speed: number;
+  physical?: number;
+  mental: number;
+  passing: number;
+  dribbling?: number;
+  shooting?: number;
+  heading?: number;
+  defending?: number;
+  handling?: number;
+  diving?: number;
+  positioning?: number;
+  reflexes?: number;
+}
+
+interface Player {
+  id: string;
+  name: string;
+  position: string;
+  photo: string;
+  attributes: PlayerAttributes;
+  rating: number;
+}
 
 interface Team {
   players: Player[];
   rating: number;
 }
+
+const SimplePlayerCard = ({ player }: { player: Player }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="flex items-center gap-3">
+      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+        <img
+          src={player.photo || "https://via.placeholder.com/300"}
+          alt={player.name}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="flex-1">
+        <h4 className="font-medium text-gray-900 dark:text-gray-100">{player.name}</h4>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-primary">{player.position}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            Rating: {Math.round(player.rating)}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -43,8 +68,15 @@ const GeneratedTeams = () => {
       return;
     }
 
-    // Here you would implement your team generation algorithm
-    const selectedPlayers = mockPlayers.filter((p) =>
+    // Get players from localStorage
+    const storedPlayers = localStorage.getItem("players");
+    if (!storedPlayers) {
+      navigate("/generator");
+      return;
+    }
+
+    const allPlayers: Player[] = JSON.parse(storedPlayers);
+    const selectedPlayers = allPlayers.filter((p) =>
       location.state.selectedPlayerIds.includes(p.id)
     );
     
@@ -57,14 +89,17 @@ const GeneratedTeams = () => {
       return Math.round(sum / players.length);
     };
 
+    const team1 = shuffled.slice(0, midpoint);
+    const team2 = shuffled.slice(midpoint);
+
     setTeams([
       {
-        players: shuffled.slice(0, midpoint),
-        rating: calculateTeamRating(shuffled.slice(0, midpoint)),
+        players: team1,
+        rating: calculateTeamRating(team1),
       },
       {
-        players: shuffled.slice(midpoint),
-        rating: calculateTeamRating(shuffled.slice(midpoint)),
+        players: team2,
+        rating: calculateTeamRating(team2),
       },
     ]);
   }, [location.state, navigate]);
@@ -86,7 +121,11 @@ const GeneratedTeams = () => {
   };
 
   const handleRegenerateTeams = () => {
-    const selectedPlayers = mockPlayers.filter((p) =>
+    const storedPlayers = localStorage.getItem("players");
+    if (!storedPlayers) return;
+
+    const allPlayers: Player[] = JSON.parse(storedPlayers);
+    const selectedPlayers = allPlayers.filter((p) =>
       location.state.selectedPlayerIds.includes(p.id)
     );
     
@@ -99,14 +138,17 @@ const GeneratedTeams = () => {
       return Math.round(sum / players.length);
     };
 
+    const team1 = shuffled.slice(0, midpoint);
+    const team2 = shuffled.slice(midpoint);
+
     setTeams([
       {
-        players: shuffled.slice(0, midpoint),
-        rating: calculateTeamRating(shuffled.slice(0, midpoint)),
+        players: team1,
+        rating: calculateTeamRating(team1),
       },
       {
-        players: shuffled.slice(midpoint),
-        rating: calculateTeamRating(shuffled.slice(midpoint)),
+        players: team2,
+        rating: calculateTeamRating(team2),
       },
     ]);
     
@@ -118,7 +160,7 @@ const GeneratedTeams = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container py-4 px-2 md:py-8 md:px-4"
+      className="container max-w-2xl mx-auto py-4 px-4 md:py-8"
     >
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between">
@@ -176,11 +218,7 @@ const GeneratedTeams = () => {
 
             <div className="grid gap-3">
               {team.players.map((player) => (
-                <PlayerCard
-                  key={player.id}
-                  player={player}
-                  className="transform-none shadow-sm"
-                />
+                <SimplePlayerCard key={player.id} player={player} />
               ))}
             </div>
           </motion.div>
