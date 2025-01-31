@@ -4,8 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PlayerCard, Player } from "@/components/PlayerCard";
 import { toast } from "sonner";
+import { Share2, RefreshCw, ArrowLeft } from "lucide-react";
 
-// Temporary mock data (replace with your actual data)
 const mockPlayers: Player[] = [
   {
     id: "1",
@@ -44,7 +44,6 @@ const GeneratedTeams = () => {
     }
 
     // Here you would implement your team generation algorithm
-    // For now, we'll just split the players randomly
     const selectedPlayers = mockPlayers.filter((p) =>
       location.state.selectedPlayerIds.includes(p.id)
     );
@@ -52,23 +51,20 @@ const GeneratedTeams = () => {
     const shuffled = [...selectedPlayers].sort(() => Math.random() - 0.5);
     const midpoint = Math.floor(shuffled.length / 2);
     
+    const calculateTeamRating = (players: Player[]) => {
+      if (players.length === 0) return 0;
+      const sum = players.reduce((acc, player) => acc + player.rating, 0);
+      return Math.round(sum / players.length);
+    };
+
     setTeams([
       {
         players: shuffled.slice(0, midpoint),
-        rating: Math.round(
-          shuffled
-            .slice(0, midpoint)
-            .reduce((acc, p) => acc + p.rating, 0) / midpoint
-        ),
+        rating: calculateTeamRating(shuffled.slice(0, midpoint)),
       },
       {
         players: shuffled.slice(midpoint),
-        rating: Math.round(
-          shuffled
-            .slice(midpoint)
-            .reduce((acc, p) => acc + p.rating, 0) /
-            (shuffled.length - midpoint)
-        ),
+        rating: calculateTeamRating(shuffled.slice(midpoint)),
       },
     ]);
   }, [location.state, navigate]);
@@ -90,7 +86,6 @@ const GeneratedTeams = () => {
   };
 
   const handleRegenerateTeams = () => {
-    // Re-run the team generation algorithm
     const selectedPlayers = mockPlayers.filter((p) =>
       location.state.selectedPlayerIds.includes(p.id)
     );
@@ -98,23 +93,20 @@ const GeneratedTeams = () => {
     const shuffled = [...selectedPlayers].sort(() => Math.random() - 0.5);
     const midpoint = Math.floor(shuffled.length / 2);
     
+    const calculateTeamRating = (players: Player[]) => {
+      if (players.length === 0) return 0;
+      const sum = players.reduce((acc, player) => acc + player.rating, 0);
+      return Math.round(sum / players.length);
+    };
+
     setTeams([
       {
         players: shuffled.slice(0, midpoint),
-        rating: Math.round(
-          shuffled
-            .slice(0, midpoint)
-            .reduce((acc, p) => acc + p.rating, 0) / midpoint
-        ),
+        rating: calculateTeamRating(shuffled.slice(0, midpoint)),
       },
       {
         players: shuffled.slice(midpoint),
-        rating: Math.round(
-          shuffled
-            .slice(midpoint)
-            .reduce((acc, p) => acc + p.rating, 0) /
-            (shuffled.length - midpoint)
-        ),
+        rating: calculateTeamRating(shuffled.slice(midpoint)),
       },
     ]);
     
@@ -126,48 +118,72 @@ const GeneratedTeams = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container py-8"
+      className="container py-4 px-2 md:py-8 md:px-4"
     >
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Generated Teams</h1>
-        <div className="flex gap-4">
-          <Button variant="outline" onClick={() => navigate("/generator")}>
-            Back to Selection
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/generator")}
+            className="p-2"
+          >
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Button variant="outline" onClick={handleRegenerateTeams}>
-            Regenerate Teams
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Generated Teams
+          </h1>
+          <div className="w-8" /> {/* Spacer for centering */}
+        </div>
+        
+        <div className="flex gap-2 justify-center">
+          <Button 
+            variant="outline" 
+            onClick={handleRegenerateTeams}
+            className="flex items-center gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Regenerate
           </Button>
-          <Button onClick={handleShareWhatsApp}>Share on WhatsApp</Button>
+          <Button 
+            onClick={handleShareWhatsApp}
+            className="flex items-center gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
         </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-6">
         {teams.map((team, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-white rounded-xl shadow-lg p-6 space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4"
           >
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 Team {index + 1}
               </h2>
-              <div className="px-4 py-2 bg-primary/10 rounded-full">
+              <div className="px-3 py-1 bg-primary/10 rounded-full">
                 <span className="text-primary font-semibold">
                   Rating: {team.rating}
                 </span>
               </div>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-3">
               {team.players.map((player) => (
                 <PlayerCard
                   key={player.id}
                   player={player}
-                  className="transform-none shadow-md"
+                  className="transform-none shadow-sm"
                 />
               ))}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </motion.div>
