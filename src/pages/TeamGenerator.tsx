@@ -47,29 +47,29 @@ const TeamGenerator = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen"
     >
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               Team Generator
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
               Select players to generate balanced teams
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-3">
             <SearchBar
               value={search}
               onChange={setSearch}
               placeholder="Search players..."
-              className="w-full sm:w-64"
+              className="w-full"
             />
             <Button
               onClick={handleGenerateTeams}
               disabled={selectedPlayers.size < 10}
-              className="whitespace-nowrap"
+              className="w-full"
             >
               <Users className="mr-2 h-5 w-5" />
               Generate Teams ({selectedPlayers.size})
@@ -78,7 +78,7 @@ const TeamGenerator = () => {
         </div>
 
         {filteredPlayers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-3">
             {filteredPlayers.map((player) => (
               <motion.div
                 key={player.id}
@@ -90,7 +90,10 @@ const TeamGenerator = () => {
                     : "hover:scale-[1.01]"
                 }`}
               >
-                <PlayerCard player={player} className="h-full" />
+                <PlayerCard
+                  player={player}
+                  className="h-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
+                />
               </motion.div>
             ))}
           </div>
@@ -98,9 +101,9 @@ const TeamGenerator = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+            className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700"
           >
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               {players.length === 0
                 ? "No players available. Start by creating some players!"
                 : "No players found matching your search."}

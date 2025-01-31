@@ -25,7 +25,7 @@ const PlayersList = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 py-6"
+      className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen"
     >
       <div className="space-y-6">
         <div className="flex flex-col gap-4">
@@ -61,7 +61,7 @@ const PlayersList = () => {
               >
                 <PlayerCard
                   player={player}
-                  className="h-full bg-white dark:bg-gray-800 shadow-md"
+                  className="h-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
                 />
               </motion.div>
             ))}
@@ -70,7 +70,7 @@ const PlayersList = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+            className="text-center py-8 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700"
           >
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               {players.length === 0
