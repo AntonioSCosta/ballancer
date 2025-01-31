@@ -4,6 +4,7 @@ import { PlayerPosition, Player } from "@/components/PlayerCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { ImagePlus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -17,6 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 const CreatePlayer = () => {
   const [name, setName] = useState("");
   const [position, setPosition] = useState<PlayerPosition>("Midfielder");
+  const [photo, setPhoto] = useState("https://via.placeholder.com/300");
   const [attributes, setAttributes] = useState({
     speed: 50,
     physical: 50,
@@ -31,6 +33,17 @@ const CreatePlayer = () => {
     positioning: 50,
     reflexes: 50,
   });
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleAttributeChange = (attr: string, value: number[]) => {
     setAttributes((prev) => ({
@@ -56,22 +69,19 @@ const CreatePlayer = () => {
       id: uuidv4(),
       name,
       position,
-      photo: "https://via.placeholder.com/300",
+      photo,
       attributes,
       rating: calculateRating(attributes, position),
     };
 
-    // Get existing players from localStorage
     const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
-    
-    // Add new player
     localStorage.setItem("players", JSON.stringify([...existingPlayers, newPlayer]));
     
     toast.success("Player created successfully!");
     
-    // Reset form
     setName("");
     setPosition("Midfielder");
+    setPhoto("https://via.placeholder.com/300");
     setAttributes({
       speed: 50,
       physical: 50,
@@ -118,65 +128,96 @@ const CreatePlayer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container max-w-2xl py-8"
+      className="container max-w-4xl py-8 px-4"
     >
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Create Player</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Name
-            </label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter player name"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Position
-            </label>
-            <Select value={position} onValueChange={(v) => setPosition(v as PlayerPosition)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
-                <SelectItem value="Defender">Defender</SelectItem>
-                <SelectItem value="Midfielder">Midfielder</SelectItem>
-                <SelectItem value="Forward">Forward</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Attributes</h2>
-          <div className="grid gap-6">
-            {renderAttributes().map(({ key, label }) => (
-              <div key={key}>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {label}
-                  </label>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {attributes[key as keyof typeof attributes]}
-                  </span>
-                </div>
-                <Slider
-                  value={[attributes[key as keyof typeof attributes]]}
-                  onValueChange={(value) => handleAttributeChange(key, value)}
-                  max={100}
-                  step={1}
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">Create Player</h1>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Name
+              </label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter player name"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Position
+              </label>
+              <Select value={position} onValueChange={(v) => setPosition(v as PlayerPosition)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                  <SelectItem value="Defender">Defender</SelectItem>
+                  <SelectItem value="Midfielder">Midfielder</SelectItem>
+                  <SelectItem value="Forward">Forward</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Photo
+              </label>
+              <div className="flex flex-col items-center gap-4">
+                <img
+                  src={photo}
+                  alt="Player preview"
+                  className="w-32 h-32 object-cover rounded-full border-2 border-primary"
                 />
+                <div className="relative">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                    className="hidden"
+                    id="photo-upload"
+                  />
+                  <label
+                    htmlFor="photo-upload"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    <ImagePlus className="w-4 h-4" />
+                    Choose Photo
+                  </label>
+                </div>
               </div>
-            ))}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Attributes</h2>
+            <div className="grid gap-6">
+              {renderAttributes().map(({ key, label }) => (
+                <div key={key}>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {label}
+                    </label>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {attributes[key as keyof typeof attributes]}
+                    </span>
+                  </div>
+                  <Slider
+                    value={[attributes[key as keyof typeof attributes]]}
+                    onValueChange={(value) => handleAttributeChange(key, value)}
+                    max={100}
+                    step={1}
+                    className="[&_[role=slider]]:bg-primary"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full max-w-md mx-auto block">
           Create Player
         </Button>
       </form>
