@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import CreatePlayer from "./pages/CreatePlayer";
 import PlayersList from "./pages/PlayersList";
 import TeamGenerator from "./pages/TeamGenerator";
@@ -20,6 +21,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Navigation />
+        <ThemeSwitcher />
         <div className="pt-16">
           <Routes>
             <Route path="/" element={<CreatePlayer />} />
