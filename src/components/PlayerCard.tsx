@@ -33,15 +33,14 @@ interface PlayerCardProps {
 }
 
 const AttributeBar = ({ label, value }: { label: string; value: number }) => (
-  <div className="flex items-center gap-2 text-sm">
-    <span className="w-20 text-gray-600 dark:text-gray-300 text-xs">{label}</span>
-    <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+  <div className="flex flex-col gap-1">
+    <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">{label}</span>
+    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
       <div
         className="h-full bg-primary rounded-full transition-all duration-500"
         style={{ width: `${value}%` }}
       />
     </div>
-    <span className="w-8 text-right text-gray-700 dark:text-gray-300 font-medium text-xs">{value}</span>
   </div>
 );
 

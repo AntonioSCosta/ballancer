@@ -96,10 +96,7 @@ const TeamGenerator = () => {
               >
                 <PlayerCard
                   player={player}
-                  onEdit={(e) => {
-                    e.stopPropagation();
-                    handleEditPlayer(player.id);
-                  }}
+                  onEdit={() => handleEditPlayer(player.id)}
                   className="h-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
                 />
               </motion.div>
