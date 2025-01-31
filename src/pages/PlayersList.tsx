@@ -1,33 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayerCard, Player } from "@/components/PlayerCard";
 import { SearchBar } from "@/components/SearchBar";
 
-// Temporary mock data
-const mockPlayers: Player[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    position: "Forward",
-    photo: "https://via.placeholder.com/300",
-    attributes: {
-      speed: 85,
-      physical: 75,
-      mental: 80,
-      passing: 70,
-      dribbling: 88,
-      shooting: 90,
-      heading: 65,
-      defending: 45,
-    },
-    rating: 85,
-  },
-  // Add more mock players as needed
-];
-
 const PlayersList = () => {
   const [search, setSearch] = useState("");
-  const [players] = useState<Player[]>(mockPlayers);
+  const [players, setPlayers] = useState<Player[]>([]);
+
+  useEffect(() => {
+    const storedPlayers = JSON.parse(localStorage.getItem("players") || "[]");
+    setPlayers(storedPlayers);
+  }, []);
 
   const filteredPlayers = players.filter(
     (player) =>
@@ -43,7 +26,7 @@ const PlayersList = () => {
       className="container py-8"
     >
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Players List</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Players List</h1>
         <SearchBar
           value={search}
           onChange={setSearch}
@@ -66,7 +49,7 @@ const PlayersList = () => {
 
       {filteredPlayers.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-gray-500">No players found</p>
+          <p className="text-gray-500 dark:text-gray-400">No players found</p>
         </div>
       )}
     </motion.div>
