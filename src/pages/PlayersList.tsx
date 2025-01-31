@@ -25,15 +25,15 @@ const PlayersList = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+      className="container mx-auto px-4 py-6"
     >
-      <div className="space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               Players List
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               View and manage your players
             </p>
           </div>
@@ -41,7 +41,7 @@ const PlayersList = () => {
             value={search}
             onChange={setSearch}
             placeholder="Search by name or position..."
-            className="w-full md:w-72"
+            className="w-full"
           />
         </div>
 
@@ -49,7 +49,7 @@ const PlayersList = () => {
           <motion.div
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            className="grid grid-cols-2 gap-3"
           >
             {filteredPlayers.map((player) => (
               <motion.div
@@ -57,10 +57,11 @@ const PlayersList = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 layout
+                className="w-full"
               >
                 <PlayerCard
                   player={player}
-                  className="h-full"
+                  className="h-full bg-white dark:bg-gray-800 shadow-md"
                 />
               </motion.div>
             ))}
@@ -69,9 +70,9 @@ const PlayersList = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+            className="text-center py-8 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
           >
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
               {players.length === 0
                 ? "No players added yet. Start by creating a player!"
                 : "No players found matching your search."}
