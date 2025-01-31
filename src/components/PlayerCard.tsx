@@ -34,14 +34,14 @@ interface PlayerCardProps {
 
 const AttributeBar = ({ label, value }: { label: string; value: number }) => (
   <div className="flex items-center gap-2 text-sm">
-    <span className="w-24 text-gray-600 dark:text-gray-300">{label}</span>
+    <span className="w-20 text-gray-600 dark:text-gray-300 text-xs">{label}</span>
     <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
       <div
         className="h-full bg-primary rounded-full transition-all duration-500"
         style={{ width: `${value}%` }}
       />
     </div>
-    <span className="w-8 text-right text-gray-700 dark:text-gray-300 font-medium">{value}</span>
+    <span className="w-8 text-right text-gray-700 dark:text-gray-300 font-medium text-xs">{value}</span>
   </div>
 );
 
@@ -88,7 +88,7 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-4">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{player.name}</h3>
@@ -101,17 +101,20 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
               onClick={onEdit}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
-              Edit
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
             </button>
           )}
         </div>
-        <div className="space-y-3">
-          {getAttributes().map((attr) => (
-            <AttributeBar
-              key={attr.label}
-              label={attr.label}
-              value={attr.value}
-            />
+        <div className="grid grid-cols-2 gap-3">
+          {getAttributes().map((attr, index) => (
+            <div key={attr.label} className={index % 2 === 0 ? "col-span-1" : "col-span-1"}>
+              <AttributeBar
+                label={attr.label}
+                value={attr.value}
+              />
+            </div>
           ))}
         </div>
       </div>

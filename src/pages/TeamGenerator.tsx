@@ -32,6 +32,10 @@ const TeamGenerator = () => {
     setSelectedPlayers(newSelected);
   };
 
+  const handleEditPlayer = (playerId: string) => {
+    navigate(`/create-player?edit=${playerId}`);
+  };
+
   const handleGenerateTeams = () => {
     if (selectedPlayers.size < 10) {
       toast.error("Please select at least 10 players");
@@ -92,6 +96,10 @@ const TeamGenerator = () => {
               >
                 <PlayerCard
                   player={player}
+                  onEdit={(e) => {
+                    e.stopPropagation();
+                    handleEditPlayer(player.id);
+                  }}
                   className="h-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
                 />
               </motion.div>
