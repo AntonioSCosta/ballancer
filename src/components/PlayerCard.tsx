@@ -34,14 +34,14 @@ interface PlayerCardProps {
 
 const AttributeBar = ({ label, value }: { label: string; value: number }) => (
   <div className="flex items-center gap-2 text-sm">
-    <span className="w-24 text-gray-600">{label}</span>
-    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+    <span className="w-24 text-gray-600 dark:text-gray-300">{label}</span>
+    <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
       <div
         className="h-full bg-primary rounded-full transition-all duration-500"
         style={{ width: `${value}%` }}
       />
     </div>
-    <span className="w-8 text-right text-gray-700 font-medium">{value}</span>
+    <span className="w-8 text-right text-gray-700 dark:text-gray-300 font-medium">{value}</span>
   </div>
 );
 
@@ -76,22 +76,22 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className={`bg-white rounded-xl shadow-lg overflow-hidden ${className}`}
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
         <img
           src={player.photo || "https://via.placeholder.com/300"}
           alt={player.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-2 right-2 bg-white px-3 py-1 rounded-full shadow-md">
-          <span className="text-sm font-medium">{player.rating}</span>
+        <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
+          <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
       </div>
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">{player.name}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{player.name}</h3>
             <span className="text-sm text-primary font-medium">
               {player.position}
             </span>
@@ -99,7 +99,7 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
           {onEdit && (
             <button
               onClick={onEdit}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               Edit
             </button>
