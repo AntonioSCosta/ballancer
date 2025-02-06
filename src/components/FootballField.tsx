@@ -49,14 +49,15 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         {/* Half way line */}
         <div className="absolute right-0 top-0 bottom-0 border-2 border-white/40" />
         
-        {/* Center circle (9.15m radius in real dimensions) */}
-        <div className="absolute w-[25%] h-[25%] -right-[12.5%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
+        {/* Center circle (9.15m radius in real dimensions) - Now a proper semicircle */}
+        <div className="absolute w-[50%] aspect-square -right-[25%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
         
         {/* Penalty spot (11m from goal line) */}
         <div className="absolute w-2 h-2 left-[30%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
         
-        {/* Penalty arc (9.15m from penalty spot) */}
-        <div className="absolute w-[20%] h-[30%] left-[20%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
+        {/* Penalty arc (9.15m from penalty spot) - Now properly aligned with penalty area */}
+        <div className="absolute w-[20%] aspect-square left-[20%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
+                      [clip-path:polygon(0%_28%,100%_28%,100%_72%,0%_72%)]" />
         
         {/* Corner arcs (1m radius) */}
         <div className="absolute w-[5%] h-[3%] left-0 top-0 border-r-2 border-b-2 border-white/40 rounded-br-full" />
