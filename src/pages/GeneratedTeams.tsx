@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Share2, RefreshCw, ArrowLeft } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Team {
   players: Player[];
@@ -173,41 +174,63 @@ const GeneratedTeams = () => {
           </Button>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {teams.map((team, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              className="flex flex-col gap-4"
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    Team {index + 1}
-                  </h2>
-                  <div className="px-3 py-1 bg-primary/10 rounded-full">
-                    <span className="text-primary font-semibold">
-                      Rating: {team.rating}
-                    </span>
+        <Tabs defaultValue="teams" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="teams">Teams</TabsTrigger>
+            <TabsTrigger value="tactics">Tactics</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="teams" className="mt-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {teams.map((team, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  className="flex flex-col gap-4"
+                >
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                        Team {index + 1}
+                      </h2>
+                      <div className="px-3 py-1 bg-primary/10 rounded-full">
+                        <span className="text-primary font-semibold">
+                          Rating: {team.rating}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid gap-3">
+                      {team.players.map((player) => (
+                        <SimplePlayerCard key={player.id} player={player} />
+                      ))}
+                    </div>
                   </div>
-                </div>
-
-                <FootballField 
-                  players={team.players} 
-                  teamName={`Team ${index + 1}`}
-                />
-
-                <div className="mt-4 grid gap-3">
-                  {team.players.map((player) => (
-                    <SimplePlayerCard key={player.id} player={player} />
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="tactics" className="mt-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              {teams.map((team, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                >
+                  <FootballField 
+                    players={team.players} 
+                    teamName={`Team ${index + 1}`}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </motion.div>
   );
