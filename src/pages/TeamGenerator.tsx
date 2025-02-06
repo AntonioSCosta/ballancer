@@ -51,7 +51,7 @@ const TeamGenerator = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen"
+      className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen relative"
     >
       <div className="space-y-6">
         <div className="flex flex-col gap-4">
@@ -63,26 +63,16 @@ const TeamGenerator = () => {
               Select players to generate balanced teams
             </p>
           </div>
-          <div className="flex flex-col gap-3">
-            <SearchBar
-              value={search}
-              onChange={setSearch}
-              placeholder="Search players..."
-              className="w-full"
-            />
-            <Button
-              onClick={handleGenerateTeams}
-              disabled={selectedPlayers.size < 10}
-              className="w-full"
-            >
-              <Users className="mr-2 h-5 w-5" />
-              Generate Teams ({selectedPlayers.size})
-            </Button>
-          </div>
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            placeholder="Search players..."
+            className="w-full"
+          />
         </div>
 
         {filteredPlayers.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 pb-24">
             {filteredPlayers.map((player) => (
               <motion.div
                 key={player.id}
@@ -115,6 +105,19 @@ const TeamGenerator = () => {
             </p>
           </motion.div>
         )}
+      </div>
+
+      {/* Floating Action Button */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md px-4">
+        <Button
+          onClick={handleGenerateTeams}
+          disabled={selectedPlayers.size < 10}
+          className="w-full shadow-lg animate-fade-in"
+          size="lg"
+        >
+          <Users className="mr-2 h-5 w-5" />
+          Generate Teams ({selectedPlayers.size})
+        </Button>
       </div>
     </motion.div>
   );
