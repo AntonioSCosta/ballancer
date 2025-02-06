@@ -40,23 +40,25 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         {/* Main outline */}
         <div className="absolute w-full h-full border-2 border-white/40" />
         
-        {/* Penalty area */}
-        <div className="absolute w-[40%] h-[30%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
+        {/* Penalty area (16.5m x 40.3m in real dimensions) */}
+        <div className="absolute w-[45%] h-[44%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
-        {/* Goal area */}
-        <div className="absolute w-[15%] h-[15%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
+        {/* Goal area (5.5m x 18.3m in real dimensions) */}
+        <div className="absolute w-[16%] h-[20%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
-        {/* Half way line and half circle */}
+        {/* Half way line */}
         <div className="absolute right-0 top-0 bottom-0 border-2 border-white/40" />
-        <div className="absolute w-[20%] h-[12%] right-0 top-1/2 -translate-y-1/2 border-2 border-l-0 border-white/40 rounded-r-full" />
         
-        {/* Penalty spot */}
-        <div className="absolute w-2 h-2 left-[20%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
+        {/* Center circle (9.15m radius in real dimensions) */}
+        <div className="absolute w-[25%] h-[25%] -right-[12.5%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
         
-        {/* Penalty arc */}
-        <div className="absolute w-[10%] h-[20%] left-[15%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
+        {/* Penalty spot (11m from goal line) */}
+        <div className="absolute w-2 h-2 left-[30%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
         
-        {/* Corner arcs */}
+        {/* Penalty arc (9.15m from penalty spot) */}
+        <div className="absolute w-[20%] h-[30%] left-[20%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
+        
+        {/* Corner arcs (1m radius) */}
         <div className="absolute w-[5%] h-[3%] left-0 top-0 border-r-2 border-b-2 border-white/40 rounded-br-full" />
         <div className="absolute w-[5%] h-[3%] left-0 bottom-0 border-r-2 border-t-2 border-white/40 rounded-tr-full" />
       </div>
