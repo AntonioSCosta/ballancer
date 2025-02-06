@@ -34,38 +34,31 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
   const forwards = getPlayersInPosition(players, "Forward");
 
   return (
-    <div className="relative w-full aspect-[2/3] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20">
+    <div className="relative w-full aspect-[3/2] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20">
       {/* Field markings */}
       <div className="absolute inset-0">
         {/* Main outline */}
         <div className="absolute w-full h-full border-2 border-white/40" />
         
-        {/* Penalty areas */}
+        {/* Penalty area */}
         <div className="absolute w-[40%] h-[30%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
-        <div className="absolute w-[40%] h-[30%] right-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
-        {/* Goal areas */}
+        {/* Goal area */}
         <div className="absolute w-[15%] h-[15%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
-        <div className="absolute w-[15%] h-[15%] right-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
-        {/* Center line and circle */}
-        <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2 border-2 border-white/40" />
-        <div className="absolute w-[20%] h-[12%] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/40" />
-        <div className="absolute w-2 h-2 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
+        {/* Half way line and half circle */}
+        <div className="absolute right-0 top-0 bottom-0 border-2 border-white/40" />
+        <div className="absolute w-[20%] h-[12%] right-0 top-1/2 -translate-y-1/2 border-2 border-l-0 border-white/40 rounded-r-full" />
+        
+        {/* Penalty spot */}
+        <div className="absolute w-2 h-2 left-[20%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
+        
+        {/* Penalty arc */}
+        <div className="absolute w-[10%] h-[20%] left-[15%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
         
         {/* Corner arcs */}
         <div className="absolute w-[5%] h-[3%] left-0 top-0 border-r-2 border-b-2 border-white/40 rounded-br-full" />
-        <div className="absolute w-[5%] h-[3%] right-0 top-0 border-l-2 border-b-2 border-white/40 rounded-bl-full" />
         <div className="absolute w-[5%] h-[3%] left-0 bottom-0 border-r-2 border-t-2 border-white/40 rounded-tr-full" />
-        <div className="absolute w-[5%] h-[3%] right-0 bottom-0 border-l-2 border-t-2 border-white/40 rounded-tl-full" />
-        
-        {/* Penalty spots */}
-        <div className="absolute w-2 h-2 left-[20%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
-        <div className="absolute w-2 h-2 right-[20%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
-        
-        {/* Penalty arcs */}
-        <div className="absolute w-[10%] h-[20%] left-[15%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
-        <div className="absolute w-[10%] h-[20%] right-[15%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
       </div>
 
       {/* Team name */}
