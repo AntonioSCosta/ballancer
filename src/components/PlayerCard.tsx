@@ -105,11 +105,19 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     >
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
         {player.photo ? (
-          <img
-            src={player.photo}
-            alt=""
-            className="w-full h-full object-cover"
-          />
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="w-full h-full"
+          >
+            <img
+              src={player.photo}
+              alt={player.name}
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              loading="lazy"
+            />
+          </motion.div>
         ) : (
           <div className={`w-full h-full flex items-center justify-center ${getPositionColor(player.position)}`}>
             <span className="text-4xl font-bold text-white">
