@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayerPosition, Player } from "@/components/PlayerCard";
@@ -168,7 +169,7 @@ const CreatePlayer = () => {
               <div className="flex flex-col items-center gap-4">
                 <img
                   src={photo}
-                  alt="Player preview"
+                  alt={name}
                   className="w-32 h-32 object-cover rounded-full border-2 border-primary"
                 />
                 <div className="relative">
