@@ -49,10 +49,16 @@ const GeneratedTeams = () => {
       )
       .join("\n\n");
 
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`,
-      "_blank"
-    );
+    // Using whatsapp:// scheme for better offline support
+    const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(teamsInfo)}`;
+    
+    try {
+      window.location.href = whatsappUrl;
+      toast.success("Opening WhatsApp...");
+    } catch (error) {
+      toast.error("Couldn't open WhatsApp. The message has been copied to clipboard.");
+      navigator.clipboard.writeText(teamsInfo);
+    }
   };
 
   const handleRegenerateTeams = () => {
