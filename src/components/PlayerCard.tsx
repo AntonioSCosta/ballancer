@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -34,6 +35,16 @@ interface PlayerCardProps {
   onEdit?: () => void;
   className?: string;
 }
+
+const getPositionColor = (position: PlayerPosition) => {
+  const colors = {
+    "Goalkeeper": "bg-orange-500",
+    "Defender": "bg-blue-500",
+    "Midfielder": "bg-purple-500",
+    "Forward": "bg-emerald-500"
+  };
+  return colors[position];
+};
 
 const AttributeBar = ({ label, value }: { label: string; value: number }) => (
   <div className="flex flex-col gap-1">
@@ -79,6 +90,16 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     ];
   };
 
+  // Get initials for the avatar fallback
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -87,25 +108,22 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {player.photo ? (
-          <img
-            src={player.photo}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <UserRound className="w-24 h-24 text-gray-400" strokeWidth={1.5} />
-          </div>
-        )}
+        <Avatar className="w-full h-full rounded-none">
+          <AvatarImage src={player.photo} alt={player.name} className="object-cover" />
+          <AvatarFallback className={`text-3xl font-semibold text-white ${getPositionColor(player.position)}`}>
+            {getInitials(player.name)}
+          </AvatarFallback>
+        </Avatar>
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
       </div>
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{player.name}</h3>
+          <div className="max-w-[80%]">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
+              {player.name}
+            </h3>
             <span className="text-sm text-primary font-medium">
               {player.position}
             </span>
@@ -133,4 +151,3 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     </motion.div>
   );
 };
-
