@@ -1,8 +1,5 @@
-
 import { motion } from "framer-motion";
-import { UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -90,7 +87,6 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     ];
   };
 
-  // Get initials for the avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -108,12 +104,19 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <Avatar className="w-full h-full rounded-none">
-          <AvatarImage src={player.photo} alt={player.name} className="object-cover" />
-          <AvatarFallback className={`text-3xl font-semibold text-white ${getPositionColor(player.position)}`}>
-            {getInitials(player.name)}
-          </AvatarFallback>
-        </Avatar>
+        {player.photo ? (
+          <img
+            src={player.photo}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className={`w-full h-full flex items-center justify-center ${getPositionColor(player.position)}`}>
+            <span className="text-4xl font-bold text-white">
+              {getInitials(player.name)}
+            </span>
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
