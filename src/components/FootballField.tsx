@@ -51,15 +51,6 @@ const getPlayersInPosition = (players: Player[], position: string) => {
   return players.filter(player => player.position === position);
 };
 
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-};
-
 export const FootballField = ({ players, teamName }: FootballFieldProps) => {
   const goalkeepers = getPlayersInPosition(players, "Goalkeeper");
   const defenders = getPlayersInPosition(players, "Defender");
@@ -68,6 +59,7 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
 
   return (
     <div className="flex flex-col gap-2">
+      {/* Team name now above the field */}
       <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full self-center">
         <span className="text-white text-sm font-medium">{teamName}</span>
       </div>
@@ -119,13 +111,10 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
               >
                 <div className="relative group">
                   <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(position)}`}>
-                    {player.photo ? (
-                      <AvatarImage src={player.photo} alt={player.name} className="object-cover" />
-                    ) : (
-                      <AvatarFallback className={`text-white ${getPositionColor(position)}`}>
-                        {getInitials(player.name)}
-                      </AvatarFallback>
-                    )}
+                    <AvatarImage src={player.photo} alt={player.name} />
+                    <AvatarFallback className={`text-white ${getPositionColor(position)}`}>
+                      {player.name[0]}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
                     {player.name}
