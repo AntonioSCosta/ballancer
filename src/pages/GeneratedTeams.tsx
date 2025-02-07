@@ -62,26 +62,43 @@ const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
 
+  const shuffle = (array: Player[]) => {
+    return [...array].sort(() => Math.random() - 0.5);
+  };
+
+  const distributeEvenly = (players: Player[]) => {
+    const shuffled = shuffle(players);
+    for (let i = 0; i < shuffled.length; i++) {
+      if (team1.length <= team2.length) {
+        team1.push(shuffled[i]);
+      } else {
+        team2.push(shuffled[i]);
+      }
+    }
+  };
+
   if (goalkeepers.length >= 2) {
-    team1.push(goalkeepers[0]);
-    team2.push(goalkeepers[1]);
+    const shuffledGKs = shuffle(goalkeepers);
+    team1.push(shuffledGKs[0]);
+    team2.push(shuffledGKs[1]);
+    if (goalkeepers.length > 2) {
+      distributeEvenly(shuffledGKs.slice(2));
+    }
   } else if (goalkeepers.length === 1) {
     (Math.random() < 0.5 ? team1 : team2).push(goalkeepers[0]);
   }
 
-  const distributePosition = (positionPlayers: Player[]) => {
-    const shuffled = [...positionPlayers].sort(() => Math.random() - 0.5);
-    
-    const playersPerTeam = Math.floor(shuffled.length / 2);
-    const extraPlayer = shuffled.length % 2;
+  distributeEvenly(defenders);
+  distributeEvenly(midfielders);
+  distributeEvenly(forwards);
 
-    team1.push(...shuffled.slice(0, playersPerTeam + (team1.length <= team2.length ? extraPlayer : 0)));
-    team2.push(...shuffled.slice(playersPerTeam + (team1.length > team2.length ? extraPlayer : 0)));
-  };
-
-  distributePosition(defenders);
-  distributePosition(midfielders);
-  distributePosition(forwards);
+  while (Math.abs(team1.length - team2.length) > 1) {
+    if (team1.length > team2.length) {
+      team2.push(team1.pop()!);
+    } else {
+      team1.push(team2.pop()!);
+    }
+  }
 
   const calculateTeamRating = (players: Player[]) => {
     if (players.length === 0) return 0;
