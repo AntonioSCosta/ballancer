@@ -13,19 +13,10 @@ interface Team {
   rating: number;
 }
 
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-};
-
 const SimplePlayerCard = ({ player }: { player: Player }) => (
   <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
     <div className="flex items-center gap-3">
-      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-500 flex items-center justify-center">
+      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700">
         {player.photo ? (
           <img
             src={player.photo}
@@ -33,9 +24,9 @@ const SimplePlayerCard = ({ player }: { player: Player }) => (
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-lg font-bold text-white">
-            {getInitials(player.name)}
-          </span>
+          <div className="w-full h-full flex items-center justify-center">
+            <PersonStanding className="w-8 h-8 text-gray-400" strokeWidth={1.5} />
+          </div>
         )}
       </div>
       <div className="flex-1">
