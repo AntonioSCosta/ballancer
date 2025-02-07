@@ -124,9 +124,7 @@ const GeneratedTeams = () => {
           `🏃‍♂️ Team ${i + 1} (Rating: ${team.rating})\n\n` +
           team.players
             .map((p) => `- ${p.name} (${p.position})`)
-            .join("\n") +
-          "\n\n📋 Tactical Formation:\n" +
-          renderAsciiField(team.players)
+            .join("\n")
       )
       .join("\n\n");
 
@@ -134,33 +132,6 @@ const GeneratedTeams = () => {
       `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`,
       "_blank"
     );
-  };
-
-  const renderAsciiField = (players: Player[]) => {
-    const goalkeepers = players.filter(p => p.position === "Goalkeeper");
-    const defenders = players.filter(p => p.position === "Defender");
-    const midfielders = players.filter(p => p.position === "Midfielder");
-    const forwards = players.filter(p => p.position === "Forward");
-
-    let field = "\n";
-    field += "      ⚽ FIELD ⚽\n";
-    field += "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
-    
-    field += forwards.map(p => p.name[0]).join(" ") + "\n";
-    field += "     ↑FWD↑\n";
-    
-    field += midfielders.map(p => p.name[0]).join(" ") + "\n";
-    field += "     ↑MID↑\n";
-    
-    field += defenders.map(p => p.name[0]).join(" ") + "\n";
-    field += "     ↑DEF↑\n";
-    
-    field += goalkeepers.length ? `     ${goalkeepers[0].name[0]}\n` : "      •\n";
-    field += "     ↑GK↑\n";
-    
-    field += "⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛\n";
-    
-    return field;
   };
 
   const handleRegenerateTeams = () => {
