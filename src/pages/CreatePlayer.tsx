@@ -47,7 +47,20 @@ const CreatePlayer = () => {
       setPosition(playerToEdit.position);
       setPhoto(playerToEdit.photo);
       setHasPhoto(playerToEdit.photo !== "https://via.placeholder.com/300");
-      setAttributes(playerToEdit.attributes);
+      setAttributes({
+        speed: playerToEdit.attributes.speed,
+        physical: playerToEdit.attributes.physical || 50,
+        mental: playerToEdit.attributes.mental,
+        passing: playerToEdit.attributes.passing,
+        dribbling: playerToEdit.attributes.dribbling || 50,
+        shooting: playerToEdit.attributes.shooting || 50,
+        heading: playerToEdit.attributes.heading || 50,
+        defending: playerToEdit.attributes.defending || 50,
+        handling: playerToEdit.attributes.handling || 50,
+        diving: playerToEdit.attributes.diving || 50,
+        positioning: playerToEdit.attributes.positioning || 50,
+        reflexes: playerToEdit.attributes.reflexes || 50,
+      });
     }
   }, [playerToEdit]);
 
