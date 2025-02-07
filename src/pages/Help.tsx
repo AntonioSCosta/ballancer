@@ -48,9 +48,10 @@ const Help = () => {
             <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
               <li>Select players for your match</li>
               <li>Generate balanced teams automatically</li>
+              <li>Equal number of players in each team</li>
+              <li>Balanced distribution of positions</li>
               <li>View teams in list format</li>
               <li>View tactical formations on a football field</li>
-              <li>Share teams via WhatsApp with visual formations</li>
               <li>Regenerate teams until you're satisfied</li>
             </ul>
           </div>
@@ -75,24 +76,6 @@ const Help = () => {
                 <li>Purple: Midfielders</li>
                 <li>Green: Forwards</li>
               </ul>
-            </ul>
-          </div>
-        </section>
-
-        {/* Sharing Teams Section */}
-        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-xl font-semibold text-primary mb-4">
-            Sharing Teams
-          </h2>
-          <div className="space-y-4">
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              When you share teams via WhatsApp, the message includes:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
-              <li>Team names and overall ratings</li>
-              <li>Complete player list for each team</li>
-              <li>Visual representation of tactical formations</li>
-              <li>Player positions and roles</li>
             </ul>
           </div>
         </section>
