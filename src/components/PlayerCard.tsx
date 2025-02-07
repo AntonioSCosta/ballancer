@@ -1,4 +1,6 @@
+
 import { motion } from "framer-motion";
+import { UserX } from "lucide-react"; // Import the UserX icon
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -78,11 +80,17 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        <img
-          src={player.photo || "https://via.placeholder.com/300"}
-          alt={player.name}
-          className="w-full h-full object-cover"
-        />
+        {player.photo ? (
+          <img
+            src={player.photo}
+            alt={player.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <UserX className="w-24 h-24 text-gray-400" strokeWidth={1.5} />
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
