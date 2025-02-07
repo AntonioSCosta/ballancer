@@ -1,5 +1,6 @@
+
 import { motion } from "framer-motion";
-import { UserRound, UserX } from "lucide-react"; // Import the UserX icon
+import { UserRound } from "lucide-react"; // Import the UserX icon
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -82,7 +83,7 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
         {player.photo ? (
           <img
             src={player.photo}
-            alt={player.name}
+            alt=""
             className="w-full h-full object-cover"
           />
         ) : (
