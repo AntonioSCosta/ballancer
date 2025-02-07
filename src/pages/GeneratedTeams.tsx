@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Share2, RefreshCw, ArrowLeft, UserRound } from "lucide-react";
+import { Share2, RefreshCw, ArrowLeft, PersonStanding } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +25,7 @@ const SimplePlayerCard = ({ player }: { player: Player }) => (
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <UserRound className="w-6 h-6 text-gray-400" strokeWidth={1.5} />
+            <PersonStanding className="w-8 h-8 text-gray-400" strokeWidth={1.5} />
           </div>
         )}
       </div>
