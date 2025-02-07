@@ -6,11 +6,14 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
+  "scope": "/",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64",
       "type": "image/x-icon"
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "orientation": "any"
 }
