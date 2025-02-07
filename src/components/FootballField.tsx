@@ -53,8 +53,8 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         {/* Center circle - Now a proper semicircle with half the size */}
         <div className="absolute w-[25%] aspect-square -right-[12.5%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
         
-        {/* Penalty arc - Repositioned to touch penalty box */}
-        <div className="absolute w-[33%] aspect-square left-0 top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
+        {/* Penalty arc - Repositioned with -5px offset */}
+        <div className="absolute w-[33%] aspect-square left-[-5px] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
                       [clip-path:polygon(33%_22%,100%_22%,100%_78%,33%_78%)]" />
         
         {/* Corner arcs */}
