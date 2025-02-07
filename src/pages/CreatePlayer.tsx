@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ImagePlus } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -17,6 +18,10 @@ import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
 const CreatePlayer = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const playerToEdit = location.state?.player as Player | undefined;
+
   const [name, setName] = useState("");
   const [position, setPosition] = useState<PlayerPosition>("Midfielder");
   const [photo, setPhoto] = useState("https://via.placeholder.com/300");
@@ -35,6 +40,16 @@ const CreatePlayer = () => {
     positioning: 50,
     reflexes: 50,
   });
+
+  useEffect(() => {
+    if (playerToEdit) {
+      setName(playerToEdit.name);
+      setPosition(playerToEdit.position);
+      setPhoto(playerToEdit.photo);
+      setHasPhoto(playerToEdit.photo !== "https://via.placeholder.com/300");
+      setAttributes(playerToEdit.attributes);
+    }
+  }, [playerToEdit]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -68,8 +83,10 @@ const CreatePlayer = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newPlayer: Player = {
-      id: uuidv4(),
+    const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
+    
+    const playerData = {
+      id: playerToEdit?.id || uuidv4(),
       name,
       position,
       photo,
@@ -77,14 +94,24 @@ const CreatePlayer = () => {
       rating: calculateRating(attributes, position),
     };
 
-    const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
-    localStorage.setItem("players", JSON.stringify([...existingPlayers, newPlayer]));
-    
-    toast.success("Player created successfully!");
-    
+    if (playerToEdit) {
+      // Update existing player
+      const updatedPlayers = existingPlayers.map((p: Player) =>
+        p.id === playerToEdit.id ? playerData : p
+      );
+      localStorage.setItem("players", JSON.stringify(updatedPlayers));
+      toast.success("Player updated successfully!");
+    } else {
+      // Create new player
+      localStorage.setItem("players", JSON.stringify([...existingPlayers, playerData]));
+      toast.success("Player created successfully!");
+    }
+
+    // Reset form and navigate back if editing
     setName("");
     setPosition("Midfielder");
     setPhoto("https://via.placeholder.com/300");
+    setHasPhoto(false);
     setAttributes({
       speed: 50,
       physical: 50,
@@ -99,6 +126,10 @@ const CreatePlayer = () => {
       positioning: 50,
       reflexes: 50,
     });
+
+    if (playerToEdit) {
+      navigate("/generator");
+    }
   };
 
   const renderAttributes = () => {
@@ -133,7 +164,9 @@ const CreatePlayer = () => {
       exit={{ opacity: 0 }}
       className="container max-w-4xl py-8 px-4"
     >
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">Create Player</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">
+        {playerToEdit ? "Edit Player" : "Create Player"}
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
@@ -223,7 +256,7 @@ const CreatePlayer = () => {
         </div>
 
         <Button type="submit" className="w-full max-w-md mx-auto block">
-          Create Player
+          {playerToEdit ? "Update Player" : "Create Player"}
         </Button>
       </form>
     </motion.div>
@@ -231,3 +264,4 @@ const CreatePlayer = () => {
 };
 
 export default CreatePlayer;
+
