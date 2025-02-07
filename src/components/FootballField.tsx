@@ -33,7 +33,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   
   return {
     x: basePositions[position as keyof typeof basePositions]?.x || "50%",
-    y: `calc(${position_y} - 10px)` // Added 10px vertical offset
+    y: `calc(${position_y} - 20px)` // Added 20px vertical offset
   };
 };
 
