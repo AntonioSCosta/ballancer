@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ import { toast } from "sonner";
 const TeamGenerator = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [players, setPlayers] = useState<Player[]>(() => {
+  const [players] = useState<Player[]>(() => {
     const storedPlayers = localStorage.getItem("players");
     return storedPlayers ? JSON.parse(storedPlayers) : [];
   });
@@ -35,20 +34,6 @@ const TeamGenerator = () => {
 
   const handleEditPlayer = (playerId: string) => {
     navigate(`/create-player?edit=${playerId}`);
-  };
-
-  const handleDeletePlayer = (playerId: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent selection toggle
-    const updatedPlayers = players.filter(p => p.id !== playerId);
-    setPlayers(updatedPlayers);
-    localStorage.setItem("players", JSON.stringify(updatedPlayers));
-    // Remove from selected if was selected
-    if (selectedPlayers.has(playerId)) {
-      const newSelected = new Set(selectedPlayers);
-      newSelected.delete(playerId);
-      setSelectedPlayers(newSelected);
-    }
-    toast.success("Player deleted successfully");
   };
 
   const handleGenerateTeams = () => {
@@ -102,7 +87,6 @@ const TeamGenerator = () => {
                 <PlayerCard
                   player={player}
                   onEdit={() => handleEditPlayer(player.id)}
-                  onDelete={(e) => handleDeletePlayer(player.id, e)}
                   className="h-full bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700"
                 />
               </motion.div>
@@ -123,6 +107,7 @@ const TeamGenerator = () => {
         )}
       </div>
 
+      {/* Floating Action Button */}
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md px-4">
         <Button
           onClick={handleGenerateTeams}

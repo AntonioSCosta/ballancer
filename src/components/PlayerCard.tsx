@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -31,7 +30,6 @@ export interface Player {
 interface PlayerCardProps {
   player: Player;
   onEdit?: () => void;
-  onDelete?: (event: React.MouseEvent) => void;
   className?: string;
 }
 
@@ -57,16 +55,11 @@ const AttributeBar = ({ label, value }: { label: string; value: number }) => (
   </div>
 );
 
-export const PlayerCard = ({ player, onEdit, onDelete, className = "" }: PlayerCardProps) => {
+export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
   const navigate = useNavigate();
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onEdit) {
-      onEdit();
-    } else {
-      navigate("/", { state: { player } });
-    }
+  const handleEdit = () => {
+    navigate("/", { state: { player } });
   };
 
   const getAttributes = () => {
@@ -130,7 +123,7 @@ export const PlayerCard = ({ player, onEdit, onDelete, className = "" }: PlayerC
       </div>
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <div className="max-w-[70%]">
+          <div className="max-w-[80%]">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
               {player.name}
             </h3>
@@ -138,24 +131,14 @@ export const PlayerCard = ({ player, onEdit, onDelete, className = "" }: PlayerC
               {player.position}
             </span>
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={handleEdit}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-            </button>
-            {onDelete && (
-              <button
-                onClick={onDelete}
-                className="text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
-              >
-                <Trash2 className="h-5 w-5" />
-              </button>
-            )}
-          </div>
+          <button
+            onClick={handleEdit}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+          </button>
         </div>
         <div className="grid grid-cols-2 gap-3">
           {getAttributes().map((attr, index) => (

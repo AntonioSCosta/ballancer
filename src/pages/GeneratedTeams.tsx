@@ -43,22 +43,40 @@ const SimplePlayerCard = ({ player }: { player: Player }) => (
 );
 
 const distributePlayersByPosition = (players: Player[]): Team[] => {
-  const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+  const goalkeepers = players.filter(p => p.position === "Goalkeeper");
+  const defenders = players.filter(p => p.position === "Defender");
+  const midfielders = players.filter(p => p.position === "Midfielder");
+  const forwards = players.filter(p => p.position === "Forward");
+
   const team1: Player[] = [];
   const team2: Player[] = [];
 
-  shuffledPlayers.forEach((player, index) => {
-    if (index % 2 === 0) {
-      team1.push(player);
-    } else {
-      team2.push(player);
-    }
-  });
+  if (goalkeepers.length >= 2) {
+    team1.push(goalkeepers[0]);
+    team2.push(goalkeepers[1]);
+  } else if (goalkeepers.length === 1) {
+    (Math.random() < 0.5 ? team1 : team2).push(goalkeepers[0]);
+  }
 
-  const calculateTeamRating = (teamPlayers: Player[]) => {
-    if (teamPlayers.length === 0) return 0;
-    const sum = teamPlayers.reduce((acc, player) => acc + player.rating, 0);
-    return Math.round(sum / teamPlayers.length);
+  const distributePosition = (positionPlayers: Player[]) => {
+    const shuffled = [...positionPlayers].sort(() => Math.random() - 0.5);
+    shuffled.forEach((player, index) => {
+      if (team1.length <= team2.length) {
+        team1.push(player);
+      } else {
+        team2.push(player);
+      }
+    });
+  };
+
+  distributePosition(defenders);
+  distributePosition(midfielders);
+  distributePosition(forwards);
+
+  const calculateTeamRating = (players: Player[]) => {
+    if (players.length === 0) return 0;
+    const sum = players.reduce((acc, player) => acc + player.rating, 0);
+    return Math.round(sum / players.length);
   };
 
   return [
@@ -103,7 +121,7 @@ const GeneratedTeams = () => {
     const teamsInfo = teams
       .map(
         (team, i) =>
-          `🏃��♂️ Team ${i + 1} (Rating: ${team.rating})\n\n` +
+          `🏃‍♂️ Team ${i + 1} (Rating: ${team.rating})\n\n` +
           team.players
             .map((p) => `- ${p.name} (${p.position})`)
             .join("\n") +
