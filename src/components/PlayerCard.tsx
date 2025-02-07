@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -105,7 +104,7 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
       <div className="relative aspect-square overflow-hidden">
-        <div className={`w-full h-full flex items-center justify-center ${getPositionColor(player.position)}`}>
+        <div className="w-full h-full flex items-center justify-center bg-primary">
           <span className="text-4xl font-bold text-white">
             {getInitials(player.name)}
           </span>
@@ -147,4 +146,3 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     </motion.div>
   );
 };
-
