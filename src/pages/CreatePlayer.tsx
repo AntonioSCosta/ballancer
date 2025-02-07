@@ -20,6 +20,7 @@ const CreatePlayer = () => {
   const [name, setName] = useState("");
   const [position, setPosition] = useState<PlayerPosition>("Midfielder");
   const [photo, setPhoto] = useState("https://via.placeholder.com/300");
+  const [hasPhoto, setHasPhoto] = useState(false);
   const [attributes, setAttributes] = useState({
     speed: 50,
     physical: 50,
@@ -41,6 +42,7 @@ const CreatePlayer = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPhoto(reader.result as string);
+        setHasPhoto(true);
       };
       reader.readAsDataURL(file);
     }
@@ -167,11 +169,13 @@ const CreatePlayer = () => {
                 Photo
               </label>
               <div className="flex flex-col items-center gap-4">
-                <img
-                  src={photo}
-                  alt={name}
-                  className="w-32 h-32 object-cover rounded-full border-2 border-primary"
-                />
+                {hasPhoto && (
+                  <img
+                    src={photo}
+                    alt={name}
+                    className="w-32 h-32 object-cover rounded-full border-2 border-primary"
+                  />
+                )}
                 <div className="relative">
                   <Input
                     type="file"
