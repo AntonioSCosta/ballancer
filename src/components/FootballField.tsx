@@ -12,11 +12,23 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   const basePositions = {
     "Goalkeeper": { x: "10%", y: "50%" },
     "Defender": { x: "30%", y: "0" },
-    "Midfielder": { x: "50%", y: "0" },
-    "Forward": { x: "70%", y: "0" }
+    "Midfielder": { x: "55%", y: "0" },
+    "Forward": { x: "75%", y: "0" }
   };
 
-  const position_y = ((index + 1) * (100 / (totalInPosition + 1))) + "%";
+  // Calculate vertical spacing based on total players in position
+  let position_y;
+  if (totalInPosition === 1) {
+    position_y = "50%"; // Center single player
+  } else if (totalInPosition === 2) {
+    position_y = `${35 + (index * 30)}%`; // Two players: 35% and 65%
+  } else if (totalInPosition === 3) {
+    position_y = `${25 + (index * 25)}%`; // Three players: 25%, 50%, 75%
+  } else if (totalInPosition === 4) {
+    position_y = `${20 + (index * 20)}%`; // Four players: 20%, 40%, 60%, 80%
+  } else {
+    position_y = `${15 + (index * ((70) / (totalInPosition - 1)))}%`; // Distribute remaining evenly
+  }
   
   return {
     x: basePositions[position as keyof typeof basePositions]?.x || "50%",
@@ -115,4 +127,3 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
     </div>
   );
 };
-
