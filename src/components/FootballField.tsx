@@ -17,17 +17,18 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   };
 
   // Calculate vertical spacing based on total players in position
+  // Adjusted base percentages to be higher up in the field
   let position_y;
   if (totalInPosition === 1) {
     position_y = "50%"; // Center single player
   } else if (totalInPosition === 2) {
-    position_y = `${35 + (index * 30)}%`; // Two players: 35% and 65%
+    position_y = `${30 + (index * 40)}%`; // Two players: 30% and 70%
   } else if (totalInPosition === 3) {
-    position_y = `${25 + (index * 25)}%`; // Three players: 25%, 50%, 75%
+    position_y = `${20 + (index * 30)}%`; // Three players: 20%, 50%, 80%
   } else if (totalInPosition === 4) {
-    position_y = `${20 + (index * 20)}%`; // Four players: 20%, 40%, 60%, 80%
+    position_y = `${15 + (index * 23)}%`; // Four players: 15%, 38%, 61%, 84%
   } else {
-    position_y = `${15 + (index * ((70) / (totalInPosition - 1)))}%`; // Distribute remaining evenly
+    position_y = `${10 + (index * ((80) / (totalInPosition - 1)))}%`; // Distribute remaining evenly
   }
   
   return {
