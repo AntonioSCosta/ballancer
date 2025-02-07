@@ -5,7 +5,7 @@ import { PlayerPosition, Player } from "@/components/PlayerCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Select,
@@ -74,6 +74,14 @@ const CreatePlayer = () => {
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleDelete = () => {
+    const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
+    const updatedPlayers = existingPlayers.filter((p: Player) => p.id !== playerToEdit?.id);
+    localStorage.setItem("players", JSON.stringify(updatedPlayers));
+    toast.success("Player deleted successfully!");
+    navigate("/generator");
   };
 
   const handleAttributeChange = (attr: string, value: number[]) => {
@@ -177,9 +185,21 @@ const CreatePlayer = () => {
       exit={{ opacity: 0 }}
       className="container max-w-4xl py-8 px-4"
     >
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8 text-center">
-        {playerToEdit ? "Edit Player" : "Create Player"}
-      </h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {playerToEdit ? "Edit Player" : "Create Player"}
+        </h1>
+        {playerToEdit && (
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            className="flex items-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete Player
+          </Button>
+        )}
+      </div>
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-6">
