@@ -42,6 +42,55 @@ const SimplePlayerCard = ({ player }: { player: Player }) => (
   </div>
 );
 
+const distributePlayersByPosition = (players: Player[]): Team[] => {
+  const goalkeepers = players.filter(p => p.position === "Goalkeeper");
+  const defenders = players.filter(p => p.position === "Defender");
+  const midfielders = players.filter(p => p.position === "Midfielder");
+  const forwards = players.filter(p => p.position === "Forward");
+
+  const team1: Player[] = [];
+  const team2: Player[] = [];
+
+  if (goalkeepers.length >= 2) {
+    team1.push(goalkeepers[0]);
+    team2.push(goalkeepers[1]);
+  } else if (goalkeepers.length === 1) {
+    (Math.random() < 0.5 ? team1 : team2).push(goalkeepers[0]);
+  }
+
+  const distributePosition = (positionPlayers: Player[]) => {
+    const shuffled = [...positionPlayers].sort(() => Math.random() - 0.5);
+    shuffled.forEach((player, index) => {
+      if (team1.length <= team2.length) {
+        team1.push(player);
+      } else {
+        team2.push(player);
+      }
+    });
+  };
+
+  distributePosition(defenders);
+  distributePosition(midfielders);
+  distributePosition(forwards);
+
+  const calculateTeamRating = (players: Player[]) => {
+    if (players.length === 0) return 0;
+    const sum = players.reduce((acc, player) => acc + player.rating, 0);
+    return Math.round(sum / players.length);
+  };
+
+  return [
+    {
+      players: team1,
+      rating: calculateTeamRating(team1)
+    },
+    {
+      players: team2,
+      rating: calculateTeamRating(team2)
+    }
+  ];
+};
+
 const GeneratedTeams = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -53,7 +102,6 @@ const GeneratedTeams = () => {
       return;
     }
 
-    // Get players from localStorage
     const storedPlayers = localStorage.getItem("players");
     if (!storedPlayers) {
       navigate("/generator");
@@ -65,28 +113,8 @@ const GeneratedTeams = () => {
       location.state.selectedPlayerIds.includes(p.id)
     );
     
-    const shuffled = [...selectedPlayers].sort(() => Math.random() - 0.5);
-    const midpoint = Math.floor(shuffled.length / 2);
-    
-    const calculateTeamRating = (players: Player[]) => {
-      if (players.length === 0) return 0;
-      const sum = players.reduce((acc, player) => acc + player.rating, 0);
-      return Math.round(sum / players.length);
-    };
-
-    const team1 = shuffled.slice(0, midpoint);
-    const team2 = shuffled.slice(midpoint);
-
-    setTeams([
-      {
-        players: team1,
-        rating: calculateTeamRating(team1),
-      },
-      {
-        players: team2,
-        rating: calculateTeamRating(team2),
-      },
-    ]);
+    const distributedTeams = distributePlayersByPosition(selectedPlayers);
+    setTeams(distributedTeams);
   }, [location.state, navigate]);
 
   const handleShareWhatsApp = () => {
@@ -114,28 +142,8 @@ const GeneratedTeams = () => {
       location.state.selectedPlayerIds.includes(p.id)
     );
     
-    const shuffled = [...selectedPlayers].sort(() => Math.random() - 0.5);
-    const midpoint = Math.floor(shuffled.length / 2);
-    
-    const calculateTeamRating = (players: Player[]) => {
-      if (players.length === 0) return 0;
-      const sum = players.reduce((acc, player) => acc + player.rating, 0);
-      return Math.round(sum / players.length);
-    };
-
-    const team1 = shuffled.slice(0, midpoint);
-    const team2 = shuffled.slice(midpoint);
-
-    setTeams([
-      {
-        players: team1,
-        rating: calculateTeamRating(team1),
-      },
-      {
-        players: team2,
-        rating: calculateTeamRating(team2),
-      },
-    ]);
+    const distributedTeams = distributePlayersByPosition(selectedPlayers);
+    setTeams(distributedTeams);
     
     toast.success("Teams regenerated!");
   };
