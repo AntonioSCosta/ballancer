@@ -71,10 +71,12 @@ const distributePlayersByPosition = (players: Player[]): Team[] => {
 
   const distributePosition = (positionPlayers: Player[]) => {
     const shuffled = [...positionPlayers].sort(() => Math.random() - 0.5);
-    const halfLength = Math.ceil(shuffled.length / 2);
     
-    team1.push(...shuffled.slice(0, halfLength));
-    team2.push(...shuffled.slice(halfLength));
+    const playersPerTeam = Math.floor(shuffled.length / 2);
+    const extraPlayer = shuffled.length % 2;
+
+    team1.push(...shuffled.slice(0, playersPerTeam + (team1.length <= team2.length ? extraPlayer : 0)));
+    team2.push(...shuffled.slice(playersPerTeam + (team1.length > team2.length ? extraPlayer : 0)));
   };
 
   distributePosition(defenders);
