@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Share2, RefreshCw, ArrowLeft, PersonStanding } from "lucide-react";
+import { Share2, RefreshCw, ArrowLeft } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -263,3 +264,4 @@ const GeneratedTeams = () => {
 };
 
 export default GeneratedTeams;
+
