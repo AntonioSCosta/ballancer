@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -72,13 +71,10 @@ const distributePlayersByPosition = (players: Player[]): Team[] => {
 
   const distributePosition = (positionPlayers: Player[]) => {
     const shuffled = [...positionPlayers].sort(() => Math.random() - 0.5);
-    shuffled.forEach((player, index) => {
-      if (team1.length <= team2.length) {
-        team1.push(player);
-      } else {
-        team2.push(player);
-      }
-    });
+    const halfLength = Math.ceil(shuffled.length / 2);
+    
+    team1.push(...shuffled.slice(0, halfLength));
+    team2.push(...shuffled.slice(halfLength));
   };
 
   distributePosition(defenders);
@@ -264,4 +260,3 @@ const GeneratedTeams = () => {
 };
 
 export default GeneratedTeams;
-
