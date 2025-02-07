@@ -27,7 +27,7 @@ const SimplePlayerCard = ({ player }: { player: Player }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
           {player.photo ? (
             <img
               src={player.photo}
@@ -35,7 +35,7 @@ const SimplePlayerCard = ({ player }: { player: Player }) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-2xl font-bold text-gray-400">
+            <span className="text-xl font-semibold text-gray-500 dark:text-gray-400">
               {getInitials(player.name)}
             </span>
           )}
