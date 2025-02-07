@@ -1,6 +1,5 @@
-
 import { motion } from "framer-motion";
-import { UserX } from "lucide-react"; // Import the UserX icon
+import { UserRound, UserX } from "lucide-react"; // Import the UserX icon
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
 
@@ -88,7 +87,7 @@ export const PlayerCard = ({ player, onEdit, className = "" }: PlayerCardProps) 
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <UserX className="w-24 h-24 text-gray-400" strokeWidth={1.5} />
+            <UserRound className="w-24 h-24 text-gray-400" strokeWidth={1.5} />
           </div>
         )}
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
