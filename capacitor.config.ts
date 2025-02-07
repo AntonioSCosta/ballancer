@@ -1,3 +1,4 @@
+
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
@@ -5,7 +6,7 @@ const config: CapacitorConfig = {
   appName: 'Football Team Generator',
   webDir: 'dist',
   server: {
-    url: 'http://localhost:5173',
+    url: 'http://localhost:8080',
     cleartext: true
   },
   ios: {
