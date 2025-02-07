@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
@@ -103,28 +104,12 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       exit={{ opacity: 0, y: 20 }}
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-700">
-        {player.photo ? (
-          <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="w-full h-full"
-          >
-            <img
-              src={player.photo}
-              alt={player.name}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              loading="lazy"
-            />
-          </motion.div>
-        ) : (
-          <div className={`w-full h-full flex items-center justify-center ${getPositionColor(player.position)}`}>
-            <span className="text-4xl font-bold text-white">
-              {getInitials(player.name)}
-            </span>
-          </div>
-        )}
+      <div className="relative aspect-square overflow-hidden">
+        <div className={`w-full h-full flex items-center justify-center ${getPositionColor(player.position)}`}>
+          <span className="text-4xl font-bold text-white">
+            {getInitials(player.name)}
+          </span>
+        </div>
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
@@ -162,3 +147,4 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     </motion.div>
   );
 };
+
