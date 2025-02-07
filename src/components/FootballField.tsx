@@ -1,3 +1,4 @@
+
 import { Player } from "./PlayerCard";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { motion } from "framer-motion";
@@ -40,11 +41,11 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         {/* Main outline */}
         <div className="absolute w-full h-full border-2 border-white/40" />
         
-        {/* Penalty area (56.25% width, 33% height) */}
-        <div className="absolute w-[56.25%] h-[33%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
+        {/* Penalty area (33% width, 56% height) */}
+        <div className="absolute w-[33%] h-[56%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
-        {/* Goal area (20% width, 15% height) */}
-        <div className="absolute w-[20%] h-[15%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
+        {/* Goal area (15% width, 20% height) */}
+        <div className="absolute w-[15%] h-[20%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
         
         {/* Half way line */}
         <div className="absolute right-0 top-0 bottom-0 border-2 border-white/40" />
@@ -56,8 +57,8 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         <div className="absolute w-2 h-2 left-[30%] top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/40 rounded-full" />
         
         {/* Penalty arc - Now a proper semicircle aligned with penalty area */}
-        <div className="absolute w-[56.25%] aspect-square left-0 top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
-                      [clip-path:polygon(50%_35%,100%_35%,100%_65%,50%_65%)]" />
+        <div className="absolute w-[33%] aspect-square left-0 top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
+                      [clip-path:polygon(50%_22%,100%_22%,100%_78%,50%_78%)]" />
         
         {/* Corner arcs */}
         <div className="absolute w-[5%] h-[3%] left-0 top-0 border-r-2 border-b-2 border-white/40 rounded-br-full" />
