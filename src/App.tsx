@@ -16,13 +16,13 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Navigation />
-        <ThemeSwitcher />
+    <BrowserRouter>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
         <div className="pt-16">
+          <Navigation />
+          <ThemeSwitcher />
           <Routes>
             <Route path="/" element={<CreatePlayer />} />
             <Route path="/generator" element={<TeamGenerator />} />
@@ -30,8 +30,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
-      </BrowserRouter>
-    </TooltipProvider>
+      </TooltipProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
