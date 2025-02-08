@@ -50,11 +50,19 @@ const GeneratedTeams = () => {
       .join("\n\n");
 
     try {
-      // Try web WhatsApp first
-      const webWhatsappUrl = `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`;
-      window.open(webWhatsappUrl, '_blank');
+      const encodedText = encodeURIComponent(teamsInfo);
+      const webWhatsappUrl = `https://web.whatsapp.com/send?text=${encodedText}`;
+      
+      // On mobile devices, try to use the WhatsApp app
+      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = `whatsapp://send?text=${encodedText}`;
+      } else {
+        // On desktop, open Web WhatsApp
+        window.open(webWhatsappUrl, '_blank');
+      }
     } catch (error) {
-      // If web WhatsApp fails, copy to clipboard
+      console.error('Error sharing to WhatsApp:', error);
+      // Fallback to clipboard
       await navigator.clipboard.writeText(teamsInfo);
       toast.success("Teams copied to clipboard!");
     }
