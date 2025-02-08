@@ -16,11 +16,11 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <Navigation />
+      <ThemeSwitcher />
       <TooltipProvider>
-        <Navigation />
-        <ThemeSwitcher />
         <div className="pt-16">
           <Routes>
             <Route path="/" element={<CreatePlayer />} />
@@ -33,8 +33,8 @@ const App = () => (
         <Toaster />
         <Sonner />
       </TooltipProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;
