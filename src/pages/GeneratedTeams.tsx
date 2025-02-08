@@ -38,7 +38,7 @@ const GeneratedTeams = () => {
     setTeams(distributedTeams);
   }, [location.state, navigate]);
 
-  const handleShareWhatsApp = () => {
+  const handleShare = async () => {
     const teamsInfo = teams
       .map(
         (team, i) =>
@@ -49,10 +49,23 @@ const GeneratedTeams = () => {
       )
       .join("\n\n");
 
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`,
-      "_blank"
-    );
+    try {
+      // Try using the Web Share API first
+      if (navigator.share) {
+        await navigator.share({
+          text: teamsInfo,
+        });
+        toast.success("Teams shared successfully!");
+        return;
+      }
+
+      // Fallback to clipboard copy
+      await navigator.clipboard.writeText(teamsInfo);
+      toast.success("Teams copied to clipboard!");
+    } catch (error) {
+      console.error("Error sharing:", error);
+      toast.error("Unable to share teams. Please try copying manually.");
+    }
   };
 
   const handleRegenerateTeams = () => {
@@ -102,7 +115,7 @@ const GeneratedTeams = () => {
             Regenerate
           </Button>
           <Button 
-            onClick={handleShareWhatsApp}
+            onClick={handleShare}
             className="flex items-center gap-2"
           >
             <Share2 className="h-4 w-4" />
