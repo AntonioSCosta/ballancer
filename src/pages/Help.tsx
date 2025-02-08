@@ -60,6 +60,29 @@ const Help = () => {
         {/* Tactics View Section */}
         <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-xl font-semibold text-primary mb-4">
+            Understanding the Tactics View
+          </h2>
+          <div className="space-y-4">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+              The tactics view shows your team's formation on a virtual football field:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+              <li>Players are positioned based on their roles</li>
+              <li>Hover over player icons to see their names</li>
+              <li>Different colors represent different positions:</li>
+              <ul className="list-disc list-inside ml-6 mt-2">
+                <li>Orange: Goalkeepers</li>
+                <li>Blue: Defenders</li>
+                <li>Purple: Midfielders</li>
+                <li>Green: Forwards</li>
+              </ul>
+            </ul>
+          </div>
+        </section>
+
+        {/* Tips Section */}
+        <section className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold text-primary mb-4">
             Pro Tips
           </h2>
           <div className="space-y-4">
