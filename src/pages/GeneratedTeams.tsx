@@ -10,14 +10,12 @@ import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamDisplay from "@/components/TeamDisplay";
-import { useIsMobile } from "@/hooks/use-mobile";
 import type { Team } from "@/utils/teamDistribution";
 
 const GeneratedTeams = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>([]);
-  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (!location.state?.selectedPlayerIds) {
@@ -53,10 +51,7 @@ const GeneratedTeams = () => {
 
     try {
       const encodedText = encodeURIComponent(teamsInfo);
-      const whatsappUrl = isMobile
-        ? `whatsapp://send?text=${encodedText}`
-        : `https://web.whatsapp.com/send?text=${encodedText}`;
-      
+      const whatsappUrl = `whatsapp://send?text=${encodedText}`;
       window.location.href = whatsappUrl;
     } catch (error) {
       console.error('Error sharing to WhatsApp:', error);
