@@ -16,9 +16,9 @@ import Help from "./pages/Help";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <BrowserRouter>
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
         <div className="pt-16">
           <Navigation />
           <ThemeSwitcher />
@@ -32,9 +32,9 @@ const App = () => (
           <Toaster />
           <Sonner />
         </div>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </BrowserRouter>
 );
 
 export default App;
