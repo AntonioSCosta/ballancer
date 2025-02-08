@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { RefreshCw, ArrowLeft } from "lucide-react";
+import { RefreshCw, ArrowLeft, Share2 } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,6 +37,30 @@ const GeneratedTeams = () => {
     const distributedTeams = distributePlayersByPosition(selectedPlayers);
     setTeams(distributedTeams);
   }, [location.state, navigate]);
+
+  const handleShareWhatsApp = () => {
+    const teamsInfo = teams
+      .map(
+        (team, i) =>
+          `⚽ Team ${i + 1} (Rating: ${team.rating})\n\n` +
+          team.players
+            .map((p) => `- ${p.name} (${p.position})`)
+            .join("\n")
+      )
+      .join("\n\n");
+
+    try {
+      const encodedText = encodeURIComponent(teamsInfo);
+      const whatsappUrl = `https://web.whatsapp.com/send?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank');
+    } catch (error) {
+      console.error('Error sharing to WhatsApp:', error);
+      // Fallback to clipboard
+      navigator.clipboard.writeText(teamsInfo)
+        .then(() => toast.success("Teams copied to clipboard!"))
+        .catch(() => toast.error("Failed to copy teams"));
+    }
+  };
 
   const handleRegenerateTeams = () => {
     const storedPlayers = localStorage.getItem("players");
@@ -75,7 +99,7 @@ const GeneratedTeams = () => {
           <div className="w-8" />
         </div>
         
-        <div className="flex justify-center">
+        <div className="flex gap-2 justify-center">
           <Button 
             variant="outline" 
             onClick={handleRegenerateTeams}
@@ -83,6 +107,13 @@ const GeneratedTeams = () => {
           >
             <RefreshCw className="h-4 w-4" />
             Regenerate
+          </Button>
+          <Button 
+            onClick={handleShareWhatsApp}
+            className="flex items-center gap-2"
+          >
+            <Share2 className="h-4 w-4" />
+            Share
           </Button>
         </div>
 
