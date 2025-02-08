@@ -51,15 +51,9 @@ const GeneratedTeams = () => {
 
     try {
       const encodedText = encodeURIComponent(teamsInfo);
-      const webWhatsappUrl = `https://web.whatsapp.com/send?text=${encodedText}`;
-      
-      // On mobile devices, try to use the WhatsApp app
-      if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.location.href = `whatsapp://send?text=${encodedText}`;
-      } else {
-        // On desktop, open Web WhatsApp
-        window.open(webWhatsappUrl, '_blank');
-      }
+      // Use the official WhatsApp API URL
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedText}`;
+      window.open(whatsappUrl, '_blank');
     } catch (error) {
       console.error('Error sharing to WhatsApp:', error);
       // Fallback to clipboard
