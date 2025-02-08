@@ -38,7 +38,7 @@ const GeneratedTeams = () => {
     setTeams(distributedTeams);
   }, [location.state, navigate]);
 
-  const handleShareWhatsApp = async () => {
+  const handleShareWhatsApp = () => {
     const teamsInfo = teams
       .map(
         (team, i) =>
@@ -49,15 +49,10 @@ const GeneratedTeams = () => {
       )
       .join("\n\n");
 
-    try {
-      // Try web WhatsApp first
-      const webWhatsappUrl = `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`;
-      window.open(webWhatsappUrl, '_blank');
-    } catch (error) {
-      // If web WhatsApp fails, copy to clipboard
-      await navigator.clipboard.writeText(teamsInfo);
-      toast.success("Teams copied to clipboard!");
-    }
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(teamsInfo)}`,
+      "_blank"
+    );
   };
 
   const handleRegenerateTeams = () => {
