@@ -15,7 +15,6 @@ export const Navigation = () => {
   const menuItems = [
     { path: "/", label: "Create Player" },
     { path: "/generator", label: "Team Generator" },
-    { path: "/help", label: "Help" },
   ];
 
   return (
