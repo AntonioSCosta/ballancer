@@ -50,7 +50,7 @@ export const shareTeamsToWhatsApp = (teams: Team[]) => {
   const teamsInfo = teams
     .map(
       (team, i) =>
-        `⚽ Team ${i + 1} (Rating: ${team.rating})\n\n` +
+        `⚽ Team ${i + 1}\n\n` +
         team.players
           .map((p) => `- ${p.name} (${p.position})`)
           .join("\n")
@@ -74,7 +74,7 @@ export const copyTeamsToClipboard = (teams: Team[]) => {
   const teamsInfo = teams
     .map(
       (team, i) =>
-        `Team ${i + 1} (Rating: ${team.rating})\n\n` +
+        `Team ${i + 1}\n\n` +
         team.players
           .map((p) => `- ${p.name} (${p.position})`)
           .join("\n")
