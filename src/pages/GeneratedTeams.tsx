@@ -1,16 +1,16 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { RefreshCw, ArrowLeft, Share2 } from "lucide-react";
+import { RefreshCw, ArrowLeft, Share2, FileDown } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamDisplay from "@/components/TeamDisplay";
 import type { Team } from "@/utils/teamDistribution";
+import jsPDF from "jspdf";
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -77,6 +77,47 @@ const GeneratedTeams = () => {
     toast.success("Teams regenerated!");
   };
 
+  const handleExportPDF = () => {
+    const pdf = new jsPDF();
+    let yPosition = 20;
+    const lineHeight = 10;
+    const margin = 20;
+
+    // Add title
+    pdf.setFontSize(16);
+    pdf.text("Generated Teams", margin, yPosition);
+    yPosition += lineHeight * 2;
+
+    // Add date
+    pdf.setFontSize(10);
+    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, yPosition);
+    yPosition += lineHeight * 2;
+
+    teams.forEach((team, teamIndex) => {
+      // Add team header
+      pdf.setFontSize(14);
+      pdf.text(`Team ${teamIndex + 1} (Rating: ${team.rating})`, margin, yPosition);
+      yPosition += lineHeight;
+
+      // Add players
+      pdf.setFontSize(12);
+      team.players.forEach((player) => {
+        if (yPosition > 270) { // Check if we need a new page
+          pdf.addPage();
+          yPosition = 20;
+        }
+        pdf.text(`${player.name} - ${player.position}`, margin, yPosition);
+        yPosition += lineHeight;
+      });
+
+      yPosition += lineHeight; // Add space between teams
+    });
+
+    // Save the PDF
+    pdf.save("generated-teams.pdf");
+    toast.success("Teams exported to PDF!");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -114,6 +155,14 @@ const GeneratedTeams = () => {
           >
             <Share2 className="h-4 w-4" />
             Share
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleExportPDF}
+            className="flex items-center gap-2"
+          >
+            <FileDown className="h-4 w-4" />
+            Export PDF
           </Button>
         </div>
 
