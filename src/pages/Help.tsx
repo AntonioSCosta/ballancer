@@ -4,10 +4,9 @@ import {
   BookOpen,
   Users,
   UserPlus,
-  Trophy,
   Share2,
-  History,
-  Settings,
+  ListCheck,
+  Info,
 } from "lucide-react";
 import {
   Card,
@@ -30,7 +29,7 @@ const Help = () => {
           Help & Documentation
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Everything you need to know about using Team Generator effectively
+          Everything you need to know about using Team Generator
         </p>
         <Separator className="my-4" />
       </div>
@@ -46,13 +45,13 @@ const Help = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Team Generator helps you create balanced teams for sports games. Here's how to start:
+              Team Generator helps you create balanced teams quickly and easily. Here's how to start:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Create players with their details</li>
-              <li>Select players for team generation</li>
-              <li>Generate balanced teams</li>
-              <li>Share or save your teams</li>
+              <li>Create players with their photos and details</li>
+              <li>Select players for the current game</li>
+              <li>Click generate to create balanced teams</li>
+              <li>Share teams via WhatsApp or copy to clipboard</li>
             </ul>
           </CardContent>
         </Card>
@@ -71,9 +70,9 @@ const Help = () => {
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>Name and preferred position</li>
-              <li>Skill level (1-5 stars)</li>
-              <li>Track performance statistics</li>
-              <li>Edit or remove players anytime</li>
+              <li>Upload a player photo</li>
+              <li>Set detailed player attributes</li>
+              <li>Edit player details anytime</li>
             </ul>
           </CardContent>
         </Card>
@@ -91,10 +90,10 @@ const Help = () => {
               Our algorithm ensures fair team distribution by:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Balancing overall team skill levels</li>
+              <li>Balancing team skill levels</li>
               <li>Considering player positions</li>
-              <li>Distributing experienced players evenly</li>
-              <li>Supporting multiple team configurations</li>
+              <li>Distributing players evenly</li>
+              <li>Visualizing team formations</li>
             </ul>
           </CardContent>
         </Card>
@@ -102,20 +101,20 @@ const Help = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-primary" />
-              Statistics & Performance
+              <ListCheck className="h-5 w-5 text-primary" />
+              Match Results
             </CardTitle>
-            <CardDescription>Track player and team performance</CardDescription>
+            <CardDescription>Record game outcomes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Keep track of:
+              After each game, you can:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Win/loss records</li>
-              <li>Goals scored</li>
-              <li>Player participation</li>
-              <li>Team performance history</li>
+              <li>Record which team won</li>
+              <li>Track individual player goals</li>
+              <li>Save match statistics</li>
+              <li>View player performance history</li>
             </ul>
           </CardContent>
         </Card>
@@ -130,13 +129,13 @@ const Help = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Multiple sharing options:
+              Share teams instantly:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>Share directly to WhatsApp</li>
-              <li>Copy to clipboard</li>
-              <li>Export team listings</li>
-              <li>Quick team overview format</li>
+              <li>Copy teams to clipboard</li>
+              <li>View team formations</li>
+              <li>Quick team overview</li>
             </ul>
           </CardContent>
         </Card>
@@ -144,7 +143,7 @@ const Help = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5 text-primary" />
+              <Info className="h-5 w-5 text-primary" />
               Tips & Best Practices
             </CardTitle>
             <CardDescription>Get the most out of the app</CardDescription>
@@ -154,10 +153,10 @@ const Help = () => {
               Recommended practices:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Keep player skills up to date</li>
-              <li>Use consistent rating criteria</li>
+              <li>Add player photos for easy identification</li>
+              <li>Set accurate player attributes</li>
+              <li>Select at least 10 players for teams</li>
               <li>Record match results promptly</li>
-              <li>Regular roster updates</li>
             </ul>
           </CardContent>
         </Card>
