@@ -1,3 +1,4 @@
+
 import { Player } from "@/components/PlayerCard";
 
 export interface Team {
@@ -26,15 +27,15 @@ const calculateTeamRating = (players: Player[]) => {
   return Math.round(sum / players.length);
 };
 
-const getPlayersByPosition = (players: Player[], position: string) => {
-  return players.filter(p => 
-    p.position === position || p.secondaryPosition === position
-  );
-};
-
 const getDefendersCount = (team: Player[]) => {
   return team.filter(p => 
     p.position === "Defender" || p.secondaryPosition === "Defender"
+  ).length;
+};
+
+const getMidfieldersCount = (team: Player[]) => {
+  return team.filter(p => 
+    p.position === "Midfielder" || p.secondaryPosition === "Midfielder"
   ).length;
 };
 
@@ -103,7 +104,23 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     p.position === "Forward" || p.secondaryPosition === "Forward"
   );
 
-  distributeEvenly(midfielders, team1, team2);
+  // Handle midfielders distribution with max 5 per team
+  const shuffledMids = shuffle(midfielders);
+  for (const midfielder of shuffledMids) {
+    if (team1.length <= team2.length && getMidfieldersCount(team1) < 5) {
+      team1.push(midfielder);
+    } else if (getMidfieldersCount(team2) < 5) {
+      team2.push(midfielder);
+    } else {
+      // If both teams have 5 midfielders, treat remaining ones as general players
+      if (team1.length <= team2.length) {
+        team1.push(midfielder);
+      } else {
+        team2.push(midfielder);
+      }
+    }
+  }
+
   distributeEvenly(forwards, team1, team2);
 
   const unassigned = remainingPlayers.filter(p => 
