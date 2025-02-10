@@ -8,7 +8,7 @@ interface FootballFieldProps {
   teamName: string;
 }
 
-const getPositionCoordinates = (position: string, index: number, totalInPosition: number, player?: Player, sortedMidfielders?: Player[]) => {
+const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
     "Goalkeeper": { x: "10%", y: "50%" },
     "Defender": { x: "30%", y: "0" },
@@ -16,30 +16,8 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     "Forward": { x: "75%", y: "0" }
   };
 
-  // Special handling for midfielders to put fastest ones on the wings
-  if (position === "Midfielder" && player && sortedMidfielders) {
-    const midfielderIndex = sortedMidfielders.findIndex(p => p.id === player.id);
-    
-    // If there are at least 3 midfielders, position the two fastest on wings
-    if (totalInPosition >= 3) {
-      if (midfielderIndex === 0) {
-        return { x: basePositions.Midfielder.x, y: "20%" }; // Top wing
-      } else if (midfielderIndex === 1) {
-        return { x: basePositions.Midfielder.x, y: "80%" }; // Bottom wing
-      }
-      
-      // For remaining midfielders, distribute them evenly in the central area
-      const remainingIndex = midfielderIndex - 2; // Subtract 2 to account for wingers
-      const remainingTotal = totalInPosition - 2;
-      const centralSpacing = 60 / (remainingTotal + 1); // Use 60% of space (from 20% to 80%)
-      return {
-        x: basePositions.Midfielder.x,
-        y: `${30 + (centralSpacing * (remainingIndex + 1))}%`
-      };
-    }
-  }
-
   // Calculate vertical spacing based on total players in position
+  // Adjusted base percentages to be higher up in the field
   let position_y;
   if (totalInPosition === 1) {
     position_y = "50%"; // Center single player
@@ -79,11 +57,6 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
   const midfielders = getPlayersInPosition(players, "Midfielder");
   const forwards = getPlayersInPosition(players, "Forward");
 
-  // Sort midfielders by speed
-  const sortedMidfielders = [...midfielders].sort((a, b) => 
-    (b.attributes.speed) - (a.attributes.speed)
-  );
-
   return (
     <div className="flex flex-col gap-2">
       {/* Team name now above the field */}
@@ -122,11 +95,11 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         {[
           { players: goalkeepers, position: "Goalkeeper" },
           { players: defenders, position: "Defender" },
-          { players: sortedMidfielders, position: "Midfielder" },
+          { players: midfielders, position: "Midfielder" },
           { players: forwards, position: "Forward" }
         ].map(({ players: positionPlayers, position }) => (
           positionPlayers.map((player, index) => {
-            const coords = getPositionCoordinates(position, index, positionPlayers.length, player, position === "Midfielder" ? sortedMidfielders : undefined);
+            const coords = getPositionCoordinates(position, index, positionPlayers.length);
             const yPosition = parseInt(coords.y);
             const tooltipPosition = yPosition < 30 ? "bottom" : "top";
 
@@ -162,4 +135,3 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
     </div>
   );
 };
-
