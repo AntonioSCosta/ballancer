@@ -26,6 +26,7 @@ const CreatePlayer = () => {
 
   const [name, setName] = useState("");
   const [position, setPosition] = useState<PlayerPosition>("Midfielder");
+  const [secondaryPosition, setSecondaryPosition] = useState<PlayerPosition | undefined>();
   const [photo, setPhoto] = useState("https://via.placeholder.com/300");
   const [hasPhoto, setHasPhoto] = useState(false);
   const [attributes, setAttributes] = useState(getDefaultAttributes());
@@ -34,6 +35,7 @@ const CreatePlayer = () => {
     if (playerToEdit) {
       setName(playerToEdit.name);
       setPosition(playerToEdit.position);
+      setSecondaryPosition(playerToEdit.secondaryPosition);
       setPhoto(playerToEdit.photo);
       setHasPhoto(playerToEdit.photo !== "https://via.placeholder.com/300");
       setAttributes({
@@ -88,6 +90,7 @@ const CreatePlayer = () => {
       id: playerToEdit?.id || uuidv4(),
       name,
       position,
+      secondaryPosition,
       photo,
       attributes,
       rating: calculateRating(attributes, position),
@@ -106,6 +109,7 @@ const CreatePlayer = () => {
 
     setName("");
     setPosition("Midfielder");
+    setSecondaryPosition(undefined);
     setPhoto("https://via.placeholder.com/300");
     setHasPhoto(false);
     setAttributes(getDefaultAttributes());
@@ -153,13 +157,33 @@ const CreatePlayer = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Position
+                Primary Position
               </label>
               <Select value={position} onValueChange={(v) => setPosition(v as PlayerPosition)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
+                  <SelectItem value="Defender">Defender</SelectItem>
+                  <SelectItem value="Midfielder">Midfielder</SelectItem>
+                  <SelectItem value="Forward">Forward</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Secondary Position (Optional)
+              </label>
+              <Select 
+                value={secondaryPosition || ""} 
+                onValueChange={(v) => setSecondaryPosition(v as PlayerPosition || undefined)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select secondary position" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">None</SelectItem>
                   <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
                   <SelectItem value="Defender">Defender</SelectItem>
                   <SelectItem value="Midfielder">Midfielder</SelectItem>

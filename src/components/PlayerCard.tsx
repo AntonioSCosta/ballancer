@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -25,6 +24,7 @@ export interface Player {
   id: string;
   name: string;
   position: PlayerPosition;
+  secondaryPosition?: PlayerPosition;
   photo: string;
   attributes: PlayerAttributes;
   rating: number;
@@ -144,9 +144,16 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
               {player.name}
             </h3>
-            <span className="text-sm text-primary font-medium">
-              {player.position}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-sm text-primary font-medium">
+                {player.position}
+              </span>
+              {player.secondaryPosition && (
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Alt: {player.secondaryPosition}
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <button
