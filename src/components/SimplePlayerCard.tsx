@@ -1,26 +1,32 @@
 
 import { Player } from "./PlayerCard";
 import { Volleyball } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface SimplePlayerCardProps {
   player: Player;
 }
 
 const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
+  const getPositionColor = (position: string) => {
+    const colors = {
+      "Goalkeeper": "bg-orange-500",
+      "Defender": "bg-blue-500",
+      "Midfielder": "bg-purple-500",
+      "Forward": "bg-emerald-500"
+    };
+    return colors[position as keyof typeof colors] || "bg-gray-500";
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-500 dark:bg-gray-700 flex items-center justify-center">
-          {player.photo ? (
-            <img
-              src={player.photo}
-              alt={player.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <Volleyball className="h-6 w-6 text-gray-300" />
-          )}
-        </div>
+        <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(player.position)}`}>
+          <AvatarImage src={player.photo} alt={player.name} />
+          <AvatarFallback className={`text-white ${getPositionColor(player.position)}`}>
+            {player.name[0]}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex-1">
           <h4 className="font-medium text-gray-900 dark:text-gray-100">{player.name}</h4>
           <div className="flex items-center gap-2">
@@ -36,3 +42,4 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
 };
 
 export default SimplePlayerCard;
+
