@@ -1,33 +1,17 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { RefreshCw, ArrowLeft, Share2, Copy, Trophy } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamDisplay from "@/components/TeamDisplay";
-import type { Team } from "@/utils/teamDistribution";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-
-export interface MatchResult {
-  date: string;
-  teams: Team[];
-  winner: number;
-  playerIds: string[];
-  playerGoals: Record<string, number>;
-}
+import TeamActions from "@/components/TeamActions";
+import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/utils/teamResultUtils";
+import type { MatchResult } from "@/types/matchResult";
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -64,30 +48,6 @@ const GeneratedTeams = () => {
     setPlayerGoals(initialGoals);
   }, [location.state, navigate]);
 
-  const handleShareWhatsApp = () => {
-    const teamsInfo = teams
-      .map(
-        (team, i) =>
-          `⚽ Team ${i + 1} (Rating: ${team.rating})\n\n` +
-          team.players
-            .map((p) => `- ${p.name} (${p.position})`)
-            .join("\n")
-      )
-      .join("\n\n");
-
-    try {
-      const encodedText = encodeURIComponent(teamsInfo);
-      const whatsappUrl = `whatsapp://send?text=${encodedText}`;
-      window.location.href = whatsappUrl;
-    } catch (error) {
-      console.error('Error sharing to WhatsApp:', error);
-      // Fallback to clipboard
-      navigator.clipboard.writeText(teamsInfo)
-        .then(() => toast.success("Teams copied to clipboard!"))
-        .catch(() => toast.error("Failed to copy teams"));
-    }
-  };
-
   const handleRegenerateTeams = () => {
     const storedPlayers = localStorage.getItem("players");
     if (!storedPlayers) return;
@@ -99,70 +59,19 @@ const GeneratedTeams = () => {
     
     const distributedTeams = distributePlayersByPosition(selectedPlayers);
     setTeams(distributedTeams);
-    
-    toast.success("Teams regenerated!");
-  };
-
-  const handleCopyTeams = () => {
-    const teamsInfo = teams
-      .map(
-        (team, i) =>
-          `Team ${i + 1} (Rating: ${team.rating})\n\n` +
-          team.players
-            .map((p) => `- ${p.name} (${p.position})`)
-            .join("\n")
-      )
-      .join("\n\n");
-
-    navigator.clipboard.writeText(teamsInfo)
-      .then(() => toast.success("Teams copied to clipboard!"))
-      .catch(() => toast.error("Failed to copy teams"));
   };
 
   const handleGoalChange = (playerId: string, goals: number) => {
     setPlayerGoals(prev => ({
       ...prev,
-      [playerId]: Math.max(0, goals) // Ensure goals can't be negative
+      [playerId]: Math.max(0, goals)
     }));
   };
 
-  const saveMatchResult = (winner: number) => {
-    const matchResult: MatchResult = {
-      date: new Date().toISOString(),
-      teams,
-      winner,
-      playerIds: teams.flatMap(team => team.players.map(p => p.id)),
-      playerGoals
-    };
-
-    // Load existing results
-    const existingResults = JSON.parse(localStorage.getItem('matchResults') || '[]');
-    
-    // Add new result
-    localStorage.setItem('matchResults', JSON.stringify([...existingResults, matchResult]));
-    
-    // Update player stats and goals
-    teams.forEach((team, index) => {
-      team.players.forEach(player => {
-        const playerStats = JSON.parse(localStorage.getItem(`playerStats_${player.id}`) || '{"wins": 0, "losses": 0, "draws": 0, "goals": 0}');
-        
-        if (winner === 0) {
-          playerStats.draws += 1;
-        } else if (winner === index + 1) {
-          playerStats.wins += 1;
-        } else {
-          playerStats.losses += 1;
-        }
-
-        // Add goals scored in this match
-        playerStats.goals = (playerStats.goals || 0) + (playerGoals[player.id] || 0);
-        
-        localStorage.setItem(`playerStats_${player.id}`, JSON.stringify(playerStats));
-      });
-    });
-
-    toast.success("Match result recorded!");
-    setShowResultDialog(false);
+  const handleSaveResult = (winner: number) => {
+    if (saveMatchResult(teams, winner, playerGoals)) {
+      setShowResultDialog(false);
+    }
   };
 
   return (
@@ -187,84 +96,17 @@ const GeneratedTeams = () => {
           <div className="w-8" />
         </div>
         
-        <div className="flex flex-wrap gap-2 justify-center">
-          <Button 
-            variant="outline" 
-            onClick={handleRegenerateTeams}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Regenerate
-          </Button>
-          <Button 
-            onClick={handleShareWhatsApp}
-            className="flex items-center gap-2"
-          >
-            <Share2 className="h-4 w-4" />
-            Share
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleCopyTeams}
-            className="flex items-center gap-2"
-          >
-            <Copy className="h-4 w-4" />
-            Copy Teams
-          </Button>
-          <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <Trophy className="h-4 w-4" />
-                Record Result
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Record Match Result</DialogTitle>
-              </DialogHeader>
-              <div className="py-4 space-y-6">
-                <RadioGroup onValueChange={(value) => saveMatchResult(parseInt(value))}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1" id="team1" />
-                    <Label htmlFor="team1">Team 1 Won</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="2" id="team2" />
-                    <Label htmlFor="team2">Team 2 Won</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="0" id="draw" />
-                    <Label htmlFor="draw">Draw</Label>
-                  </div>
-                </RadioGroup>
-
-                <div className="space-y-4">
-                  <h3 className="font-medium text-sm">Player Goals</h3>
-                  {teams.map((team, teamIndex) => (
-                    <div key={teamIndex} className="space-y-2">
-                      <h4 className="text-sm font-medium text-gray-500">Team {teamIndex + 1}</h4>
-                      {team.players.map((player) => (
-                        <div key={player.id} className="flex items-center justify-between gap-2">
-                          <Label htmlFor={`goals-${player.id}`} className="flex-1">
-                            {player.name}
-                          </Label>
-                          <Input
-                            id={`goals-${player.id}`}
-                            type="number"
-                            min="0"
-                            value={playerGoals[player.id]}
-                            onChange={(e) => handleGoalChange(player.id, parseInt(e.target.value) || 0)}
-                            className="w-20"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+        <TeamActions
+          onRegenerateTeams={handleRegenerateTeams}
+          onShareWhatsApp={() => shareTeamsToWhatsApp(teams)}
+          onCopyTeams={() => copyTeamsToClipboard(teams)}
+          teams={teams}
+          showResultDialog={showResultDialog}
+          setShowResultDialog={setShowResultDialog}
+          playerGoals={playerGoals}
+          onGoalChange={handleGoalChange}
+          onSaveResult={handleSaveResult}
+        />
 
         <Tabs defaultValue="teams" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
