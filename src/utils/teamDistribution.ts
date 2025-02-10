@@ -32,6 +32,12 @@ const getPlayersByPosition = (players: Player[], position: string) => {
   );
 };
 
+const getDefendersCount = (team: Player[]) => {
+  return team.filter(p => 
+    p.position === "Defender" || p.secondaryPosition === "Defender"
+  ).length;
+};
+
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const primaryGoalkeepers = players.filter(p => p.position === "Goalkeeper");
   const primaryDefenders = players.filter(p => p.position === "Defender");
@@ -62,13 +68,34 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     (Math.random() < 0.5 ? team1 : team2).push(allGoalkeepers[0]);
   }
 
+  const expectedTeamSize = Math.floor(players.length / 2);
+  const shouldPrioritizeDefenders = expectedTeamSize >= 9;
+  const minDefenders = shouldPrioritizeDefenders ? 3 : 0;
+
+  const allDefenders = [...primaryDefenders];
+  if (allDefenders.length < (minDefenders * 2)) {
+    allDefenders.push(...secondaryDefenders);
+  }
+
+  if (shouldPrioritizeDefenders) {
+    const shuffledDefs = shuffle(allDefenders);
+    for (let i = 0; i < Math.min(minDefenders, shuffledDefs.length); i++) {
+      if (team1.length <= team2.length && getDefendersCount(team1) < minDefenders) {
+        team1.push(shuffledDefs[i]);
+      } else if (getDefendersCount(team2) < minDefenders) {
+        team2.push(shuffledDefs[i]);
+      }
+    }
+    const remainingDefs = shuffledDefs.slice(Math.min(minDefenders * 2, shuffledDefs.length));
+    distributeEvenly(remainingDefs, team1, team2);
+  } else {
+    distributeEvenly(allDefenders, team1, team2);
+  }
+
   const remainingPlayers = players.filter(p => 
     !team1.includes(p) && !team2.includes(p)
   );
 
-  const defenders = remainingPlayers.filter(p => 
-    p.position === "Defender" || p.secondaryPosition === "Defender"
-  );
   const midfielders = remainingPlayers.filter(p => 
     p.position === "Midfielder" || p.secondaryPosition === "Midfielder"
   );
@@ -76,7 +103,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     p.position === "Forward" || p.secondaryPosition === "Forward"
   );
 
-  distributeEvenly(defenders, team1, team2);
   distributeEvenly(midfielders, team1, team2);
   distributeEvenly(forwards, team1, team2);
 
