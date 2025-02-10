@@ -100,6 +100,9 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
         ].map(({ players: positionPlayers, position }) => (
           positionPlayers.map((player, index) => {
             const coords = getPositionCoordinates(position, index, positionPlayers.length);
+            const yPosition = parseInt(coords.y);
+            const tooltipPosition = yPosition < 30 ? "bottom" : "top";
+
             return (
               <motion.div
                 key={player.id}
@@ -116,7 +119,11 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
                       {player.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50">
+                  <div 
+                    className={`absolute ${
+                      tooltipPosition === "top" ? "-top-8" : "top-14"
+                    } left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50`}
+                  >
                     {player.name}
                   </div>
                 </div>
@@ -128,4 +135,3 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
     </div>
   );
 };
-
