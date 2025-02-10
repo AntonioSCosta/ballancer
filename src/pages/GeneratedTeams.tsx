@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -140,7 +141,7 @@ const GeneratedTeams = () => {
           <div className="w-8" />
         </div>
         
-        <div className="flex gap-2 justify-center">
+        <div className="flex flex-wrap gap-2 justify-center">
           <Button 
             variant="outline" 
             onClick={handleRegenerateTeams}
@@ -173,7 +174,7 @@ const GeneratedTeams = () => {
           </TabsList>
           
           <TabsContent value="teams" className="mt-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {teams.map((team, index) => (
                 <TeamDisplay key={index} team={team} index={index} />
               ))}
@@ -181,13 +182,14 @@ const GeneratedTeams = () => {
           </TabsContent>
           
           <TabsContent value="tactics" className="mt-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {teams.map((team, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.2 }}
+                  className="overflow-x-auto"
                 >
                   <FootballField 
                     players={team.players} 
