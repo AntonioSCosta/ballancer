@@ -1,7 +1,7 @@
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Trophy } from "lucide-react";
 
 export type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
@@ -36,6 +36,13 @@ interface PlayerCardProps {
   className?: string;
 }
 
+interface PlayerStats {
+  wins: number;
+  losses: number;
+  draws: number;
+  goals: number;
+}
+
 const getPositionColor = (position: PlayerPosition) => {
   const colors = {
     "Goalkeeper": "bg-orange-500",
@@ -60,14 +67,25 @@ const AttributeBar = ({ label, value }: { label: string; value: number }) => (
 
 export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
   const navigate = useNavigate();
+  const [showStats, setShowStats] = useState(false);
 
   const handleEdit = () => {
     navigate("/", { state: { player } });
   };
 
-  const handleStatsClick = () => {
-    navigate("/player-stats", { state: { player } });
+  const getPlayerStats = (): PlayerStats => {
+    const stats = localStorage.getItem(`playerStats_${player.id}`);
+    return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
   };
+
+  const calculateWinRate = (stats: PlayerStats) => {
+    const totalGames = stats.wins + stats.losses + stats.draws;
+    if (totalGames === 0) return 0;
+    return Math.round((stats.wins / totalGames) * 100);
+  };
+
+  const stats = getPlayerStats();
+  const winRate = calculateWinRate(stats);
 
   const getAttributes = () => {
     if (player.position === "Goalkeeper") {
@@ -132,7 +150,7 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={handleStatsClick}
+              onClick={() => setShowStats(!showStats)}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
               <Trophy className="h-5 w-5" />
@@ -148,16 +166,37 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
           </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-3">
-          {getAttributes().map((attr, index) => (
-            <div key={attr.label} className={index % 2 === 0 ? "col-span-1" : "col-span-1"}>
-              <AttributeBar
-                label={attr.label}
-                value={attr.value}
-              />
+        {showStats ? (
+          <div className="space-y-3 mb-4">
+            <div className="bg-primary/10 p-3 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Win Rate</span>
+                <span className="text-sm font-bold text-primary">{winRate}%</span>
+              </div>
+              <div className="mt-2 space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-green-600 dark:text-green-400">Wins: {stats.wins}</span>
+                  <span className="text-red-600 dark:text-red-400">Losses: {stats.losses}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Draws: {stats.draws}</span>
+                </div>
+                <div className="flex justify-between text-xs mt-2">
+                  <span className="text-yellow-600 dark:text-yellow-400">Goals: {stats.goals}</span>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            {getAttributes().map((attr, index) => (
+              <div key={attr.label} className={index % 2 === 0 ? "col-span-1" : "col-span-1"}>
+                <AttributeBar
+                  label={attr.label}
+                  value={attr.value}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </motion.div>
   );
