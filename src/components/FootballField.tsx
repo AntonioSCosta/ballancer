@@ -17,14 +17,25 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   };
 
   // Special handling for midfielders to put fastest ones on the wings
-  if (position === "Midfielder" && player && sortedMidfielders && sortedMidfielders.length > 2) {
+  if (position === "Midfielder" && player && sortedMidfielders) {
     const midfielderIndex = sortedMidfielders.findIndex(p => p.id === player.id);
     
-    // If it's one of the two fastest midfielders, position them on the wings
-    if (midfielderIndex === 0) {
-      return { x: basePositions.Midfielder.x, y: "20%" }; // Top wing
-    } else if (midfielderIndex === 1) {
-      return { x: basePositions.Midfielder.x, y: "80%" }; // Bottom wing
+    // If there are at least 3 midfielders, position the two fastest on wings
+    if (totalInPosition >= 3) {
+      if (midfielderIndex === 0) {
+        return { x: basePositions.Midfielder.x, y: "20%" }; // Top wing
+      } else if (midfielderIndex === 1) {
+        return { x: basePositions.Midfielder.x, y: "80%" }; // Bottom wing
+      }
+      
+      // For remaining midfielders, distribute them evenly in the central area
+      const remainingIndex = midfielderIndex - 2; // Subtract 2 to account for wingers
+      const remainingTotal = totalInPosition - 2;
+      const centralSpacing = 60 / (remainingTotal + 1); // Use 60% of space (from 20% to 80%)
+      return {
+        x: basePositions.Midfielder.x,
+        y: `${30 + (centralSpacing * (remainingIndex + 1))}%`
+      };
     }
   }
 
