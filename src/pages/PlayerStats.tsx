@@ -54,6 +54,11 @@ const PlayerStats = () => {
     toast.success("Statistics cleared successfully");
   };
 
+  const handleCloseDialog = () => {
+    const closeButton = document.querySelector('[aria-label="Close"]') as HTMLButtonElement;
+    if (closeButton) closeButton.click();
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -103,14 +108,14 @@ const PlayerStats = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="flex justify-end gap-4">
-                <Button variant="outline" onClick={() => document.querySelector('button[aria-label="Close"]')?.click()}>
+                <Button variant="outline" onClick={handleCloseDialog}>
                   Cancel
                 </Button>
                 <Button 
                   variant="destructive" 
                   onClick={() => {
                     clearStats();
-                    document.querySelector('button[aria-label="Close"]')?.click();
+                    handleCloseDialog();
                   }}
                 >
                   Clear

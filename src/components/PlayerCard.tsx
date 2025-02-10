@@ -1,3 +1,5 @@
+
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Trophy } from "lucide-react";
@@ -34,13 +36,6 @@ interface PlayerCardProps {
   className?: string;
 }
 
-interface PlayerStats {
-  wins: number;
-  losses: number;
-  draws: number;
-  goals: number;
-}
-
 const getPositionColor = (position: PlayerPosition) => {
   const colors = {
     "Goalkeeper": "bg-orange-500",
@@ -65,7 +60,6 @@ const AttributeBar = ({ label, value }: { label: string; value: number }) => (
 
 export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
   const navigate = useNavigate();
-  const [showStats, setShowStats] = useState(false);
 
   const handleEdit = () => {
     navigate("/", { state: { player } });
@@ -74,20 +68,6 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
   const handleStatsClick = () => {
     navigate("/player-stats", { state: { player } });
   };
-
-  const getPlayerStats = (): PlayerStats => {
-    const stats = localStorage.getItem(`playerStats_${player.id}`);
-    return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
-  };
-
-  const calculateWinRate = (stats: PlayerStats) => {
-    const totalGames = stats.wins + stats.losses + stats.draws;
-    if (totalGames === 0) return 0;
-    return Math.round((stats.wins / totalGames) * 100);
-  };
-
-  const stats = getPlayerStats();
-  const winRate = calculateWinRate(stats);
 
   const getAttributes = () => {
     if (player.position === "Goalkeeper") {
