@@ -1,21 +1,37 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { RefreshCw, ArrowLeft, Share2, Copy } from "lucide-react";
+import { RefreshCw, ArrowLeft, Share2, Copy, Trophy } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamDisplay from "@/components/TeamDisplay";
 import type { Team } from "@/utils/teamDistribution";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+
+export interface MatchResult {
+  date: string;
+  teams: Team[];
+  winner: number; // 0 = draw, 1 = team 1, 2 = team 2
+  playerIds: string[];
+}
 
 const GeneratedTeams = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>([]);
+  const [showResultDialog, setShowResultDialog] = useState(false);
 
   useEffect(() => {
     if (!location.state?.selectedPlayerIds) {
@@ -93,6 +109,41 @@ const GeneratedTeams = () => {
       .catch(() => toast.error("Failed to copy teams"));
   };
 
+  const saveMatchResult = (winner: number) => {
+    const matchResult: MatchResult = {
+      date: new Date().toISOString(),
+      teams,
+      winner,
+      playerIds: teams.flatMap(team => team.players.map(p => p.id))
+    };
+
+    // Load existing results
+    const existingResults = JSON.parse(localStorage.getItem('matchResults') || '[]');
+    
+    // Add new result
+    localStorage.setItem('matchResults', JSON.stringify([...existingResults, matchResult]));
+    
+    // Update player stats
+    teams.forEach((team, index) => {
+      team.players.forEach(player => {
+        const playerStats = JSON.parse(localStorage.getItem(`playerStats_${player.id}`) || '{"wins": 0, "losses": 0, "draws": 0}');
+        
+        if (winner === 0) {
+          playerStats.draws += 1;
+        } else if (winner === index + 1) {
+          playerStats.wins += 1;
+        } else {
+          playerStats.losses += 1;
+        }
+        
+        localStorage.setItem(`playerStats_${player.id}`, JSON.stringify(playerStats));
+      });
+    });
+
+    toast.success("Match result recorded!");
+    setShowResultDialog(false);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -139,6 +190,35 @@ const GeneratedTeams = () => {
             <Copy className="h-4 w-4" />
             Copy Teams
           </Button>
+          <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
+                Record Result
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Record Match Result</DialogTitle>
+              </DialogHeader>
+              <div className="py-4">
+                <RadioGroup onValueChange={(value) => saveMatchResult(parseInt(value))}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1" id="team1" />
+                    <Label htmlFor="team1">Team 1 Won</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="2" id="team2" />
+                    <Label htmlFor="team2">Team 2 Won</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="0" id="draw" />
+                    <Label htmlFor="draw">Draw</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Tabs defaultValue="teams" className="w-full">
