@@ -1,6 +1,6 @@
 
 import { Player } from "./PlayerCard";
-import { UserRound } from "lucide-react";
+import { Football } from "lucide-react";
 
 interface SimplePlayerCardProps {
   player: Player;
@@ -18,7 +18,7 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <UserRound className="h-6 w-6 text-gray-300" />
+            <Football className="h-6 w-6 text-gray-300" />
           )}
         </div>
         <div className="flex-1">
