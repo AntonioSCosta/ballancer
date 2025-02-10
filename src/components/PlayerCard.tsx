@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -39,6 +40,7 @@ interface PlayerStats {
   wins: number;
   losses: number;
   draws: number;
+  goals: number;
 }
 
 const getPositionColor = (position: PlayerPosition) => {
@@ -73,7 +75,7 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
 
   const getPlayerStats = (): PlayerStats => {
     const stats = localStorage.getItem(`playerStats_${player.id}`);
-    return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0 };
+    return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
   };
 
   const calculateWinRate = (stats: PlayerStats) => {
@@ -176,6 +178,9 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
                   <span className="text-green-600 dark:text-green-400">Wins: {stats.wins}</span>
                   <span className="text-red-600 dark:text-red-400">Losses: {stats.losses}</span>
                   <span className="text-gray-600 dark:text-gray-400">Draws: {stats.draws}</span>
+                </div>
+                <div className="flex justify-between text-xs mt-2">
+                  <span className="text-yellow-600 dark:text-yellow-400">Goals: {stats.goals}</span>
                 </div>
               </div>
             </div>

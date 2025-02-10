@@ -1,6 +1,5 @@
 
 import { Player } from "./PlayerCard";
-import { Volleyball } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface SimplePlayerCardProps {
@@ -18,6 +17,13 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
     return colors[position as keyof typeof colors] || "bg-gray-500";
   };
 
+  const getPlayerStats = () => {
+    const stats = localStorage.getItem(`playerStats_${player.id}`);
+    return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
+  };
+
+  const stats = getPlayerStats();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
@@ -34,6 +40,11 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
             <span className="text-sm text-gray-500 dark:text-gray-400">
               Rating: {Math.round(player.rating)}
             </span>
+            {stats.goals > 0 && (
+              <span className="text-sm text-yellow-600 dark:text-yellow-400">
+                Goals: {stats.goals}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -42,4 +53,3 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
 };
 
 export default SimplePlayerCard;
-
