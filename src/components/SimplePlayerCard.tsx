@@ -9,7 +9,7 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full overflow-hidden bg-[#8E9196] dark:bg-gray-700 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-500 dark:bg-gray-700 flex items-center justify-center">
           {player.photo ? (
             <img
               src={player.photo}
