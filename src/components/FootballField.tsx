@@ -116,7 +116,7 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
                       {player.name[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50">
                     {player.name}
                   </div>
                 </div>
@@ -128,3 +128,4 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
     </div>
   );
 };
+
