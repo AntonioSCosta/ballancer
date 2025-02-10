@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export interface MatchResult {
   date: string;
   teams: Team[];
-  winner: number; // 0 = draw, 1 = team 1, 2 = team 2
+  winner: number;
   playerIds: string[];
+  playerGoals: Record<string, number>;
 }
 
 const GeneratedTeams = () => {
@@ -32,6 +34,7 @@ const GeneratedTeams = () => {
   const navigate = useNavigate();
   const [teams, setTeams] = useState<Team[]>([]);
   const [showResultDialog, setShowResultDialog] = useState(false);
+  const [playerGoals, setPlayerGoals] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!location.state?.selectedPlayerIds) {
@@ -52,6 +55,13 @@ const GeneratedTeams = () => {
     
     const distributedTeams = distributePlayersByPosition(selectedPlayers);
     setTeams(distributedTeams);
+
+    // Initialize player goals
+    const initialGoals: Record<string, number> = {};
+    selectedPlayers.forEach(player => {
+      initialGoals[player.id] = 0;
+    });
+    setPlayerGoals(initialGoals);
   }, [location.state, navigate]);
 
   const handleShareWhatsApp = () => {
@@ -109,12 +119,20 @@ const GeneratedTeams = () => {
       .catch(() => toast.error("Failed to copy teams"));
   };
 
+  const handleGoalChange = (playerId: string, goals: number) => {
+    setPlayerGoals(prev => ({
+      ...prev,
+      [playerId]: Math.max(0, goals) // Ensure goals can't be negative
+    }));
+  };
+
   const saveMatchResult = (winner: number) => {
     const matchResult: MatchResult = {
       date: new Date().toISOString(),
       teams,
       winner,
-      playerIds: teams.flatMap(team => team.players.map(p => p.id))
+      playerIds: teams.flatMap(team => team.players.map(p => p.id)),
+      playerGoals
     };
 
     // Load existing results
@@ -123,10 +141,10 @@ const GeneratedTeams = () => {
     // Add new result
     localStorage.setItem('matchResults', JSON.stringify([...existingResults, matchResult]));
     
-    // Update player stats
+    // Update player stats and goals
     teams.forEach((team, index) => {
       team.players.forEach(player => {
-        const playerStats = JSON.parse(localStorage.getItem(`playerStats_${player.id}`) || '{"wins": 0, "losses": 0, "draws": 0}');
+        const playerStats = JSON.parse(localStorage.getItem(`playerStats_${player.id}`) || '{"wins": 0, "losses": 0, "draws": 0, "goals": 0}');
         
         if (winner === 0) {
           playerStats.draws += 1;
@@ -135,6 +153,9 @@ const GeneratedTeams = () => {
         } else {
           playerStats.losses += 1;
         }
+
+        // Add goals scored in this match
+        playerStats.goals = (playerStats.goals || 0) + (playerGoals[player.id] || 0);
         
         localStorage.setItem(`playerStats_${player.id}`, JSON.stringify(playerStats));
       });
@@ -197,11 +218,11 @@ const GeneratedTeams = () => {
                 Record Result
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Record Match Result</DialogTitle>
               </DialogHeader>
-              <div className="py-4">
+              <div className="py-4 space-y-6">
                 <RadioGroup onValueChange={(value) => saveMatchResult(parseInt(value))}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1" id="team1" />
@@ -216,6 +237,30 @@ const GeneratedTeams = () => {
                     <Label htmlFor="draw">Draw</Label>
                   </div>
                 </RadioGroup>
+
+                <div className="space-y-4">
+                  <h3 className="font-medium text-sm">Player Goals</h3>
+                  {teams.map((team, teamIndex) => (
+                    <div key={teamIndex} className="space-y-2">
+                      <h4 className="text-sm font-medium text-gray-500">Team {teamIndex + 1}</h4>
+                      {team.players.map((player) => (
+                        <div key={player.id} className="flex items-center justify-between gap-2">
+                          <Label htmlFor={`goals-${player.id}`} className="flex-1">
+                            {player.name}
+                          </Label>
+                          <Input
+                            id={`goals-${player.id}`}
+                            type="number"
+                            min="0"
+                            value={playerGoals[player.id]}
+                            onChange={(e) => handleGoalChange(player.id, parseInt(e.target.value) || 0)}
+                            className="w-20"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             </DialogContent>
           </Dialog>
