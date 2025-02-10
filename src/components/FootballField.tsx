@@ -17,6 +17,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   };
 
   // Calculate vertical spacing based on total players in position
+  // Adjusted base percentages to be higher up in the field
   let position_y;
   if (totalInPosition === 1) {
     position_y = "50%"; // Center single player
@@ -47,7 +48,6 @@ const getPositionColor = (position: string) => {
 };
 
 const getPlayersInPosition = (players: Player[], position: string) => {
-  // Only get players where this is their primary position
   return players.filter(player => player.position === position);
 };
 

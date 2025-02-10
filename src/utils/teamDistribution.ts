@@ -1,3 +1,4 @@
+
 import { Player } from "@/components/PlayerCard";
 
 export interface Team {
@@ -26,64 +27,29 @@ const calculateTeamRating = (players: Player[]) => {
   return Math.round(sum / players.length);
 };
 
-const getPlayersByPosition = (players: Player[], position: string) => {
-  return players.filter(p => 
-    p.position === position || p.secondaryPosition === position
-  );
-};
-
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
-  const primaryGoalkeepers = players.filter(p => p.position === "Goalkeeper");
-  const primaryDefenders = players.filter(p => p.position === "Defender");
-  const primaryMidfielders = players.filter(p => p.position === "Midfielder");
-  const primaryForwards = players.filter(p => p.position === "Forward");
-
-  const secondaryGoalkeepers = players.filter(p => p.secondaryPosition === "Goalkeeper");
-  const secondaryDefenders = players.filter(p => p.secondaryPosition === "Defender");
-  const secondaryMidfielders = players.filter(p => p.secondaryPosition === "Midfielder");
-  const secondaryForwards = players.filter(p => p.secondaryPosition === "Forward");
+  const goalkeepers = players.filter(p => p.position === "Goalkeeper");
+  const defenders = players.filter(p => p.position === "Defender");
+  const midfielders = players.filter(p => p.position === "Midfielder");
+  const forwards = players.filter(p => p.position === "Forward");
 
   const team1: Player[] = [];
   const team2: Player[] = [];
 
-  const allGoalkeepers = [...primaryGoalkeepers];
-  if (allGoalkeepers.length < 2) {
-    allGoalkeepers.push(...secondaryGoalkeepers);
-  }
-
-  if (allGoalkeepers.length >= 2) {
-    const shuffledGKs = shuffle(allGoalkeepers);
+  if (goalkeepers.length >= 2) {
+    const shuffledGKs = shuffle(goalkeepers);
     team1.push(shuffledGKs[0]);
     team2.push(shuffledGKs[1]);
-    if (allGoalkeepers.length > 2) {
+    if (goalkeepers.length > 2) {
       distributeEvenly(shuffledGKs.slice(2), team1, team2);
     }
-  } else if (allGoalkeepers.length === 1) {
-    (Math.random() < 0.5 ? team1 : team2).push(allGoalkeepers[0]);
+  } else if (goalkeepers.length === 1) {
+    (Math.random() < 0.5 ? team1 : team2).push(goalkeepers[0]);
   }
-
-  const remainingPlayers = players.filter(p => 
-    !team1.includes(p) && !team2.includes(p)
-  );
-
-  const defenders = remainingPlayers.filter(p => 
-    p.position === "Defender" || p.secondaryPosition === "Defender"
-  );
-  const midfielders = remainingPlayers.filter(p => 
-    p.position === "Midfielder" || p.secondaryPosition === "Midfielder"
-  );
-  const forwards = remainingPlayers.filter(p => 
-    p.position === "Forward" || p.secondaryPosition === "Forward"
-  );
 
   distributeEvenly(defenders, team1, team2);
   distributeEvenly(midfielders, team1, team2);
   distributeEvenly(forwards, team1, team2);
-
-  const unassigned = remainingPlayers.filter(p => 
-    !team1.includes(p) && !team2.includes(p)
-  );
-  distributeEvenly(unassigned, team1, team2);
 
   while (Math.abs(team1.length - team2.length) > 1) {
     if (team1.length > team2.length) {
