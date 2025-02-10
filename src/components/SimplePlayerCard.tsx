@@ -1,5 +1,6 @@
 
 import { Player } from "./PlayerCard";
+import { UserRound } from "lucide-react";
 
 interface SimplePlayerCardProps {
   player: Player;
@@ -16,7 +17,9 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
               alt={player.name}
               className="w-full h-full object-cover"
             />
-          ) : null}
+          ) : (
+            <UserRound className="h-6 w-6 text-gray-300" />
+          )}
         </div>
         <div className="flex-1">
           <h4 className="font-medium text-gray-900 dark:text-gray-100">{player.name}</h4>
