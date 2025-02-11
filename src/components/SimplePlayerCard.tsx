@@ -22,16 +22,32 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
     return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
   };
 
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   const stats = getPlayerStats();
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
         <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(player.position)}`}>
-          <AvatarImage src={player.photo} alt={player.name} />
-          <AvatarFallback className={`text-white ${getPositionColor(player.position)}`}>
-            {player.name[0]}
-          </AvatarFallback>
+          {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
+            <AvatarImage 
+              src={player.photo} 
+              alt={player.name}
+              className="object-cover"
+            />
+          ) : (
+            <AvatarFallback className={`text-white ${getPositionColor(player.position)}`}>
+              {getInitials(player.name)}
+            </AvatarFallback>
+          )}
         </Avatar>
         <div className="flex-1">
           <h4 className="font-medium text-gray-900 dark:text-gray-100">{player.name}</h4>

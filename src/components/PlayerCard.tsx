@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -129,11 +128,19 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}
     >
       <div className="relative aspect-square overflow-hidden">
-        <div className="w-full h-full flex items-center justify-center bg-gray-500">
-          <span className="text-4xl font-bold text-white">
-            {getInitials(player.name)}
-          </span>
-        </div>
+        {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
+          <img
+            src={player.photo}
+            alt={player.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-500">
+            <span className="text-4xl font-bold text-white">
+              {getInitials(player.name)}
+            </span>
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-primary text-white px-3 py-1 rounded-full shadow-md">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
