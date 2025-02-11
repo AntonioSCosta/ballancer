@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayerPosition, Player } from "@/components/PlayerCard";
@@ -17,6 +18,47 @@ import { v4 as uuidv4 } from "uuid";
 import PlayerPhotoUpload from "@/components/PlayerPhotoUpload";
 import PlayerAttributes from "@/components/PlayerAttributes";
 import { calculateRating, getDefaultAttributes } from "@/utils/playerUtils";
+
+const MAX_WIDTH = 300;
+const MAX_HEIGHT = 300;
+
+const compressImage = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions while maintaining aspect ratio
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Compress image to JPEG with reduced quality
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        resolve(compressedDataUrl);
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+};
 
 const CreatePlayer = () => {
   const location = useLocation();
@@ -55,14 +97,15 @@ const CreatePlayer = () => {
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        console.log("Setting photo:", base64String.slice(0, 50) + "...");
-        setPhoto(base64String);
+      try {
+        const compressedImage = await compressImage(file);
+        console.log("Compressed photo size:", Math.round(compressedImage.length / 1024), "KB");
+        setPhoto(compressedImage);
         setHasPhoto(true);
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Error compressing image:", error);
+        toast.error("Error processing image. Please try a smaller image.");
+      }
     }
   };
 
@@ -84,11 +127,6 @@ const CreatePlayer = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log("Current photo state:", photo.slice(0, 50) + "...");
-    console.log("Has photo:", hasPhoto);
-    
-    const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
-    
     const playerData = {
       id: playerToEdit?.id || uuidv4(),
       name,
@@ -98,29 +136,31 @@ const CreatePlayer = () => {
       rating: calculateRating(attributes, position),
     };
 
-    console.log("Saving player data:", { ...playerData, photo: playerData.photo.slice(0, 50) + "..." });
-
-    if (playerToEdit) {
-      const updatedPlayers = existingPlayers.map((p: Player) =>
-        p.id === playerToEdit.id ? playerData : p
-      );
+    try {
+      const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
       
-      localStorage.setItem("players", JSON.stringify(updatedPlayers));
-      console.log("Updated players in localStorage");
-      
-      toast.success("Player updated successfully!");
-      setTimeout(() => {
-        window.location.href = "/generator";
-      }, 100);
-    } else {
-      localStorage.setItem("players", JSON.stringify([...existingPlayers, playerData]));
-      toast.success("Player created successfully!");
+      if (playerToEdit) {
+        const updatedPlayers = existingPlayers.map((p: Player) =>
+          p.id === playerToEdit.id ? playerData : p
+        );
+        localStorage.setItem("players", JSON.stringify(updatedPlayers));
+        toast.success("Player updated successfully!");
+        setTimeout(() => {
+          window.location.href = "/generator";
+        }, 100);
+      } else {
+        localStorage.setItem("players", JSON.stringify([...existingPlayers, playerData]));
+        toast.success("Player created successfully!");
 
-      setName("");
-      setPosition("Midfielder");
-      setPhoto("https://via.placeholder.com/300");
-      setHasPhoto(false);
-      setAttributes(getDefaultAttributes());
+        setName("");
+        setPosition("Midfielder");
+        setPhoto("https://via.placeholder.com/300");
+        setHasPhoto(false);
+        setAttributes(getDefaultAttributes());
+      }
+    } catch (error) {
+      console.error("Error saving player:", error);
+      toast.error("Error saving player. Please try using a smaller photo.");
     }
   };
 
