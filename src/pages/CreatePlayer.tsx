@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayerPosition, Player } from "@/components/PlayerCard";
@@ -59,7 +58,7 @@ const CreatePlayer = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        console.log("Setting photo:", base64String.slice(0, 50) + "..."); // Debug log
+        console.log("Setting photo:", base64String.slice(0, 50) + "...");
         setPhoto(base64String);
         setHasPhoto(true);
       };
@@ -85,7 +84,6 @@ const CreatePlayer = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Debug logs
     console.log("Current photo state:", photo.slice(0, 50) + "...");
     console.log("Has photo:", hasPhoto);
     
@@ -106,10 +104,14 @@ const CreatePlayer = () => {
       const updatedPlayers = existingPlayers.map((p: Player) =>
         p.id === playerToEdit.id ? playerData : p
       );
+      
       localStorage.setItem("players", JSON.stringify(updatedPlayers));
       console.log("Updated players in localStorage");
+      
       toast.success("Player updated successfully!");
-      navigate("/generator");
+      setTimeout(() => {
+        window.location.href = "/generator";
+      }, 100);
     } else {
       localStorage.setItem("players", JSON.stringify([...existingPlayers, playerData]));
       toast.success("Player created successfully!");
