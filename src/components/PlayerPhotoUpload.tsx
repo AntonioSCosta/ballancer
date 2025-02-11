@@ -1,6 +1,7 @@
 
 import { ImagePlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 interface PlayerPhotoUploadProps {
   photo: string;
@@ -10,6 +11,23 @@ interface PlayerPhotoUploadProps {
 }
 
 const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhotoUploadProps) => {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Create an immediate preview
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
+      
+      // Call the parent's onPhotoChange handler
+      onPhotoChange(e);
+    }
+  };
+
+  // Determine which image to show: preview, uploaded photo, or placeholder
+  const displayImage = previewUrl || photo;
+
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -17,7 +35,7 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
       </label>
       <div className="flex flex-col items-center gap-4">
         <img
-          src={photo}
+          src={displayImage}
           alt={name}
           className="w-32 h-32 object-cover rounded-full border-2 border-primary"
         />
@@ -25,7 +43,7 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
           <Input
             type="file"
             accept="image/*"
-            onChange={onPhotoChange}
+            onChange={handlePhotoChange}
             className="hidden"
             id="photo-upload"
           />
