@@ -58,7 +58,8 @@ const CreatePlayer = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhoto(reader.result as string);
+        const result = reader.result as string;
+        setPhoto(result);
         setHasPhoto(true);
       };
       reader.readAsDataURL(file);
@@ -99,19 +100,16 @@ const CreatePlayer = () => {
       );
       localStorage.setItem("players", JSON.stringify(updatedPlayers));
       toast.success("Player updated successfully!");
+      navigate("/generator");
     } else {
       localStorage.setItem("players", JSON.stringify([...existingPlayers, playerData]));
       toast.success("Player created successfully!");
-    }
 
-    setName("");
-    setPosition("Midfielder");
-    setPhoto("https://via.placeholder.com/300");
-    setHasPhoto(false);
-    setAttributes(getDefaultAttributes());
-
-    if (playerToEdit) {
-      navigate("/generator");
+      setName("");
+      setPosition("Midfielder");
+      setPhoto("https://via.placeholder.com/300");
+      setHasPhoto(false);
+      setAttributes(getDefaultAttributes());
     }
   };
 
