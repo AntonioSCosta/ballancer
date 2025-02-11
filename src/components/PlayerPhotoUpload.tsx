@@ -16,13 +16,11 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
         Photo
       </label>
       <div className="flex flex-col items-center gap-4">
-        {hasPhoto && (
-          <img
-            src={photo}
-            alt={name}
-            className="w-32 h-32 object-cover rounded-full border-2 border-primary"
-          />
-        )}
+        <img
+          src={photo}
+          alt={name}
+          className="w-32 h-32 object-cover rounded-full border-2 border-primary"
+        />
         <div className="relative">
           <Input
             type="file"

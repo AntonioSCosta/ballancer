@@ -53,13 +53,14 @@ const CreatePlayer = () => {
     }
   }, [playerToEdit]);
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const result = reader.result as string;
-        setPhoto(result);
+        const base64String = reader.result as string;
+        console.log("Setting photo:", base64String.slice(0, 50) + "..."); // Debug log
+        setPhoto(base64String);
         setHasPhoto(true);
       };
       reader.readAsDataURL(file);
@@ -83,6 +84,11 @@ const CreatePlayer = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Debug logs
+    console.log("Current photo state:", photo.slice(0, 50) + "...");
+    console.log("Has photo:", hasPhoto);
+    
     const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
     
     const playerData = {
@@ -94,11 +100,14 @@ const CreatePlayer = () => {
       rating: calculateRating(attributes, position),
     };
 
+    console.log("Saving player data:", { ...playerData, photo: playerData.photo.slice(0, 50) + "..." });
+
     if (playerToEdit) {
       const updatedPlayers = existingPlayers.map((p: Player) =>
         p.id === playerToEdit.id ? playerData : p
       );
       localStorage.setItem("players", JSON.stringify(updatedPlayers));
+      console.log("Updated players in localStorage");
       toast.success("Player updated successfully!");
       navigate("/generator");
     } else {
