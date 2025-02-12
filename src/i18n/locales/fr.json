@@ -1,0 +1,21 @@
+
+{
+  "navigation": {
+    "createPlayer": "Créer un Joueur",
+    "teamGenerator": "Générateur d'Équipes",
+    "help": "Aide",
+    "settings": "Paramètres"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "languages": {
+      "en": "Anglais",
+      "pt-PT": "Portugais (Portugal)",
+      "pt-BR": "Portugais (Brésil)",
+      "fr": "Français",
+      "es": "Espagnol",
+      "it": "Italien"
+    }
+  }
+}

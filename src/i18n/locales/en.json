@@ -1,0 +1,21 @@
+
+{
+  "navigation": {
+    "createPlayer": "Create Player",
+    "teamGenerator": "Team Generator",
+    "help": "Help",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languages": {
+      "en": "English",
+      "pt-PT": "Portuguese (Portugal)",
+      "pt-BR": "Portuguese (Brazil)",
+      "fr": "French",
+      "es": "Spanish",
+      "it": "Italian"
+    }
+  }
+}

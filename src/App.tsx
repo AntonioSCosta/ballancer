@@ -11,6 +11,8 @@ import TeamGenerator from "./pages/TeamGenerator";
 import GeneratedTeams from "./pages/GeneratedTeams";
 import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
+import Settings from "./pages/Settings";
+import "./i18n";
 
 // Initialize React Query client
 const queryClient = new QueryClient();
@@ -27,6 +29,7 @@ const App = () => (
             <Route path="/generator" element={<TeamGenerator />} />
             <Route path="/generated-teams" element={<GeneratedTeams />} />
             <Route path="/help" element={<Help />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
