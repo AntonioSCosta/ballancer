@@ -17,5 +17,16 @@
       "es": "Español",
       "it": "Italiano"
     }
+  },
+  "teamGenerator": {
+    "title": "Generador de Equipos",
+    "description": "Selecciona jugadores para generar equipos equilibrados",
+    "searchPlaceholder": "Buscar jugadores...",
+    "noPlayersAvailable": "No hay jugadores disponibles. ¡Empieza creando algunos jugadores!",
+    "noPlayersFound": "No se encontraron jugadores que coincidan con tu búsqueda.",
+    "generateTeams": "Generar Equipos",
+    "selectMinPlayers": "Por favor, selecciona al menos 10 jugadores",
+    "rating": "Clasificación",
+    "goals": "Goles"
   }
 }

@@ -17,5 +17,16 @@
       "es": "Spanish",
       "it": "Italian"
     }
+  },
+  "teamGenerator": {
+    "title": "Team Generator",
+    "description": "Select players to generate balanced teams",
+    "searchPlaceholder": "Search players...",
+    "noPlayersAvailable": "No players available. Start by creating some players!",
+    "noPlayersFound": "No players found matching your search.",
+    "generateTeams": "Generate Teams",
+    "selectMinPlayers": "Please select at least 10 players",
+    "rating": "Rating",
+    "goals": "Goals"
   }
 }

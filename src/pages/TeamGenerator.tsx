@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -6,9 +7,11 @@ import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const TeamGenerator = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [players] = useState<Player[]>(() => {
     const storedPlayers = localStorage.getItem("players");
@@ -38,7 +41,7 @@ const TeamGenerator = () => {
 
   const handleGenerateTeams = () => {
     if (selectedPlayers.size < 10) {
-      toast.error("Please select at least 10 players");
+      toast.error(t("teamGenerator.selectMinPlayers"));
       return;
     }
     navigate("/generated-teams", {
@@ -57,16 +60,16 @@ const TeamGenerator = () => {
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Team Generator
+              {t("teamGenerator.title")}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Select players to generate balanced teams
+              {t("teamGenerator.description")}
             </p>
           </div>
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search players..."
+            placeholder={t("teamGenerator.searchPlaceholder")}
             className="w-full"
           />
         </div>
@@ -100,8 +103,8 @@ const TeamGenerator = () => {
           >
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               {players.length === 0
-                ? "No players available. Start by creating some players!"
-                : "No players found matching your search."}
+                ? t("teamGenerator.noPlayersAvailable")
+                : t("teamGenerator.noPlayersFound")}
             </p>
           </motion.div>
         )}
@@ -116,7 +119,7 @@ const TeamGenerator = () => {
           size="lg"
         >
           <Users className="mr-2 h-5 w-5" />
-          Generate Teams ({selectedPlayers.size})
+          {t("teamGenerator.generateTeams")} ({selectedPlayers.size})
         </Button>
       </div>
     </motion.div>

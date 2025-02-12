@@ -17,5 +17,16 @@
       "es": "Espanhol",
       "it": "Italiano"
     }
+  },
+  "teamGenerator": {
+    "title": "Gerador de Times",
+    "description": "Selecione jogadores para gerar times equilibrados",
+    "searchPlaceholder": "Procurar jogadores...",
+    "noPlayersAvailable": "Não há jogadores disponíveis. Comece criando alguns jogadores!",
+    "noPlayersFound": "Nenhum jogador encontrado com sua pesquisa.",
+    "generateTeams": "Gerar Times",
+    "selectMinPlayers": "Por favor, selecione pelo menos 10 jogadores",
+    "rating": "Classificação",
+    "goals": "Gols"
   }
 }
