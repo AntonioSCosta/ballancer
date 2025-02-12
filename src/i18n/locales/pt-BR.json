@@ -28,5 +28,97 @@
     "selectMinPlayers": "Por favor, selecione pelo menos 10 jogadores",
     "rating": "Classificação",
     "goals": "Gols"
+  },
+  "playerAttributes": {
+    "speed": "Velocidade",
+    "physical": "Físico",
+    "mental": "Mental",
+    "passing": "Passe",
+    "dribbling": "Drible",
+    "shooting": "Finalização",
+    "heading": "Cabeceio",
+    "defending": "Defesa",
+    "handling": "Pegada",
+    "diving": "Mergulho",
+    "positioning": "Posicionamento",
+    "reflexes": "Reflexos"
+  },
+  "positions": {
+    "Goalkeeper": "Goleiro",
+    "Defender": "Defensor",
+    "Midfielder": "Meio-campista",
+    "Forward": "Atacante"
+  },
+  "help": {
+    "title": "Ajuda & Documentação",
+    "subtitle": "Tudo o que você precisa saber sobre como usar o Gerador de Times",
+    "sections": {
+      "gettingStarted": {
+        "title": "Começando",
+        "subtitle": "Conceitos básicos essenciais para começar",
+        "description": "O Gerador de Times ajuda você a criar times equilibrados de forma rápida e fácil. Veja como começar:",
+        "steps": [
+          "Crie jogadores com suas fotos e detalhes",
+          "Selecione jogadores para o jogo atual",
+          "Clique em gerar para criar times equilibrados",
+          "Compartilhe os times via WhatsApp ou copie para a área de transferência"
+        ]
+      },
+      "playerManagement": {
+        "title": "Gerenciamento de Jogadores",
+        "subtitle": "Gerenciando seu elenco de jogadores",
+        "description": "Para cada jogador, você pode definir:",
+        "features": [
+          "Nome e posição preferida",
+          "Enviar uma foto do jogador",
+          "Definir atributos detalhados",
+          "Editar detalhes do jogador a qualquer momento"
+        ]
+      },
+      "teamGeneration": {
+        "title": "Geração de Times",
+        "subtitle": "Criando times equilibrados",
+        "description": "Nosso algoritmo garante uma distribuição justa dos times:",
+        "features": [
+          "Equilibrando níveis de habilidade dos times",
+          "Considerando as posições dos jogadores",
+          "Distribuindo jogadores de forma equilibrada",
+          "Visualizando formações dos times"
+        ]
+      },
+      "matchResults": {
+        "title": "Resultados das Partidas",
+        "subtitle": "Registre os resultados dos jogos",
+        "description": "Após cada jogo, você pode:",
+        "features": [
+          "Registrar qual time venceu",
+          "Acompanhar gols individuais dos jogadores",
+          "Salvar estatísticas da partida",
+          "Ver histórico de desempenho dos jogadores"
+        ]
+      },
+      "sharing": {
+        "title": "Compartilhando Times",
+        "subtitle": "Compartilhe os times gerados facilmente",
+        "description": "Compartilhe times instantaneamente:",
+        "features": [
+          "Compartilhe diretamente no WhatsApp",
+          "Copie os times para a área de transferência",
+          "Visualize as formações dos times",
+          "Visão rápida dos times"
+        ]
+      },
+      "tips": {
+        "title": "Dicas & Melhores Práticas",
+        "subtitle": "Aproveite ao máximo o aplicativo",
+        "description": "Práticas recomendadas:",
+        "features": [
+          "Adicione fotos dos jogadores para fácil identificação",
+          "Defina atributos precisos dos jogadores",
+          "Selecione pelo menos 10 jogadores para os times",
+          "Registre os resultados das partidas prontamente"
+        ]
+      }
+    }
   }
 }
