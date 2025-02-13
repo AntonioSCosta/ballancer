@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Share2, Copy } from "lucide-react";
+import { RefreshCw, Copy } from "lucide-react";
 import MatchResultDialog from "./MatchResultDialog";
 import { Team } from "@/utils/teamDistribution";
 
@@ -18,7 +18,6 @@ interface TeamActionsProps {
 
 const TeamActions = ({
   onRegenerateTeams,
-  onShareWhatsApp,
   onCopyTeams,
   teams,
   showResultDialog,
@@ -36,13 +35,6 @@ const TeamActions = ({
       >
         <RefreshCw className="h-4 w-4" />
         Regenerate
-      </Button>
-      <Button 
-        onClick={onShareWhatsApp}
-        className="flex items-center gap-2"
-      >
-        <Share2 className="h-4 w-4" />
-        Share
       </Button>
       <Button
         variant="outline"
