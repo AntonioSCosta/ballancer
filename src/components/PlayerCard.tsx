@@ -24,6 +24,7 @@ export interface Player {
   id: string;
   name: string;
   position: PlayerPosition;
+  secondaryPosition?: PlayerPosition;
   photo: string;
   attributes: PlayerAttributes;
   rating: number;
