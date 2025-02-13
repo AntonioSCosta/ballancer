@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlayerPosition, Player } from "@/components/PlayerCard";
@@ -225,14 +224,14 @@ const CreatePlayer = () => {
                 Secondary Position (Optional)
               </label>
               <Select 
-                value={secondaryPosition || ""} 
-                onValueChange={(v) => setSecondaryPosition(v ? v as PlayerPosition : undefined)}
+                value={secondaryPosition || "none"} 
+                onValueChange={(v) => setSecondaryPosition(v === "none" ? undefined : v as PlayerPosition)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select secondary position" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
                   <SelectItem value="Defender">Defender</SelectItem>
                   <SelectItem value="Midfielder">Midfielder</SelectItem>
