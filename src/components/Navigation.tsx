@@ -1,6 +1,5 @@
 
 import { Menu } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,14 +10,12 @@ import { Link, useLocation } from "react-router-dom";
 
 export const Navigation = () => {
   const location = useLocation();
-  const { t } = useTranslation();
 
   // Define navigation menu items
   const menuItems = [
-    { path: "/", label: t("navigation.createPlayer") },
-    { path: "/generator", label: t("navigation.teamGenerator") },
-    { path: "/help", label: t("navigation.help") },
-    { path: "/settings", label: t("navigation.settings") },
+    { path: "/", label: "Create Player" },
+    { path: "/generator", label: "Team Generator" },
+    { path: "/help", label: "Help" },
   ];
 
   return (
