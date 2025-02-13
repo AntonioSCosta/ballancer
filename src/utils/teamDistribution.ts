@@ -1,3 +1,4 @@
+
 import { Player } from "@/components/PlayerCard";
 
 export interface Team {
@@ -68,16 +69,39 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     const shuffledDefenders = shuffle(defenders);
     
     // Try to assign at least 3 defenders to each team if available
-    const minDefenders = Math.min(3, Math.floor(defenders.length / 2));
-    
-    for (let i = 0; i < minDefenders * 2 && i < shuffledDefenders.length; i++) {
-      const defender = shuffledDefenders[i];
-      if (i % 2 === 0) {
-        team1.push(defender);
-      } else {
-        team2.push(defender);
+    let team1Defenders = 0;
+    let team2Defenders = 0;
+    const targetDefenders = Math.min(3, Math.floor(defenders.length / 2));
+
+    // First pass: try to get 3 defenders per team
+    shuffledDefenders.forEach(defender => {
+      if (!assignedPlayers.has(defender.id)) {
+        if (team1Defenders < targetDefenders && (team1Defenders <= team2Defenders || team2Defenders >= targetDefenders)) {
+          team1.push(defender);
+          assignedPlayers.add(defender.id);
+          team1Defenders++;
+        } else if (team2Defenders < targetDefenders) {
+          team2.push(defender);
+          assignedPlayers.add(defender.id);
+          team2Defenders++;
+        }
       }
-      assignedPlayers.add(defender.id);
+    });
+
+    // Second pass: distribute any remaining defenders if we still need them
+    if (needsMinDefenders && (team1Defenders < 3 || team2Defenders < 3)) {
+      const remainingDefenders = defenders.filter(d => !assignedPlayers.has(d.id));
+      remainingDefenders.forEach(defender => {
+        if (team1Defenders < 3 && (team1.length <= team2.length || team2Defenders >= 3)) {
+          team1.push(defender);
+          assignedPlayers.add(defender.id);
+          team1Defenders++;
+        } else if (team2Defenders < 3) {
+          team2.push(defender);
+          assignedPlayers.add(defender.id);
+          team2Defenders++;
+        }
+      });
     }
   }
 
