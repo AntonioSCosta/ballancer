@@ -5,7 +5,6 @@ import {
   Users,
   UserPlus,
   Share2,
-  ListCheck,
   Info,
 } from "lucide-react";
 import {
@@ -107,27 +106,6 @@ const Help = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <ListCheck className="h-5 w-5 text-primary" />
-              Match Results
-            </CardTitle>
-            <CardDescription>Record game outcomes</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              After each game, you can:
-            </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Record which team won</li>
-              <li>Track individual player goals</li>
-              <li>Save match statistics</li>
-              <li>View player performance history</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
               <Share2 className="h-5 w-5 text-primary" />
               Sharing Teams
             </CardTitle>
@@ -162,7 +140,7 @@ const Help = () => {
               <li>Add player photos for easy identification</li>
               <li>Set accurate player attributes for better team balance</li>
               <li>Use secondary positions for versatile players</li>
-              <li>Record match results promptly</li>
+              <li>Keep your player roster up to date</li>
             </ul>
           </CardContent>
         </Card>

@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Copy } from "lucide-react";
-import MatchResultDialog from "./MatchResultDialog";
 import { Team } from "@/utils/teamDistribution";
 
 interface TeamActionsProps {
@@ -9,22 +8,11 @@ interface TeamActionsProps {
   onShareWhatsApp: () => void;
   onCopyTeams: () => void;
   teams: Team[];
-  showResultDialog: boolean;
-  setShowResultDialog: (show: boolean) => void;
-  playerGoals: Record<string, number>;
-  onGoalChange: (playerId: string, goals: number) => void;
-  onSaveResult: (winner: number) => void;
 }
 
 const TeamActions = ({
   onRegenerateTeams,
   onCopyTeams,
-  teams,
-  showResultDialog,
-  setShowResultDialog,
-  playerGoals,
-  onGoalChange,
-  onSaveResult,
 }: TeamActionsProps) => {
   return (
     <div className="flex flex-wrap gap-2 justify-center">
@@ -44,14 +32,6 @@ const TeamActions = ({
         <Copy className="h-4 w-4" />
         Copy Teams
       </Button>
-      <MatchResultDialog
-        teams={teams}
-        showResultDialog={showResultDialog}
-        setShowResultDialog={setShowResultDialog}
-        playerGoals={playerGoals}
-        onGoalChange={onGoalChange}
-        onSaveResult={onSaveResult}
-      />
     </div>
   );
 };
