@@ -59,20 +59,14 @@ const Help = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-primary" />
-              Player Management
+              Player Skill Attributes
             </CardTitle>
             <CardDescription>Managing your player roster</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Determine the player's ability by rating various skill atttributes:
-            </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
               <li>Physical: Strength, stamina, and overall fitness level.</li>
-              <li>Mental: Decision-making, composure, positioning and game intelligence.</li>
-            
-              <li>Edit player details anytime</li>
+              <li>l: Decision-making, composure, positioning and game intelligence.</li>
             </ul>
           </CardContent>
         </Card>
