@@ -67,12 +67,13 @@ const Help = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Determine the player's ability by rating various skill atttributes:
             </p>
+            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
               <li>Physical: Strength, stamina, and overall fitness level.</li>
               <li>Mental: Decision-making, composure, positioning and game intelligence.</li>
             
               <li>Edit player details anytime</li>
-           
+            </ul>
           </CardContent>
         </Card>
 
