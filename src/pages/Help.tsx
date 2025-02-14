@@ -72,9 +72,14 @@ const Help = () => {
               <li>Secondary position for versatile players</li>
               <li>Specific attributes for each position:</li>
               <ul className="list-disc pl-4 ml-2 space-y-1">
-                <li>Field players: speed, physical, mental, etc.</li>
-                <li>Goalkeepers: handling, diving, reflexes, etc.</li>
-                <li>Both sets when having dual positions</li>
+                <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
+                <li>Physical: Strength, stamina, and overall fitness level.</li>
+                <li>Passing: Accuracy and vision when distributing the ball.</li>
+                <li>Mental: Decision-making, composure, and game intelligence.</li>
+                <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
+                <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
+                <li>Heading: Aerial ability in both attacking and defensive situations.</li>
+                <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
               </ul>
               <li>Upload a player photo</li>
               <li>Edit player details anytime</li>
