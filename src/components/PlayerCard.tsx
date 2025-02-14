@@ -158,12 +158,6 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setShowStats(!showStats)}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              <Trophy className="h-5 w-5" />
-            </button>
-            <button
               onClick={handleEdit}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             >
