@@ -50,7 +50,7 @@ const Help = () => {
               <li>Create players with their photos and details</li>
               <li>Select players for the current game</li>
               <li>Click generate to create balanced teams</li>
-              <li>Share teams via WhatsApp or copy to clipboard</li>
+              <li>Share teams copying them to clipboard</li>
             </ul>
           </CardContent>
         </Card>
