@@ -23,10 +23,6 @@ const Help = () => {
       icon: <BookOpen className="h-5 w-5 text-primary" />,
       description: "Essential basics to get you going",
       content: (
-        <>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Team Generator helps you create balanced teams quickly and easily. Here's how to start:
-          </p>
           <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
             <li>Create players with their photos and details</li>
             <li>Select players for the current game</li>
