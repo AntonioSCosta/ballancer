@@ -72,7 +72,6 @@ const Help = () => {
       description: "Share generated teams easily",
       content: (
         <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Share directly to WhatsApp</li>
           <li>Copy teams to clipboard</li>
           <li>View team formations</li>
           <li>Quick team overview</li>
