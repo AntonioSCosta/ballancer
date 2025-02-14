@@ -136,19 +136,21 @@ const Help = () => {
             <Card className="shadow-md border dark:border-gray-700">
               <CardHeader
                 onClick={() => toggleCard(title)}
-                className="cursor-pointer flex items-center justify-between"
+                className="cursor-pointer flex justify-between items-center"
               >
                 <div className="flex items-center gap-2">
                   {icon}
-                  <CardTitle>{title}</CardTitle>
+                  <CardTitle className="flex-grow flex justify-between items-center">
+                    {title}
+                    <motion.span
+                      animate={{ rotate: expandedCard === title ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="ml-2 text-gray-500 dark:text-gray-400"
+                    >
+                      ▼
+                    </motion.span>
+                  </CardTitle>
                 </div>
-                <motion.span
-                  animate={{ rotate: expandedCard === title ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-gray-500 dark:text-gray-400"
-                >
-                  ▼
-                </motion.span>
               </CardHeader>
               <CardDescription className="px-4">{description}</CardDescription>
               <motion.div
