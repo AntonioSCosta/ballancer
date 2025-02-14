@@ -1,4 +1,3 @@
-
 import { Player } from "./PlayerCard";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { motion } from "framer-motion";
@@ -47,15 +46,48 @@ const getPositionColor = (position: string) => {
   return colors[position as keyof typeof colors] || "bg-gray-500";
 };
 
-const getPlayersInPosition = (players: Player[], position: string) => {
-  return players.filter(player => player.position === position);
+const determinePlayerPosition = (player: Player, defenders: number, midfielders: number) => {
+  if (player.position === "Goalkeeper") return "Goalkeeper";
+  
+  // If player is primarily a defender, keep them as defender
+  if (player.position === "Defender") return "Defender";
+  
+  // If we need more defenders and player can play as defender
+  if (defenders < 3 && player.secondaryPosition === "Defender") {
+    return "Defender";
+  }
+  
+  // If player is primarily a midfielder and we haven't exceeded midfielder limit
+  if (player.position === "Midfielder" && midfielders < 5) {
+    return "Midfielder";
+  }
+  
+  // If player can play as midfielder and we haven't exceeded limit
+  if (player.secondaryPosition === "Midfielder" && midfielders < 5) {
+    return "Midfielder";
+  }
+  
+  // Keep player in their primary position as fallback
+  return player.position;
+};
+
+const getPlayersInPosition = (players: Player[], targetPosition: string, neededDefenders: number, neededMidfielders: number) => {
+  return players.filter(player => {
+    const assignedPosition = determinePlayerPosition(player, neededDefenders, neededMidfielders);
+    return assignedPosition === targetPosition;
+  });
 };
 
 export const FootballField = ({ players, teamName }: FootballFieldProps) => {
-  const goalkeepers = getPlayersInPosition(players, "Goalkeeper");
-  const defenders = getPlayersInPosition(players, "Defender");
-  const midfielders = getPlayersInPosition(players, "Midfielder");
-  const forwards = getPlayersInPosition(players, "Forward");
+  // Calculate current number of defenders and midfielders
+  const currentDefenders = players.filter(p => p.position === "Defender").length;
+  const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
+  
+  // Get players by their assigned positions
+  const goalkeepers = getPlayersInPosition(players, "Goalkeeper", currentDefenders, currentMidfielders);
+  const defenders = getPlayersInPosition(players, "Defender", currentDefenders, currentMidfielders);
+  const midfielders = getPlayersInPosition(players, "Midfielder", currentDefenders, currentMidfielders);
+  const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
     <div className="flex flex-col gap-2">
@@ -102,6 +134,7 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
             const coords = getPositionCoordinates(position, index, positionPlayers.length);
             const yPosition = parseInt(coords.y);
             const tooltipPosition = yPosition < 30 ? "bottom" : "top";
+            const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
             return (
               <motion.div
@@ -113,9 +146,9 @@ export const FootballField = ({ players, teamName }: FootballFieldProps) => {
                 style={{ left: coords.x, top: coords.y }}
               >
                 <div className="relative group">
-                  <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(position)}`}>
+                  <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(assignedPosition)}`}>
                     <AvatarImage src={player.photo} alt={player.name} />
-                    <AvatarFallback className={`text-white ${getPositionColor(position)}`}>
+                    <AvatarFallback className={`text-white ${getPositionColor(assignedPosition)}`}>
                       {player.name[0]}
                     </AvatarFallback>
                   </Avatar>
