@@ -73,6 +73,8 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       }
       assignedPlayers.add(defender.id);
     }
+  });
+
   
   // **3. Assign remaining positions while keeping balance**
   ["Defender", "Midfielder", "Forward"].forEach(position => {
@@ -125,3 +127,4 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     { players: team2, rating: calculateTeamRating(team2) }
   ];
 };
+ 
