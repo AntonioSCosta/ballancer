@@ -70,7 +70,7 @@ const CreatePlayer = () => {
   const [secondaryPosition, setSecondaryPosition] = useState<PlayerPosition | undefined>();
   const [photo, setPhoto] = useState("https://via.placeholder.com/300");
   const [hasPhoto, setHasPhoto] = useState(false);
-  const [attributes, setAttributes] = useState(getDefaultAttributes());
+  const [attributes, setAttributes] = useState(getDefaultAttributes("Midfielder"));
 
   useEffect(() => {
     if (playerToEdit) {
@@ -95,6 +95,11 @@ const CreatePlayer = () => {
       });
     }
   }, [playerToEdit]);
+
+  // Update attributes when position or secondary position changes
+  useEffect(() => {
+    setAttributes(getDefaultAttributes(position, secondaryPosition));
+  }, [position, secondaryPosition]);
 
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -160,7 +165,7 @@ const CreatePlayer = () => {
         setSecondaryPosition(undefined);
         setPhoto("https://via.placeholder.com/300");
         setHasPhoto(false);
-        setAttributes(getDefaultAttributes());
+        setAttributes(getDefaultAttributes("Midfielder"));
       }
     } catch (error) {
       console.error("Error saving player:", error);
@@ -250,6 +255,7 @@ const CreatePlayer = () => {
 
           <PlayerAttributes
             position={position}
+            secondaryPosition={secondaryPosition}
             attributes={attributes}
             onAttributeChange={handleAttributeChange}
           />

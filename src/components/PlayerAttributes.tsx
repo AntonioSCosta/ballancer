@@ -5,16 +5,17 @@ import { renderAttributes } from "@/utils/playerUtils";
 
 interface PlayerAttributesProps {
   position: PlayerPosition;
+  secondaryPosition?: PlayerPosition;
   attributes: Record<string, number>;
   onAttributeChange: (attr: string, value: number[]) => void;
 }
 
-const PlayerAttributes = ({ position, attributes, onAttributeChange }: PlayerAttributesProps) => {
+const PlayerAttributes = ({ position, secondaryPosition, attributes, onAttributeChange }: PlayerAttributesProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Attributes</h2>
       <div className="grid gap-6">
-        {renderAttributes(position).map(({ key, label }) => (
+        {renderAttributes(position, secondaryPosition).map(({ key, label }) => (
           <div key={key}>
             <div className="flex justify-between items-center mb-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
