@@ -1,4 +1,3 @@
-
 import { ImagePlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
@@ -26,7 +25,7 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
   };
 
   // Determine which image to show: preview, uploaded photo, or placeholder
-  const displayImage = previewUrl || photo;
+  const displayImage = previewUrl || (hasPhoto ? photo : "");
 
   return (
     <div>
@@ -34,11 +33,17 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
         Photo
       </label>
       <div className="flex flex-col items-center gap-4">
-        <img
-          src={displayImage}
-          alt={name}
-          className="w-32 h-32 object-cover rounded-full border-2 border-primary"
-        />
+        {hasPhoto || previewUrl ? (
+          <img
+            src={displayImage}
+            alt="Player Photo"
+            className="w-32 h-32 object-cover rounded-full border-2 border-primary"
+          />
+        ) : (
+          <div className="w-32 h-32 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full border-2 border-gray-300 dark:border-gray-600">
+            <ImagePlus className="w-8 h-8 text-gray-500" />
+          </div>
+        )}
         <div className="relative">
           <Input
             type="file"
