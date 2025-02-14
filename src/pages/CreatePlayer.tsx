@@ -98,9 +98,11 @@ const CreatePlayer = () => {
 
   // Update attributes when position or secondary position changes
   useEffect(() => {
-    setAttributes(getDefaultAttributes(position, secondaryPosition));
-  }, [position, secondaryPosition]);
-
+    if (!playerToEdit) {
+      setAttributes(getDefaultAttributes(position, secondaryPosition));
+    }
+  }, [position, secondaryPosition, playerToEdit]);
+  
   const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {

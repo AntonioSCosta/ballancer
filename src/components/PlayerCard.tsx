@@ -157,6 +157,7 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
             </span>
           </div>
           <div className="flex gap-2">
+            
             <button
               onClick={handleEdit}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
