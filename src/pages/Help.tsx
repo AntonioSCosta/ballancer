@@ -65,8 +65,14 @@ const Help = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+              <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
               <li>Physical: Strength, stamina, and overall fitness level.</li>
-              <li>l: Decision-making, composure, positioning and game intelligence.</li>
+              <li>Passing: Accuracy and vision when distributing the ball.</li>
+              <li>Mental: Decision-making, composure, and game intelligence.</li>
+              <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
+              <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
+              <li>Heading: Aerial ability in both attacking and defensive situations.</li>
+              <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
             </ul>
           </CardContent>
         </Card>
