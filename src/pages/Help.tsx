@@ -125,28 +125,46 @@ const Help = () => {
             ),
           },
         ].map(({ title, icon, description, content }) => (
-          <Card key={title}>
-            <CardHeader
-              onClick={() => toggleCard(title)}
-              className="cursor-pointer flex items-center justify-between"
-            >
-              <div className="flex items-center gap-2">
-                {icon}
-                <CardTitle>{title}</CardTitle>
-              </div>
-              <span className="text-gray-500 dark:text-gray-400">
-                {expandedCard === title ? "▼" : "▶"}
-              </span>
-            </CardHeader>
-            <CardDescription className="px-4">{description}</CardDescription>
-            <motion.div
-              initial={false}
-              animate={{ height: expandedCard === title ? "auto" : 0, opacity: expandedCard === title ? 1 : 0 }}
-              className="overflow-hidden"
-            >
-              <CardContent className="space-y-4">{content}</CardContent>
-            </motion.div>
-          </Card>
+          <motion.div
+            key={title}
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <Card className="shadow-md border dark:border-gray-700">
+              <CardHeader
+                onClick={() => toggleCard(title)}
+                className="cursor-pointer flex items-center justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  {icon}
+                  <CardTitle>{title}</CardTitle>
+                </div>
+                <motion.span
+                  animate={{ rotate: expandedCard === title ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-gray-500 dark:text-gray-400"
+                >
+                  ▼
+                </motion.span>
+              </CardHeader>
+              <CardDescription className="px-4">{description}</CardDescription>
+              <motion.div
+                layout
+                initial={false}
+                animate={{
+                  opacity: expandedCard === title ? 1 : 0,
+                  scale: expandedCard === title ? 1 : 0.95,
+                }}
+                transition={{ duration: 0.3 }}
+                className={`overflow-hidden ${expandedCard === title ? "block" : "hidden"}`}
+              >
+                <CardContent className="space-y-4">{content}</CardContent>
+              </motion.div>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </motion.div>
