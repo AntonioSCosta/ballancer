@@ -1,27 +1,34 @@
 import { Player } from "@/components/PlayerCard";
 
+// Interface defining a team with a list of players and a rating
 export interface Team {
   players: Player[];
   rating: number;
 }
 
+// Function to shuffle an array of players
 const shuffle = (array: Player[]) => [...array].sort(() => Math.random() - 0.5);
 
+// Function to distribute players evenly between two teams
 const distributeEvenly = (players: Player[], team1: Player[], team2: Player[]) => {
   shuffle(players).forEach((player, i) => {
     (team1.length <= team2.length ? team1 : team2).push(player);
   });
 };
 
+// Function to calculate the rating of a team based on the ratings of its players
 const calculateTeamRating = (players: Player[]) =>
   players.length === 0 ? 0 : Math.round(players.reduce((acc, p) => acc + p.rating, 0) / players.length);
 
+// Function to get players for a specific position, excluding those with IDs in the excludeIds set
 const getPlayersForPosition = (players: Player[], position: string, excludeIds = new Set<string>()) =>
   players.filter(p => !excludeIds.has(p.id) && (p.position === position || p.secondaryPosition === position));
 
+// Function to count the number of players by position in a team
 const countPlayersByPosition = (team: Player[], position: string) =>
   team.filter(p => p.position === position || p.secondaryPosition === position).length;
 
+// Function to balance teams, ensuring each team has the same number of players
 const balanceTeams = (team1: Player[], team2: Player[], totalPlayers: number) => {
   const targetSize = Math.floor(totalPlayers / 2);
   while (team1.length < targetSize) {
@@ -32,6 +39,7 @@ const balanceTeams = (team1: Player[], team2: Player[], totalPlayers: number) =>
   }
 };
 
+// Main function to distribute players by position into two teams
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
@@ -73,7 +81,8 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       }
       assignedPlayers.add(defender.id);
     }
-  
+  });
+
   // **3. Assign remaining positions while keeping balance**
   ["Defender", "Midfielder", "Forward"].forEach(position => {
     const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
@@ -124,4 +133,4 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     { players: team1, rating: calculateTeamRating(team1) },
     { players: team2, rating: calculateTeamRating(team2) }
   ];
-
+};
