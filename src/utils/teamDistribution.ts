@@ -22,11 +22,22 @@ const getPlayersForPosition = (players: Player[], position: string, excludeIds =
 const countPlayersByPosition = (team: Player[], position: string) =>
   team.filter(p => p.position === position || p.secondaryPosition === position).length;
 
+const balanceTeams = (team1: Player[], team2: Player[], totalPlayers: number) => {
+  const targetSize = Math.floor(totalPlayers / 2);
+  while (team1.length < targetSize) {
+    team1.push(team2.pop()!);
+  }
+  while (team2.length < targetSize) {
+    team2.push(team1.pop()!);
+  }
+};
+
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
   const assignedPlayers = new Set<string>();
-  const needsMinDefenders = Math.floor(players.length / 2) >= 9;
+  const playersPerTeam = Math.floor(players.length / 2);
+  const needsMinDefenders = playersPerTeam >= 9;
 
   // **1. Assign Goalkeepers**
   const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
@@ -101,6 +112,9 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       team1.push(extraGk);
     }
   }
+
+  // **5. Balance teams to have equal number of players**
+  balanceTeams(team1, team2, players.length);
 
   return [
     { players: team1, rating: calculateTeamRating(team1) },
