@@ -40,17 +40,9 @@ const Help = () => {
             icon: <BookOpen className="h-5 w-5 text-primary" />,
             description: "Essential basics to get you going",
             content: (
-              <>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Team Generator helps you create balanced teams quickly and easily. Here's how to start:
-                </p>
-                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                  <li>Create players with their photos and details</li>
-                  <li>Select players for the current game</li>
-                  <li>Click generate to create balanced teams</li>
-                  <li>Share teams copying them to clipboard</li>
-                </ul>
-              </>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Team Generator helps you create balanced teams quickly and easily. Here's how to start:
+              </p>
             ),
           },
           {
@@ -59,69 +51,11 @@ const Help = () => {
             description: "Managing your player roster",
             content: (
               <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
-                <li>Physical: Strength, stamina, and overall fitness level.</li>
-                <li>Passing: Accuracy and vision when distributing the ball.</li>
-                <li>Mental: Decision-making, composure, and game intelligence.</li>
-                <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
-                <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
-                <li>Heading: Aerial ability in both attacking and defensive situations.</li>
-                <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
+                <li>Speed: How fast the player moves</li>
+                <li>Physical: Strength, stamina, and fitness</li>
+                <li>Passing: Accuracy and vision</li>
+                <li>Mental: Decision-making and composure</li>
               </ul>
-            ),
-          },
-          {
-            title: "Team Generation",
-            icon: <Users className="h-5 w-5 text-primary" />,
-            description: "Creating balanced teams",
-            content: (
-              <>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Our algorithm ensures fair team distribution by:
-                </p>
-                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                  <li>Balancing team skill levels</li>
-                  <li>Considering both primary and secondary positions</li>
-                  <li>Using appropriate attributes based on assigned position</li>
-                  <li>Visualizing team formations with position-specific colors</li>
-                </ul>
-              </>
-            ),
-          },
-          {
-            title: "Sharing Teams",
-            icon: <Share2 className="h-5 w-5 text-primary" />,
-            description: "Share generated teams easily",
-            content: (
-              <>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Share teams instantly:
-                </p>
-                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                  <li>Share directly to WhatsApp</li>
-                  <li>Copy teams to clipboard</li>
-                  <li>View team formations</li>
-                  <li>Quick team overview</li>
-                </ul>
-              </>
-            ),
-          },
-          {
-            title: "Tips & Best Practices",
-            icon: <Info className="h-5 w-5 text-primary" />,
-            description: "Get the most out of the app",
-            content: (
-              <>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Recommended practices:
-                </p>
-                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-                  <li>Add player photos for easy identification</li>
-                  <li>Set accurate player attributes for better team balance</li>
-                  <li>Use secondary positions for versatile players</li>
-                  <li>Keep your player roster up to date</li>
-                </ul>
-              </>
             ),
           },
         ].map(({ title, icon, description, content }) => (
@@ -138,14 +72,14 @@ const Help = () => {
                 onClick={() => toggleCard(title)}
                 className="cursor-pointer flex justify-between items-center"
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full">
                   {icon}
                   <CardTitle className="flex-grow flex justify-between items-center">
                     {title}
                     <motion.span
                       animate={{ rotate: expandedCard === title ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
-                      className="ml-2 text-gray-500 dark:text-gray-400"
+                      className="ml-2 text-gray-500 dark:text-gray-400 text-xs"
                     >
                       ▼
                     </motion.span>
