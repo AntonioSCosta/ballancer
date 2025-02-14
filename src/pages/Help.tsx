@@ -1,12 +1,6 @@
-
+import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  BookOpen,
-  Users,
-  UserPlus,
-  Share2,
-  Info,
-} from "lucide-react";
+import { BookOpen, Users, UserPlus, Share2, Info } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -17,6 +11,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 const Help = () => {
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+
+  const toggleCard = (title: string) => {
+    setExpandedCard(expandedCard === title ? null : title);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,111 +34,120 @@ const Help = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-primary" />
-              Getting Started
-            </CardTitle>
-            <CardDescription>Essential basics to get you going</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Team Generator helps you create balanced teams quickly and easily. Here's how to start:
-            </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Create players with their photos and details</li>
-              <li>Select players for the current game</li>
-              <li>Click generate to create balanced teams</li>
-              <li>Share teams copying them to clipboard</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-primary" />
-              Player Skill Attributes
-            </CardTitle>
-            <CardDescription>Managing your player roster</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
-              <li>Physical: Strength, stamina, and overall fitness level.</li>
-              <li>Passing: Accuracy and vision when distributing the ball.</li>
-              <li>Mental: Decision-making, composure, and game intelligence.</li>
-              <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
-              <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
-              <li>Heading: Aerial ability in both attacking and defensive situations.</li>
-              <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              Team Generation
-            </CardTitle>
-            <CardDescription>Creating balanced teams</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Our algorithm ensures fair team distribution by:
-            </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Balancing team skill levels</li>
-              <li>Considering both primary and secondary positions</li>
-              <li>Using appropriate attributes based on assigned position</li>
-              <li>Visualizing team formations with position-specific colors</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Share2 className="h-5 w-5 text-primary" />
-              Sharing Teams
-            </CardTitle>
-            <CardDescription>Share generated teams easily</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Share teams instantly:
-            </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Share directly to WhatsApp</li>
-              <li>Copy teams to clipboard</li>
-              <li>View team formations</li>
-              <li>Quick team overview</li>
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info className="h-5 w-5 text-primary" />
-              Tips & Best Practices
-            </CardTitle>
-            <CardDescription>Get the most out of the app</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Recommended practices:
-            </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Add player photos for easy identification</li>
-              <li>Set accurate player attributes for better team balance</li>
-              <li>Use secondary positions for versatile players</li>
-              <li>Keep your player roster up to date</li>
-            </ul>
-          </CardContent>
-        </Card>
+        {[
+          {
+            title: "Getting Started",
+            icon: <BookOpen className="h-5 w-5 text-primary" />,
+            description: "Essential basics to get you going",
+            content: (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Team Generator helps you create balanced teams quickly and easily. Here's how to start:
+                </p>
+                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                  <li>Create players with their photos and details</li>
+                  <li>Select players for the current game</li>
+                  <li>Click generate to create balanced teams</li>
+                  <li>Share teams copying them to clipboard</li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            title: "Player Skill Attributes",
+            icon: <UserPlus className="h-5 w-5 text-primary" />,
+            description: "Managing your player roster",
+            content: (
+              <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
+                <li>Physical: Strength, stamina, and overall fitness level.</li>
+                <li>Passing: Accuracy and vision when distributing the ball.</li>
+                <li>Mental: Decision-making, composure, and game intelligence.</li>
+                <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
+                <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
+                <li>Heading: Aerial ability in both attacking and defensive situations.</li>
+                <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
+              </ul>
+            ),
+          },
+          {
+            title: "Team Generation",
+            icon: <Users className="h-5 w-5 text-primary" />,
+            description: "Creating balanced teams",
+            content: (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Our algorithm ensures fair team distribution by:
+                </p>
+                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                  <li>Balancing team skill levels</li>
+                  <li>Considering both primary and secondary positions</li>
+                  <li>Using appropriate attributes based on assigned position</li>
+                  <li>Visualizing team formations with position-specific colors</li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            title: "Sharing Teams",
+            icon: <Share2 className="h-5 w-5 text-primary" />,
+            description: "Share generated teams easily",
+            content: (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Share teams instantly:
+                </p>
+                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                  <li>Share directly to WhatsApp</li>
+                  <li>Copy teams to clipboard</li>
+                  <li>View team formations</li>
+                  <li>Quick team overview</li>
+                </ul>
+              </>
+            ),
+          },
+          {
+            title: "Tips & Best Practices",
+            icon: <Info className="h-5 w-5 text-primary" />,
+            description: "Get the most out of the app",
+            content: (
+              <>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Recommended practices:
+                </p>
+                <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+                  <li>Add player photos for easy identification</li>
+                  <li>Set accurate player attributes for better team balance</li>
+                  <li>Use secondary positions for versatile players</li>
+                  <li>Keep your player roster up to date</li>
+                </ul>
+              </>
+            ),
+          },
+        ].map(({ title, icon, description, content }) => (
+          <Card key={title}>
+            <CardHeader
+              onClick={() => toggleCard(title)}
+              className="cursor-pointer flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                {icon}
+                <CardTitle>{title}</CardTitle>
+              </div>
+              <span className="text-gray-500 dark:text-gray-400">
+                {expandedCard === title ? "▼" : "▶"}
+              </span>
+            </CardHeader>
+            <CardDescription className="px-4">{description}</CardDescription>
+            <motion.div
+              initial={false}
+              animate={{ height: expandedCard === title ? "auto" : 0, opacity: expandedCard === title ? 1 : 0 }}
+              className="overflow-hidden"
+            >
+              <CardContent className="space-y-4">{content}</CardContent>
+            </motion.div>
+          </Card>
+        ))}
       </div>
     </motion.div>
   );
