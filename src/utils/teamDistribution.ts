@@ -50,7 +50,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const playersPerTeam = Math.floor(players.length / 2);
   const needsMinDefenders = playersPerTeam >= 9;
 
-  // First, try to distribute goalkeepers
+  //1 - First, try to distribute goalkeepers
   const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
   if (goalkeepers.length >= 2) {
     const shuffledGKs = shuffle(goalkeepers);
@@ -63,7 +63,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     assignedPlayers.add(goalkeepers[0].id);
   }
 
-  // Distribute defenders first when we need minimum 3
+  //2 - Distribute defenders first when we need minimum 3
   if (needsMinDefenders) {
     const defenders = getPlayersForPosition(players, "Defender", assignedPlayers);
     const shuffledDefenders = shuffle(defenders);
@@ -103,9 +103,28 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
         }
       });
     }
+  } else {
+
+    defenders.forEach(defender => {
+      if (!assignedPlayers.has(defender.id)) {
+        if (
+          (team1Defenders < 2 || (needsMinDefenders && team1.length >= 9 && team1Defenders < 3)) &&
+          (team1Defenders <= team2Defenders || team2Defenders >= 2)
+        ) {
+          team1.push(defender);
+          team1Defenders++;
+        } else if (
+          (team2Defenders < 2 || (needsMinDefenders && team2.length >= 9 && team2Defenders < 3))
+        ) {
+          team2.push(defender);
+          team2Defenders++;
+        }
+        assignedPlayers.add(defender.id);
+      }
+    });
   }
 
-  // Distribute remaining positions
+  //3 - Distribute remaining positions
   const positions = ["Defender", "Midfielder", "Forward"];
   positions.forEach(position => {
     const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
