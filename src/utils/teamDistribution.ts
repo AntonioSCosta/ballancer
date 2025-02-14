@@ -124,4 +124,4 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     { players: team1, rating: calculateTeamRating(team1) },
     { players: team2, rating: calculateTeamRating(team2) }
   ];
-};
+
