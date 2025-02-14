@@ -26,8 +26,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
   const assignedPlayers = new Set<string>();
-  const playersPerTeam = Math.floor(players.length / 2);
-  const needsMinDefenders = playersPerTeam >= 9;
+  const needsMinDefenders = Math.floor(players.length / 2) >= 9;
 
   // **1. Assign Goalkeepers**
   const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
@@ -70,8 +69,8 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
         const team1Count = countPlayersByPosition(team1, position);
         const team2Count = countPlayersByPosition(team2, position);
 
-        if (position === "Defender" && team1Count >= 5 && team2Count >= 5) return;
-        if (position === "Midfielder" && team1Count >= 5 && team2Count >= 5) return;
+        if (position === "Defender" && (team1Count >= 5 || team2Count >= 5)) return;
+        if (position === "Midfielder" && (team1Count >= 5 || team2Count >= 5)) return;
 
         if (team1.length <= team2.length) {
           team1.push(player);
@@ -82,10 +81,26 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       }
     });
   });
-  
 
   // **4. Assign remaining unassigned players evenly**
   distributeEvenly(players.filter(p => !assignedPlayers.has(p.id)), team1, team2);
+
+  // Ensure no team has more than one goalkeeper
+  if (countPlayersByPosition(team1, "Goalkeeper") > 1) {
+    const extraGk = team1.find(p => p.position === "Goalkeeper");
+    if (extraGk) {
+      team1.splice(team1.indexOf(extraGk), 1);
+      team2.push(extraGk);
+    }
+  }
+
+  if (countPlayersByPosition(team2, "Goalkeeper") > 1) {
+    const extraGk = team2.find(p => p.position === "Goalkeeper");
+    if (extraGk) {
+      team2.splice(team2.indexOf(extraGk), 1);
+      team1.push(extraGk);
+    }
+  }
 
   return [
     { players: team1, rating: calculateTeamRating(team1) },
