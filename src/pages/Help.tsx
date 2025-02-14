@@ -29,7 +29,7 @@ const Help = () => {
             <li>Click generate to create balanced teams</li>
             <li>Share teams by copying them to the clipboard</li>
           </ul>
-        </>
+       
       ),
     },
     {
