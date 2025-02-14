@@ -69,9 +69,15 @@ const Help = () => {
               For each player, you can set:
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Name and preferred position</li>
+              <li>Name and primary position</li>
+              <li>Secondary position for versatile players</li>
+              <li>Specific attributes for each position:</li>
+              <ul className="list-disc pl-4 ml-2 space-y-1">
+                <li>Field players: speed, physical, mental, etc.</li>
+                <li>Goalkeepers: handling, diving, reflexes, etc.</li>
+                <li>Both sets when having dual positions</li>
+              </ul>
               <li>Upload a player photo</li>
-              <li>Set detailed player attributes</li>
               <li>Edit player details anytime</li>
             </ul>
           </CardContent>
@@ -91,9 +97,9 @@ const Help = () => {
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>Balancing team skill levels</li>
-              <li>Considering player positions</li>
-              <li>Distributing players evenly</li>
-              <li>Visualizing team formations</li>
+              <li>Considering both primary and secondary positions</li>
+              <li>Using appropriate attributes based on assigned position</li>
+              <li>Visualizing team formations with position-specific colors</li>
             </ul>
           </CardContent>
         </Card>
@@ -154,8 +160,8 @@ const Help = () => {
             </p>
             <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
               <li>Add player photos for easy identification</li>
-              <li>Set accurate player attributes</li>
-              <li>Select at least 10 players for teams</li>
+              <li>Set accurate player attributes for better team balance</li>
+              <li>Use secondary positions for versatile players</li>
               <li>Record match results promptly</li>
             </ul>
           </CardContent>
