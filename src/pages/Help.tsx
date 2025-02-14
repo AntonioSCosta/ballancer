@@ -65,25 +65,14 @@ const Help = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              For each player, you can set:
+              Determine the player's ability by rating various skill atttributes:
             </p>
-            <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-              <li>Name and primary position</li>
-              <li>Secondary position for versatile players</li>
-              <li>Specific attributes for each position:</li>
-              <ul className="list-disc pl-4 ml-2 space-y-1">
-                <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
-                <li>Physical: Strength, stamina, and overall fitness level.</li>
-                <li>Passing: Accuracy and vision when distributing the ball.</li>
-                <li>Mental: Decision-making, composure, and game intelligence.</li>
-                <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
-                <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
-                <li>Heading: Aerial ability in both attacking and defensive situations.</li>
-                <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
-              </ul>
-              <li>Upload a player photo</li>
+              <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
+              <li>Physical: Strength, stamina, and overall fitness level.</li>
+              <li>Mental: Decision-making, composure, positioning and game intelligence.</li>
+            
               <li>Edit player details anytime</li>
-            </ul>
+           
           </CardContent>
         </Card>
 
