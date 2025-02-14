@@ -82,6 +82,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       }
     });
   });
+  
 
   // **4. Assign remaining unassigned players evenly**
   distributeEvenly(players.filter(p => !assignedPlayers.has(p.id)), team1, team2);
