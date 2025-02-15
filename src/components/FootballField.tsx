@@ -24,13 +24,13 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   } else if (totalInPosition === 2) {
     position_x = `${30 + (index * 40)}%`; // 30% and 70% for 2 players
   } else if (totalInPosition === 3) {
-    const positions = [25, 55, 85]; // 20%, 50%, 80% for 3 players
+    const positions = [15, 45, 75]; // 20%, 50%, 80% for 3 players
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 4) {
-    const positions = [10, 40, 60, 90]; // 10%, 40%, 60%, 90% for 4 players
+    const positions = [5, 35, 55, 85]; // 10%, 40%, 60%, 90% for 4 players
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 5) {
-    const positions = [10, 26, 42, 58, 74, 90]; // 10%, 26%, 42%, 58%, 74%, 90% for 5 players
+    const positions = [5, 21, 37, 53, 69, 85]; // 10%, 26%, 42%, 58%, 74%, 90% for 5 players
     position_x = `${positions[index]}%`;
   } else {
     // Fallback for more than 5 players: evenly distribute across 80% of the field width
