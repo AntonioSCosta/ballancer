@@ -24,7 +24,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   } else if (totalInPosition === 2) {
     position_x = `${30 + (index * 40)}%`; // 30% and 70% for 2 players
   } else if (totalInPosition === 3) {
-    const positions = [20, 50, 80]; // 20%, 50%, 80% for 3 players
+    const positions = [25, 55, 85]; // 20%, 50%, 80% for 3 players
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 4) {
     const positions = [10, 40, 60, 90]; // 10%, 40%, 60%, 90% for 4 players
