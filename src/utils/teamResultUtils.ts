@@ -1,7 +1,8 @@
+
 import { Team } from "./teamDistribution";
 import { MatchResult } from "@/types/matchResult";
 import { toast } from "sonner";
-import { determinePlayerPosition } from "@/components/FootballField";
+import { determinePlayerPosition } from "./positionUtils";
 
 export const saveMatchResult = (
   teams: Team[],

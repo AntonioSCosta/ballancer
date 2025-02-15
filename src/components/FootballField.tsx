@@ -1,5 +1,6 @@
 import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
+import { determinePlayerPosition } from "@/utils/positionUtils";
 
 interface FootballFieldProps {
   players: Player[];
@@ -42,26 +43,6 @@ const getPositionColor = (position: string) => {
     "Forward": "bg-emerald-500"
   };
   return colors[position as keyof typeof colors] || "bg-gray-500";
-};
-
-const determinePlayerPosition = (player: Player, defenders: number, midfielders: number) => {
-  if (player.position === "Goalkeeper") return "Goalkeeper";
-  
-  if (player.position === "Defender") return "Defender";
-  
-  if (defenders < 3 && player.secondaryPosition === "Defender") {
-    return "Defender";
-  }
-  
-  if (player.position === "Midfielder" && midfielders < 5) {
-    return "Midfielder";
-  }
-  
-  if (player.secondaryPosition === "Midfielder" && midfielders < 5) {
-    return "Midfielder";
-  }
-  
-  return player.position;
 };
 
 const getPlayersInPosition = (players: Player[], targetPosition: string, neededDefenders: number, neededMidfielders: number) => {
