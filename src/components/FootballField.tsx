@@ -10,27 +10,6 @@ interface FootballFieldProps {
 }
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number, rotate: boolean) => {
-  // For team 2 (rotate=true), we invert the positions to properly mirror team 1
-  let actualPosition = position;
-  if (rotate) {
-    switch (position) {
-      case "Goalkeeper":
-        actualPosition = "Forward";
-        break;
-      case "Defender":
-        actualPosition = "Midfielder";
-        break;
-      case "Midfielder":
-        actualPosition = "Defender";
-        break;
-      case "Forward":
-        actualPosition = "Goalkeeper";
-        break;
-      default:
-        break;
-    }
-  }
-
   const basePositions = {
     "Goalkeeper": { x: "50%", y: "10%" },
     "Defender": { x: "0", y: "30%" },
@@ -50,10 +29,10 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   } else {
     position_x = `${10 + (index * ((80) / (totalInPosition - 1)))}%`;
   }
-  
+
   return {
     x: `calc(${position_x} - 8px)`,
-    y: basePositions[actualPosition as keyof typeof basePositions]?.y || "50%"
+    y: basePositions[position as keyof typeof basePositions]?.y || "50%"
   };
 };
 
