@@ -1,7 +1,7 @@
-
 import { Team } from "./teamDistribution";
 import { MatchResult } from "@/types/matchResult";
 import { toast } from "sonner";
+import { determinePlayerPosition } from "@/components/FootballField";
 
 export const saveMatchResult = (
   teams: Team[],
@@ -50,9 +50,14 @@ export const shareTeamsToWhatsApp = (teams: Team[]) => {
   const teamsInfo = teams
     .map(
       (team, i) =>
-        `⚽ Team ${i + 1}\n\n` +
+        `⚽ Team ${i + 1} (Rating: ${team.rating})\n\n` +
         team.players
-          .map((p) => `- ${p.name} (${p.position})`)
+          .map((p) => {
+            const currentDefenders = team.players.filter(pl => pl.position === "Defender").length;
+            const currentMidfielders = team.players.filter(pl => pl.position === "Midfielder").length;
+            const assignedPosition = determinePlayerPosition(p, currentDefenders, currentMidfielders);
+            return `- ${p.name} (${assignedPosition})`;
+          })
           .join("\n")
     )
     .join("\n\n");
@@ -63,7 +68,6 @@ export const shareTeamsToWhatsApp = (teams: Team[]) => {
     window.location.href = whatsappUrl;
   } catch (error) {
     console.error('Error sharing to WhatsApp:', error);
-    // Fallback to clipboard
     navigator.clipboard.writeText(teamsInfo)
       .then(() => toast.success("Teams copied to clipboard!"))
       .catch(() => toast.error("Failed to copy teams"));
@@ -74,9 +78,14 @@ export const copyTeamsToClipboard = (teams: Team[]) => {
   const teamsInfo = teams
     .map(
       (team, i) =>
-        `Team ${i + 1}\n\n` +
+        `Team ${i + 1} (Rating: ${team.rating})\n\n` +
         team.players
-          .map((p) => `- ${p.name} (${p.position})`)
+          .map((p) => {
+            const currentDefenders = team.players.filter(pl => pl.position === "Defender").length;
+            const currentMidfielders = team.players.filter(pl => pl.position === "Midfielder").length;
+            const assignedPosition = determinePlayerPosition(p, currentDefenders, currentMidfielders);
+            return `- ${p.name} (${assignedPosition})`;
+          })
           .join("\n")
     )
     .join("\n\n");

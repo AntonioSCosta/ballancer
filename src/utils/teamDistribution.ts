@@ -1,4 +1,3 @@
-
 import { Player } from "@/components/PlayerCard";
 
 export interface Team {
@@ -69,18 +68,17 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     const shuffledDefenders = shuffle(defenders);
     
     // Try to assign at least 3 defenders to each team if available
-    let team1Defenders = 0;
-    let team2Defenders = 0;
-    const targetDefenders = Math.min(3, Math.floor(defenders.length / 2));
+    let team1Defenders = countPlayersByPosition(team1, "Defender");
+    let team2Defenders = countPlayersByPosition(team2, "Defender");
 
     // First pass: try to get 3 defenders per team
     shuffledDefenders.forEach(defender => {
       if (!assignedPlayers.has(defender.id)) {
-        if (team1Defenders < targetDefenders && (team1Defenders <= team2Defenders || team2Defenders >= targetDefenders)) {
+        if (team1Defenders < 3 && (team1Defenders <= team2Defenders || team2Defenders >= 3)) {
           team1.push(defender);
           assignedPlayers.add(defender.id);
           team1Defenders++;
-        } else if (team2Defenders < targetDefenders) {
+        } else if (team2Defenders < 3) {
           team2.push(defender);
           assignedPlayers.add(defender.id);
           team2Defenders++;

@@ -1,18 +1,18 @@
 import { Player } from "./PlayerCard";
-import { Avatar, AvatarFallback } from "./ui/avatar";
 import { motion } from "framer-motion";
 
 interface FootballFieldProps {
   players: Player[];
   teamName: string;
+  rotate?: boolean;
 }
 
-const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
+const getPositionCoordinates = (position: string, index: number, totalInPosition: number, rotate: boolean) => {
   const basePositions = {
-    "Goalkeeper": { x: "50%", y: "10%" },
-    "Defender": { x: "0", y: "30%" },
-    "Midfielder": { x: "0", y: "55%" },
-    "Forward": { x: "0", y: "75%" }
+    "Goalkeeper": { x: "50%", y: rotate ? "90%" : "10%" },
+    "Defender": { x: "0", y: rotate ? "70%" : "30%" },
+    "Midfielder": { x: "0", y: rotate ? "45%" : "55%" },
+    "Forward": { x: "0", y: rotate ? "25%" : "75%" }
   };
 
   let position_x;
@@ -80,7 +80,7 @@ const getInitials = (name: string) => {
     .slice(0, 2);
 };
 
-export const FootballField = ({ players }: FootballFieldProps) => {
+export const FootballField = ({ players, rotate = false }: FootballFieldProps) => {
   const currentDefenders = players.filter(p => p.position === "Defender").length;
   const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
   
@@ -90,7 +90,7 @@ export const FootballField = ({ players }: FootballFieldProps) => {
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
-    <div className="relative w-full aspect-[2/3] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20">
+    <div className={`relative w-full aspect-[2/3] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 ${rotate ? 'rotate-180' : ''}`}>
       <div className="absolute inset-0">
         <div className="absolute w-full h-full border-2 border-white/40" />
         <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
@@ -110,7 +110,7 @@ export const FootballField = ({ players }: FootballFieldProps) => {
         { players: forwards, position: "Forward" }
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
-          const coords = getPositionCoordinates(position, index, positionPlayers.length);
+          const coords = getPositionCoordinates(position, index, positionPlayers.length, rotate);
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
           return (
@@ -119,7 +119,7 @@ export const FootballField = ({ players }: FootballFieldProps) => {
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2"
+              className={`absolute transform -translate-x-1/2 -translate-y-1/2 ${rotate ? '-rotate-180' : ''}`}
               style={{ left: coords.x, top: coords.y }}
             >
               <div className="relative flex flex-col items-center">

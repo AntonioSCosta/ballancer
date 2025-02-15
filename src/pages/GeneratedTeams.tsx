@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -116,6 +115,7 @@ const GeneratedTeams = () => {
               <FootballField 
                 players={team.players} 
                 teamName={`Team ${index + 1}`}
+                rotate={index === 1}
               />
             </motion.div>
           ))}
