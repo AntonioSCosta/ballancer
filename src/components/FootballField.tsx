@@ -10,11 +10,32 @@ interface FootballFieldProps {
 }
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number, rotate: boolean) => {
+  // For team 2 (rotate=true), we invert the positions to properly mirror team 1
+  let actualPosition = position;
+  if (rotate) {
+    switch (position) {
+      case "Goalkeeper":
+        actualPosition = "Forward";
+        break;
+      case "Defender":
+        actualPosition = "Midfielder";
+        break;
+      case "Midfielder":
+        actualPosition = "Defender";
+        break;
+      case "Forward":
+        actualPosition = "Goalkeeper";
+        break;
+      default:
+        break;
+    }
+  }
+
   const basePositions = {
-    "Goalkeeper": { x: "50%", y: rotate ? "90%" : "10%" },
-    "Defender": { x: "0", y: rotate ? "70%" : "30%" },
-    "Midfielder": { x: "0", y: rotate ? "45%" : "55%" },
-    "Forward": { x: "0", y: rotate ? "25%" : "75%" }
+    "Goalkeeper": { x: "50%", y: "10%" },
+    "Defender": { x: "0", y: "30%" },
+    "Midfielder": { x: "0", y: "55%" },
+    "Forward": { x: "0", y: "75%" }
   };
 
   let position_x;
@@ -32,7 +53,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   
   return {
     x: `calc(${position_x} - 8px)`,
-    y: basePositions[position as keyof typeof basePositions]?.y || "50%"
+    y: basePositions[actualPosition as keyof typeof basePositions]?.y || "50%"
   };
 };
 
@@ -63,7 +84,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
-    <div className={`relative w-full aspect-[2/3] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 ${rotate ? 'rotate-180' : ''}`}>
+    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 ${rotate ? 'rotate-180' : ''}`}>
       <div className="absolute inset-0">
         <div className="absolute w-full h-full border-2 border-white/40" />
         <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
