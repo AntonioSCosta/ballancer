@@ -6,12 +6,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
-import TeamDisplay from "@/components/TeamDisplay";
 import TeamActions from "@/components/TeamActions";
 import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/utils/teamResultUtils";
-import type { MatchResult } from "@/types/matchResult";
+import type { Team } from "@/utils/teamDistribution";
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -101,46 +99,27 @@ const GeneratedTeams = () => {
           onShareWhatsApp={() => shareTeamsToWhatsApp(teams)}
           onCopyTeams={() => copyTeamsToClipboard(teams)}
           teams={teams}
-          showResultDialog={showResultDialog}
-          setShowResultDialog={setShowResultDialog}
-          playerGoals={playerGoals}
-          onGoalChange={handleGoalChange}
-          onSaveResult={handleSaveResult}
         />
 
-        <Tabs defaultValue="teams" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="teams">Teams</TabsTrigger>
-            <TabsTrigger value="tactics">Tactics</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="teams" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {teams.map((team, index) => (
-                <TeamDisplay key={index} team={team} index={index} />
-              ))}
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="tactics" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {teams.map((team, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  className="overflow-x-auto"
-                >
-                  <FootballField 
-                    players={team.players} 
-                    teamName={`Team ${index + 1}`}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {teams.map((team, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
+              className="overflow-x-auto"
+            >
+              <div className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Team {index + 1} - Rating: {team.rating}
+              </div>
+              <FootballField 
+                players={team.players} 
+                teamName={`Team ${index + 1}`}
+              />
+            </motion.div>
+          ))}
+        </div>
       </div>
     </motion.div>
   );
