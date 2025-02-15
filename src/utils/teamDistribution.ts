@@ -49,7 +49,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const playersPerTeam = Math.floor(players.length / 2);
   const needsMinDefenders = playersPerTeam >= 9;
 
-  //1 - First, try to distribute goalkeepers
+  // 1 - First, try to distribute goalkeepers
   const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
   if (goalkeepers.length >= 2) {
     const shuffledGKs = shuffle(goalkeepers);
@@ -62,68 +62,27 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     assignedPlayers.add(goalkeepers[0].id);
   }
 
-  //2 - Distribute defenders first when we need minimum 3
-  if (needsMinDefenders) {
-    const defenders = getPlayersForPosition(players, "Defender", assignedPlayers);
-    const shuffledDefenders = shuffle(defenders);
-    
-    // Try to assign at least 3 defenders to each team if available
-    let team1Defenders = countPlayersByPosition(team1, "Defender");
-    let team2Defenders = countPlayersByPosition(team2, "Defender");
+  // 2 - Distribute defenders
+  const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
+  let team1Defenders = countPlayersByPosition(team1, "Defender");
+  let team2Defenders = countPlayersByPosition(team2, "Defender");
 
-    // First pass: try to get 3 defenders per team
-    shuffledDefenders.forEach(defender => {
-      if (!assignedPlayers.has(defender.id)) {
-        if (team1Defenders < 3 && (team1Defenders <= team2Defenders || team2Defenders >= 3)) {
-          team1.push(defender);
-          assignedPlayers.add(defender.id);
-          team1Defenders++;
-        } else if (team2Defenders < 3) {
-          team2.push(defender);
-          assignedPlayers.add(defender.id);
-          team2Defenders++;
-        }
-      }
-    });
-
-    // Second pass: distribute any remaining defenders if we still need them
-    if (needsMinDefenders && (team1Defenders < 3 || team2Defenders < 3)) {
-      const remainingDefenders = defenders.filter(d => !assignedPlayers.has(d.id));
-      remainingDefenders.forEach(defender => {
-        if (team1Defenders < 3 && (team1.length <= team2.length || team2Defenders >= 3)) {
-          team1.push(defender);
-          assignedPlayers.add(defender.id);
-          team1Defenders++;
-        } else if (team2Defenders < 3) {
-          team2.push(defender);
-          assignedPlayers.add(defender.id);
-          team2Defenders++;
-        }
-      });
-    }
-  } else {
-
-    defenders.forEach(defender => {
-      if (!assignedPlayers.has(defender.id)) {
-        if (
-          (team1Defenders < 2 || (needsMinDefenders && team1.length >= 9 && team1Defenders < 3)) &&
-          (team1Defenders <= team2Defenders || team2Defenders >= 2)
-        ) {
-          team1.push(defender);
-          team1Defenders++;
-        } else if (
-          (team2Defenders < 2 || (needsMinDefenders && team2.length >= 9 && team2Defenders < 3))
-        ) {
-          team2.push(defender);
-          team2Defenders++;
-        }
+  availableDefenders.forEach(defender => {
+    if (!assignedPlayers.has(defender.id)) {
+      if (team1Defenders < 3 && (team1Defenders <= team2Defenders || team2Defenders >= 3)) {
+        team1.push(defender);
         assignedPlayers.add(defender.id);
+        team1Defenders++;
+      } else if (team2Defenders < 3) {
+        team2.push(defender);
+        assignedPlayers.add(defender.id);
+        team2Defenders++;
       }
-    });
-  }
+    }
+  });
 
-  //3 - Distribute remaining positions
-  const positions = ["Defender", "Midfielder", "Forward"];
+  // 3 - Distribute remaining positions
+  const positions = ["Midfielder", "Forward"];
   positions.forEach(position => {
     const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
     
@@ -156,7 +115,7 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     }
   });
 
-  // Distribute remaining players evenly (if any players weren't assigned due to position restrictions)
+  // Distribute remaining players evenly
   const remainingPlayers = players.filter(p => !assignedPlayers.has(p.id));
   if (remainingPlayers.length > 0) {
     distributeEvenly(remainingPlayers, team1, team2);

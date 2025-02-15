@@ -1,3 +1,4 @@
+
 import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
@@ -52,15 +53,6 @@ const getPlayersInPosition = (players: Player[], targetPosition: string, neededD
   });
 };
 
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-};
-
 export const FootballField = ({ players, rotate = false }: FootballFieldProps) => {
   const currentDefenders = players.filter(p => p.position === "Defender").length;
   const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
@@ -100,10 +92,10 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className={`absolute transform -translate-x-1/2 -translate-y-1/2 ${rotate ? '-rotate-180' : ''}`}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2"
               style={{ left: coords.x, top: coords.y }}
             >
-              <div className="relative flex flex-col items-center">
+              <div className={`relative flex flex-col items-center ${rotate ? 'rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
                   {player.name}
                 </div>
