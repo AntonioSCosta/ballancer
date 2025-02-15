@@ -46,7 +46,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   } else if (totalInPosition === 3) {
     position_x = `${20 + (index * 30)}%`;
   } else if (totalInPosition === 4) {
-    position_x = `${15 + (index * 23)}%`;
+    position_x = `${10 + (index * 23)}%`;
   } else {
     position_x = `${10 + (index * ((80) / (totalInPosition - 1)))}%`;
   }
