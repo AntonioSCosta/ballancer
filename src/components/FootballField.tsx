@@ -17,21 +17,18 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     "Forward": { x: "0", y: "75%" }
   };
 
+  // Calculate horizontal spacing
   let position_x;
   if (totalInPosition === 1) {
-    position_x = "50%";
-  } else if (totalInPosition === 2) {
-    position_x = `${30 + (index * 40)}%`;
-  } else if (totalInPosition === 3) {
-    position_x = `${20 + (index * 30)}%`;
-  } else if (totalInPosition === 4) {
-    position_x = `${10 + (index * 23)}%`;
+    position_x = "50%"; // Center the player if there's only one
   } else {
-    position_x = `${10 + (index * ((80) / (totalInPosition - 1)))}%`;
+    // Evenly distribute players across 80% of the field width
+    const spacingPercentage = 80 / (totalInPosition + 1); // Add 1 to create margins on both sides
+    position_x = `${10 + (index + 1) * spacingPercentage}%`; // Start at 10% to leave a margin
   }
 
   return {
-    x: `calc(${position_x} - 8px)`,
+    x: `calc(${position_x} - 8px)`, // Adjust for the player's size
     y: basePositions[position as keyof typeof basePositions]?.y || "50%"
   };
 };
