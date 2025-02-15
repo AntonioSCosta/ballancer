@@ -17,14 +17,25 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     "Forward": { x: "0", y: "75%" }
   };
 
-  // Calculate horizontal spacing
+  // Calculate horizontal spacing based on the number of players
   let position_x;
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
+  } else if (totalInPosition === 2) {
+    position_x = `${30 + (index * 40)}%`; // 30% and 70% for 2 players
+  } else if (totalInPosition === 3) {
+    const positions = [20, 50, 80]; // 20%, 50%, 80% for 3 players
+    position_x = `${positions[index]}%`;
+  } else if (totalInPosition === 4) {
+    const positions = [10, 40, 60, 90]; // 10%, 40%, 60%, 90% for 4 players
+    position_x = `${positions[index]}%`;
+  } else if (totalInPosition === 5) {
+    const positions = [10, 26, 42, 58, 74, 90]; // 10%, 26%, 42%, 58%, 74%, 90% for 5 players
+    position_x = `${positions[index]}%`;
   } else {
-    // Evenly distribute players across 80% of the field width
-    const spacingPercentage = 80 / (totalInPosition + 1); // Add 1 to create margins on both sides
-    position_x = `${10 + (index + 1) * spacingPercentage}%`; // Start at 10% to leave a margin
+    // Fallback for more than 5 players: evenly distribute across 80% of the field width
+    const spacingPercentage = 80 / (totalInPosition - 1);
+    position_x = `${10 + (index * spacingPercentage)}%`;
   }
 
   return {
