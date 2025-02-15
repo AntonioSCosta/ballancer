@@ -1,5 +1,5 @@
 import { Player } from "./PlayerCard";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { motion } from "framer-motion";
 
 interface FootballFieldProps {
@@ -9,28 +9,28 @@ interface FootballFieldProps {
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
-    "Goalkeeper": { x: "10%", y: "50%" },
-    "Defender": { x: "30%", y: "0" },
-    "Midfielder": { x: "55%", y: "0" },
-    "Forward": { x: "75%", y: "0" }
+    "Goalkeeper": { x: "50%", y: "10%" },
+    "Defender": { x: "0", y: "30%" },
+    "Midfielder": { x: "0", y: "55%" },
+    "Forward": { x: "0", y: "75%" }
   };
 
-  let position_y;
+  let position_x;
   if (totalInPosition === 1) {
-    position_y = "50%";
+    position_x = "50%";
   } else if (totalInPosition === 2) {
-    position_y = `${30 + (index * 40)}%`;
+    position_x = `${30 + (index * 40)}%`;
   } else if (totalInPosition === 3) {
-    position_y = `${20 + (index * 30)}%`;
+    position_x = `${20 + (index * 30)}%`;
   } else if (totalInPosition === 4) {
-    position_y = `${15 + (index * 23)}%`;
+    position_x = `${15 + (index * 23)}%`;
   } else {
-    position_y = `${10 + (index * ((80) / (totalInPosition - 1)))}%`;
+    position_x = `${10 + (index * ((80) / (totalInPosition - 1)))}%`;
   }
   
   return {
-    x: basePositions[position as keyof typeof basePositions]?.x || "50%",
-    y: `calc(${position_y} - 16px)`
+    x: `calc(${position_x} - 8px)`,
+    y: basePositions[position as keyof typeof basePositions]?.y || "50%"
   };
 };
 
@@ -90,17 +90,17 @@ export const FootballField = ({ players }: FootballFieldProps) => {
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
-    <div className="relative w-full aspect-[3/2] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20">
+    <div className="relative w-full aspect-[2/3] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20">
       <div className="absolute inset-0">
         <div className="absolute w-full h-full border-2 border-white/40" />
-        <div className="absolute w-[33%] h-[56%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
-        <div className="absolute w-[15%] h-[25%] left-0 top-1/2 -translate-y-1/2 border-2 border-white/40" />
-        <div className="absolute right-0 top-0 bottom-0 border-2 border-white/40" />
-        <div className="absolute w-[25%] aspect-square -right-[12.5%] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full" />
-        <div className="absolute w-[33%] aspect-square left-[10px] top-1/2 -translate-y-1/2 border-2 border-white/40 rounded-full 
-                      [clip-path:polygon(33%_22%,100%_22%,100%_78%,33%_78%)]" />
-        <div className="absolute w-[5%] h-[3%] left-0 top-0 border-r-2 border-b-2 border-white/40 rounded-br-full" />
-        <div className="absolute w-[5%] h-[3%] left-0 bottom-0 border-r-2 border-t-2 border-white/40 rounded-tr-full" />
+        <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
+        <div className="absolute h-[15%] w-[25%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
+        <div className="absolute bottom-0 left-0 right-0 border-2 border-white/40" />
+        <div className="absolute h-[25%] aspect-square -bottom-[12.5%] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full" />
+        <div className="absolute h-[33%] aspect-square top-[10px] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full 
+                      [clip-path:polygon(22%_33%,22%_100%,78%_100%,78%_33%)]" />
+        <div className="absolute h-[5%] w-[3%] top-0 left-0 border-b-2 border-r-2 border-white/40 rounded-br-full" />
+        <div className="absolute h-[5%] w-[3%] top-0 right-0 border-b-2 border-l-2 border-white/40 rounded-bl-full" />
       </div>
 
       {[
@@ -111,8 +111,6 @@ export const FootballField = ({ players }: FootballFieldProps) => {
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
           const coords = getPositionCoordinates(position, index, positionPlayers.length);
-          const yPosition = parseInt(coords.y);
-          const tooltipPosition = yPosition < 30 ? "bottom" : "top";
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
           return (
@@ -124,19 +122,11 @@ export const FootballField = ({ players }: FootballFieldProps) => {
               className="absolute transform -translate-x-1/2 -translate-y-1/2"
               style={{ left: coords.x, top: coords.y }}
             >
-              <div className="relative group">
-                <Avatar className={`h-8 w-8 border-2 border-white shadow-lg ${getPositionColor(assignedPosition)}`}>
-                  <AvatarFallback className={`text-[10px] font-semibold text-white ${getPositionColor(assignedPosition)}`}>
-                    {getInitials(player.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div 
-                  className={`absolute ${
-                    tooltipPosition === "top" ? "-top-8" : "top-10"
-                  } left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/75 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-50`}
-                >
+              <div className="relative flex flex-col items-center">
+                <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
                   {player.name}
                 </div>
+                <div className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`} />
               </div>
             </motion.div>
           );
