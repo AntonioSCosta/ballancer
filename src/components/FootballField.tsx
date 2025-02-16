@@ -1,12 +1,18 @@
 
 import { Player } from "./PlayerCard";
-import { motion } from "framer-motion";
+import { motion, Reorder, useDragControls } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
+import { useState } from "react";
 
 interface FootballFieldProps {
   players: Player[];
   teamName: string;
   rotate?: boolean;
+}
+
+interface PlayerPosition {
+  x: string;
+  y: string;
 }
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number, rotate: boolean) => {
@@ -70,8 +76,27 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const midfielders = getPlayersInPosition(players, "Midfielder", currentDefenders, currentMidfielders);
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
+  const [customPositions, setCustomPositions] = useState<Record<string, { x: number, y: number }>>({});
+
+  const handleDrag = (playerId: string, info: { point: { x: number, y: number } }) => {
+    const fieldElement = document.querySelector('.football-field') as HTMLElement;
+    if (!fieldElement) return;
+
+    const fieldRect = fieldElement.getBoundingClientRect();
+    const relativeX = ((info.point.x - fieldRect.left) / fieldRect.width) * 100;
+    const relativeY = ((info.point.y - fieldRect.top) / fieldRect.height) * 100;
+
+    setCustomPositions(prev => ({
+      ...prev,
+      [playerId]: { 
+        x: Math.max(0, Math.min(100, relativeX)), 
+        y: Math.max(0, Math.min(100, relativeY)) 
+      }
+    }));
+  };
+
   return (
-    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 ${rotate ? 'rotate-180' : ''}`}>
+    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'rotate-180' : ''}`}>
       <div className="absolute inset-0">
         <div className="absolute w-full h-full border-2 border-white/40" />
         <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
@@ -91,8 +116,13 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         { players: forwards, position: "Forward" }
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
-          const coords = getPositionCoordinates(position, index, positionPlayers.length, rotate);
+          const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length, rotate);
+          const customPosition = customPositions[player.id];
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
+
+          const style = customPosition 
+            ? { left: `${customPosition.x}%`, top: `${customPosition.y}%` }
+            : { left: defaultCoords.x, top: defaultCoords.y };
 
           return (
             <motion.div
@@ -100,14 +130,21 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2"
-              style={{ left: coords.x, top: coords.y }}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-move"
+              style={style}
+              drag
+              dragMomentum={false}
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              dragElastic={0}
+              onDrag={(_, info) => handleDrag(player.id, info)}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
                   {player.name}
                 </div>
-                <div className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`} />
+                <div 
+                  className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)} hover:scale-110 transition-transform`}
+                />
               </div>
             </motion.div>
           );
