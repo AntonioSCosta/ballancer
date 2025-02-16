@@ -42,64 +42,90 @@ const countPlayersByPosition = (team: Player[], position: string): number => {
   return team.filter(p => p.position === position || p.secondaryPosition === position).length;
 };
 
-const assignExtraGoalkeeper = (goalkeeper: Player, team: Player[]) => {
-  if (goalkeeper.secondaryPosition) {
-    return {
-      ...goalkeeper,
-      position: goalkeeper.secondaryPosition,
-      secondaryPosition: "Goalkeeper"
-    };
-  }
-  
-  const currentDefenders = team.filter(p => p.position === "Defender").length;
-  if (currentDefenders < 3) {
-    return {
-      ...goalkeeper,
-      position: "Defender",
-      secondaryPosition: "Goalkeeper"
-    };
-  }
-  
+const findLowestRatedPlayer = (players: Player[]): Player => {
+  return players.reduce((lowest, current) => 
+    current.rating < lowest.rating ? current : lowest
+  , players[0]);
+};
+
+const convertToGoalkeeper = (player: Player): Player => {
+  const oldPosition = player.position;
   return {
-    ...goalkeeper,
-    position: "Forward",
-    secondaryPosition: "Goalkeeper"
+    ...player,
+    position: "Goalkeeper" as const,
+    secondaryPosition: oldPosition
   };
+};
+
+const distributeGoalkeepers = (allPlayers: Player[], team1: Player[], team2: Player[], assignedPlayers: Set<string>) => {
+  // Get all available goalkeepers (primary and secondary)
+  const primaryGoalkeepers = allPlayers.filter(p => p.position === "Goalkeeper" && !assignedPlayers.has(p.id));
+  const secondaryGoalkeepers = allPlayers.filter(p => p.secondaryPosition === "Goalkeeper" && !assignedPlayers.has(p.id));
+  
+  // Handle Team 1 goalkeeper
+  if (primaryGoalkeepers.length > 0) {
+    const gk = primaryGoalkeepers[0];
+    team1.push(gk);
+    assignedPlayers.add(gk.id);
+  } else if (secondaryGoalkeepers.length > 0) {
+    const gk = secondaryGoalkeepers[0];
+    const convertedGk = {
+      ...gk,
+      position: "Goalkeeper" as const,
+      secondaryPosition: gk.position
+    };
+    team1.push(convertedGk);
+    assignedPlayers.add(gk.id);
+  }
+
+  // Handle Team 2 goalkeeper
+  const remainingPrimaryGks = primaryGoalkeepers.filter(p => !assignedPlayers.has(p.id));
+  const remainingSecondaryGks = secondaryGoalkeepers.filter(p => !assignedPlayers.has(p.id));
+
+  if (remainingPrimaryGks.length > 0) {
+    const gk = remainingPrimaryGks[0];
+    team2.push(gk);
+    assignedPlayers.add(gk.id);
+  } else if (remainingSecondaryGks.length > 0) {
+    const gk = remainingSecondaryGks[0];
+    const convertedGk = {
+      ...gk,
+      position: "Goalkeeper" as const,
+      secondaryPosition: gk.position
+    };
+    team2.push(convertedGk);
+    assignedPlayers.add(gk.id);
+  }
 };
 
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
   const assignedPlayers = new Set<string>();
-  const playersPerTeam = Math.floor(players.length / 2);
 
-  const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
-  if (goalkeepers.length > 0) {
-    const shuffledGKs = shuffle(goalkeepers);
-    
-    team1.push(shuffledGKs[0]);
-    assignedPlayers.add(shuffledGKs[0].id);
-    
-    if (shuffledGKs.length > 1) {
-      team2.push(shuffledGKs[1]);
-      assignedPlayers.add(shuffledGKs[1].id);
-      
-      for (let i = 2; i < shuffledGKs.length; i++) {
-        const reassignedGK = assignExtraGoalkeeper(
-          shuffledGKs[i],
-          team1.length <= team2.length ? team1 : team2
-        );
-        
-        if (team1.length <= team2.length) {
-          team1.push(reassignedGK);
-        } else {
-          team2.push(reassignedGK);
-        }
-        assignedPlayers.add(shuffledGKs[i].id);
-      }
+  // First, distribute goalkeepers
+  distributeGoalkeepers(players, team1, team2, assignedPlayers);
+
+  // If any team is missing a goalkeeper, assign the lowest rated unassigned player
+  if (team1.filter(p => p.position === "Goalkeeper").length === 0) {
+    const availablePlayers = players.filter(p => !assignedPlayers.has(p.id));
+    if (availablePlayers.length > 0) {
+      const lowestRated = findLowestRatedPlayer(availablePlayers);
+      team1.push(convertToGoalkeeper(lowestRated));
+      assignedPlayers.add(lowestRated.id);
     }
   }
 
+  if (team2.filter(p => p.position === "Goalkeeper").length === 0) {
+    const availablePlayers = players.filter(p => !assignedPlayers.has(p.id));
+    if (availablePlayers.length > 0) {
+      const lowestRated = findLowestRatedPlayer(availablePlayers);
+      team2.push(convertToGoalkeeper(lowestRated));
+      assignedPlayers.add(lowestRated.id);
+    }
+  }
+
+  // Distribute remaining players
   const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
   let team1Defenders = countPlayersByPosition(team1, "Defender");
   let team2Defenders = countPlayersByPosition(team2, "Defender");
