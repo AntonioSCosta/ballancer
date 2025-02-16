@@ -9,7 +9,7 @@ interface FootballFieldProps {
   rotate?: boolean;
 }
 
-const getPositionCoordinates = (position: string, index: number, totalInPosition: number, rotate: boolean) => {
+const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
     "Goalkeeper": { x: "50%", y: "10%" },
     "Defender": { x: "0", y: "30%" },
@@ -72,13 +72,19 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
 
   const [customPositions, setCustomPositions] = useState<Record<string, { x: number, y: number }>>({});
 
-  const handleDrag = (playerId: string, info: { point: { x: number, y: number } }) => {
+  const handleDrag = (playerId: string, info: { point: { x: number, y: number } }, rotate: boolean) => {
     const fieldElement = document.querySelector('.football-field') as HTMLElement;
     if (!fieldElement) return;
 
     const fieldRect = fieldElement.getBoundingClientRect();
-    const relativeX = ((info.point.x - fieldRect.left) / fieldRect.width) * 100;
-    const relativeY = ((info.point.y - fieldRect.top) / fieldRect.height) * 100;
+    let relativeX = ((info.point.x - fieldRect.left) / fieldRect.width) * 100;
+    let relativeY = ((info.point.y - fieldRect.top) / fieldRect.height) * 100;
+
+    // Invert coordinates for Team 2 (rotated field)
+    if (rotate) {
+      relativeX = 100 - relativeX;
+      relativeY = 100 - relativeY;
+    }
 
     setCustomPositions(prev => ({
       ...prev,
@@ -110,7 +116,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         { players: forwards, position: "Forward" }
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
-          const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length, rotate);
+          const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
           const customPosition = customPositions[player.id];
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
@@ -130,7 +136,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               dragMomentum={false}
               dragConstraints={{ left: 0, right: 100, top: 0, bottom: 100 }}
               dragElastic={0.1}
-              onDrag={(_, info) => handleDrag(player.id, info)}
+              onDrag={(_, info) => handleDrag(player.id, info, rotate)}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
