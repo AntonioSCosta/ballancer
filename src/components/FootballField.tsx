@@ -1,7 +1,10 @@
+
 import { Player } from "./PlayerCard";
-import { motion, Reorder, useDragControls } from "framer-motion";
+import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { Edit2, Check } from "lucide-react";
 
 interface FootballFieldProps {
   players: Player[];
@@ -78,12 +81,14 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   const [customPositions, setCustomPositions] = useState<Record<string, { x: number, y: number }>>({});
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [editingPosition, setEditingPosition] = useState<boolean>(false);
 
   const handleDrag = (playerId: string, info: { point: { x: number, y: number } }) => {
+    if (!editingPosition || selectedPlayer !== playerId) return;
+
     const fieldElement = document.querySelector('.football-field') as HTMLElement;
     if (!fieldElement) return;
-
-    const fieldRect = fieldElement.getBoundingClientRect();
     
     const rect = fieldElement.getBoundingClientRect();
     const x = info.point.x - rect.left;
@@ -101,6 +106,17 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
     }));
   };
 
+  const handlePlayerClick = (playerId: string) => {
+    if (editingPosition && selectedPlayer === playerId) {
+      // Finish editing
+      setEditingPosition(false);
+      setSelectedPlayer(null);
+    } else {
+      setSelectedPlayer(playerId);
+      setEditingPosition(false);
+    }
+  };
+
   return (
     <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'rotate-180' : ''}`}>
       <div className="absolute inset-0">
@@ -115,6 +131,37 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         <div className="absolute h-[5%] w-[3%] top-0 right-0 border-b-2 border-l-2 border-white/40 rounded-bl-full" />
       </div>
 
+      {selectedPlayer && !editingPosition && (
+        <div className={`absolute top-2 left-1/2 -translate-x-1/2 z-50 ${rotate ? 'rotate-180' : ''}`}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setEditingPosition(true)}
+            className="bg-white/90 hover:bg-white flex items-center gap-2"
+          >
+            <Edit2 className="w-4 h-4" />
+            Edit Position
+          </Button>
+        </div>
+      )}
+
+      {editingPosition && selectedPlayer && (
+        <div className={`absolute top-2 left-1/2 -translate-x-1/2 z-50 ${rotate ? 'rotate-180' : ''}`}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setEditingPosition(false);
+              setSelectedPlayer(null);
+            }}
+            className="bg-white/90 hover:bg-white flex items-center gap-2"
+          >
+            <Check className="w-4 h-4" />
+            Done
+          </Button>
+        </div>
+      )}
+
       {[
         { players: goalkeepers, position: "Goalkeeper" },
         { players: defenders, position: "Defender" },
@@ -125,6 +172,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
           const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length, rotate);
           const customPosition = customPositions[player.id];
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
+          const isSelected = selectedPlayer === player.id;
 
           const style = customPosition 
             ? { left: `${customPosition.x}%`, top: `${customPosition.y}%` }
@@ -134,23 +182,31 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
             <motion.div
               key={player.id}
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                boxShadow: isSelected ? "0 0 0 2px rgba(255,255,255,0.5)" : "none"
+              }}
               transition={{ delay: index * 0.1 }}
-              className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-move"
+              className={`absolute transform -translate-x-1/2 -translate-y-1/2 ${editingPosition && isSelected ? 'cursor-move' : 'cursor-pointer'}`}
               style={style}
-              drag
+              drag={editingPosition && isSelected}
               dragMomentum={false}
               dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
               dragElastic={0}
               onDrag={(_, info) => handleDrag(player.id, info)}
               whileDrag={{ zIndex: 50 }}
+              onClick={() => handlePlayerClick(player.id)}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-pre-line text-center">
                   {formatPlayerName(player.name)}
                 </div>
                 <div 
-                  className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)} hover:scale-110 transition-transform`}
+                  className={`w-4 h-4 rounded-full border ${isSelected ? 'border-white' : 'border-white/40'} 
+                    ${getPositionColor(assignedPosition)} 
+                    ${isSelected ? 'scale-110' : 'hover:scale-110'} 
+                    transition-transform`}
                 />
               </div>
             </motion.div>
