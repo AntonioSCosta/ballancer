@@ -22,7 +22,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
   } else {
-    // Evenly distribute players across 80% of the field width
+    // Evenly distribute players across 80% of the field width, centered
     const spacingPercentage = 80 / (totalInPosition + 1); // Add 1 to create margins on both sides
     position_x = `${10 + (index + 1) * spacingPercentage}%`; // Start at 10% to leave a margin
   }
