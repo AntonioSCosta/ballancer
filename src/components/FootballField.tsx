@@ -1,4 +1,3 @@
-
 import { Player } from "./PlayerCard";
 import { motion, Reorder, useDragControls } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
@@ -23,29 +22,27 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     "Forward": { x: "0", y: "75%" }
   };
 
-  // Calculate horizontal spacing based on the number of players
   let position_x;
   if (totalInPosition === 1) {
-    position_x = "50%"; // Center the player if there's only one
+    position_x = "50%";
   } else if (totalInPosition === 2) {
-    position_x = `${30 + (index * 40)}%`; // 30% and 70% for 2 players
+    position_x = `${30 + (index * 40)}`;
   } else if (totalInPosition === 3) {
-    const positions = [15, 45, 75]; // 20%, 50%, 80% for 3 players
-    position_x = `${positions[index]}%`;
+    const positions = [15, 45, 75];
+    position_x = `${positions[index]}`;
   } else if (totalInPosition === 4) {
-    const positions = [5, 35, 55, 85]; // 10%, 40%, 60%, 90% for 4 players
-    position_x = `${positions[index]}%`;
+    const positions = [5, 35, 55, 85];
+    position_x = `${positions[index]}`;
   } else if (totalInPosition === 5) {
-    const positions = [5, 21, 37, 53, 69, 85]; // 10%, 26%, 42%, 58%, 74%, 90% for 5 players
-    position_x = `${positions[index]}%`;
+    const positions = [5, 21, 37, 53, 69, 85];
+    position_x = `${positions[index]}`;
   } else {
-    // Fallback for more than 5 players: evenly distribute across 80% of the field width
     const spacingPercentage = 80 / (totalInPosition - 1);
-    position_x = `${10 + (index * spacingPercentage)}%`;
+    position_x = `${10 + (index * spacingPercentage)}`;
   }
 
   return {
-    x: `calc(${position_x} - 8px)`, // Adjust for the player's size
+    x: `calc(${position_x} - 8px)`,
     y: basePositions[position as keyof typeof basePositions]?.y || "50%"
   };
 };
@@ -67,6 +64,10 @@ const getPlayersInPosition = (players: Player[], targetPosition: string, neededD
   });
 };
 
+const formatPlayerName = (name: string) => {
+  return name.split(' ').join('\n');
+};
+
 export const FootballField = ({ players, rotate = false }: FootballFieldProps) => {
   const currentDefenders = players.filter(p => p.position === "Defender").length;
   const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
@@ -83,15 +84,20 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
     if (!fieldElement) return;
 
     const fieldRect = fieldElement.getBoundingClientRect();
-    const relativeX = ((info.point.x - fieldRect.left) / fieldRect.width) * 100;
-    const relativeY = ((info.point.y - fieldRect.top) / fieldRect.height) * 100;
+    
+    const rect = fieldElement.getBoundingClientRect();
+    const x = info.point.x - rect.left;
+    const y = info.point.y - rect.top;
+    
+    const relativeX = (x / rect.width) * 100;
+    const relativeY = (y / rect.height) * 100;
+
+    const clampedX = Math.max(0, Math.min(100, relativeX));
+    const clampedY = Math.max(0, Math.min(100, relativeY));
 
     setCustomPositions(prev => ({
       ...prev,
-      [playerId]: { 
-        x: Math.max(0, Math.min(100, relativeX)), 
-        y: Math.max(0, Math.min(100, relativeY)) 
-      }
+      [playerId]: { x: clampedX, y: clampedY }
     }));
   };
 
@@ -137,10 +143,11 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
               dragElastic={0}
               onDrag={(_, info) => handleDrag(player.id, info)}
+              whileDrag={{ zIndex: 50 }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'rotate-180' : ''}`}>
-                <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
-                  {player.name}
+                <div className="text-white text-xs font-medium mb-1 whitespace-pre-line text-center">
+                  {formatPlayerName(player.name)}
                 </div>
                 <div 
                   className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)} hover:scale-110 transition-transform`}
