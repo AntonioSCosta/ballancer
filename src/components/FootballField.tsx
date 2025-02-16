@@ -94,6 +94,9 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
           const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
+          // Split the player name into parts (if it contains spaces)
+          const nameParts = player.name.split(" ");
+
           return (
             <motion.div
               key={player.id}
@@ -105,7 +108,9 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
-                  {player.name}
+                  {nameParts.map((part, i) => (
+                    <div key={i}>{part}</div>
+                  ))}
                 </div>
                 <div 
                   className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`}
