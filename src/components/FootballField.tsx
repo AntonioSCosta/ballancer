@@ -90,7 +90,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   };
 
   return (
-    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-visible border-4 border-white/20 football-field ${rotate ? 'rotate-180' : ''}`}>
+    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'transform rotate-180' : ''}`}>
       <div className="absolute inset-0">
         <div className="absolute w-full h-full border-2 border-white/40" />
         <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
@@ -132,7 +132,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               dragElastic={0.1}
               onDrag={(_, info) => handleDrag(player.id, info)}
             >
-              <div className={`relative flex flex-col items-center ${rotate ? 'rotate-180' : ''}`}>
+              <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
                   {player.name}
                 </div>
