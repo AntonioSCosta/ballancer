@@ -70,31 +70,6 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const midfielders = getPlayersInPosition(players, "Midfielder", currentDefenders, currentMidfielders);
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
-  const [customPositions, setCustomPositions] = useState<Record<string, { x: number, y: number }>>({});
-
-  const handleDrag = (playerId: string, info: { point: { x: number, y: number } }, rotate: boolean) => {
-    const fieldElement = document.querySelector('.football-field') as HTMLElement;
-    if (!fieldElement) return;
-
-    const fieldRect = fieldElement.getBoundingClientRect();
-    let relativeX = ((info.point.x - fieldRect.left) / fieldRect.width) * 100;
-    let relativeY = ((info.point.y - fieldRect.top) / fieldRect.height) * 100;
-
-    // Invert coordinates for Team 2 (rotated field)
-    if (rotate) {
-      relativeX = 100 - relativeX;
-      relativeY = 100 - relativeY;
-    }
-
-    setCustomPositions(prev => ({
-      ...prev,
-      [playerId]: { 
-        x: Math.max(0, Math.min(100, relativeX)), 
-        y: Math.max(0, Math.min(100, relativeY)) 
-      }
-    }));
-  };
-
   return (
     <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'transform rotate-180' : ''}`}>
       <div className="absolute inset-0">
@@ -117,12 +92,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
           const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
-          const customPosition = customPositions[player.id];
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
-
-          const style = customPosition 
-            ? { left: `${customPosition.x}%`, top: `${customPosition.y}%` }
-            : { left: defaultCoords.x, top: defaultCoords.y };
 
           return (
             <motion.div
@@ -130,20 +100,15 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="absolute cursor-move z-10"
-              style={style}
-              drag
-              dragMomentum={false}
-              dragConstraints={{ left: 0, right: 100, top: 0, bottom: 100 }}
-              dragElastic={0.1}
-              onDrag={(_, info) => handleDrag(player.id, info, rotate)}
+              className="absolute z-10"
+              style={{ left: defaultCoords.x, top: defaultCoords.y }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
                   {player.name}
                 </div>
                 <div 
-                  className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)} hover:scale-110 transition-transform`}
+                  className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`}
                 />
               </div>
             </motion.div>
