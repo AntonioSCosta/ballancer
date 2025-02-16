@@ -82,6 +82,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         positionPlayers.map((player, index) => {
           const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
+          
 
           // Split the player name into parts (if it contains spaces)
           const nameParts = player.name.split(" ");
