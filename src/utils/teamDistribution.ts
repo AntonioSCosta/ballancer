@@ -42,27 +42,64 @@ const countPlayersByPosition = (team: Player[], position: string): number => {
   return team.filter(p => p.position === position || p.secondaryPosition === position).length;
 };
 
+const assignExtraGoalkeeper = (goalkeeper: Player, team: Player[]) => {
+  if (goalkeeper.secondaryPosition) {
+    return {
+      ...goalkeeper,
+      position: goalkeeper.secondaryPosition,
+      secondaryPosition: "Goalkeeper"
+    };
+  }
+  
+  const currentDefenders = team.filter(p => p.position === "Defender").length;
+  if (currentDefenders < 3) {
+    return {
+      ...goalkeeper,
+      position: "Defender",
+      secondaryPosition: "Goalkeeper"
+    };
+  }
+  
+  return {
+    ...goalkeeper,
+    position: "Forward",
+    secondaryPosition: "Goalkeeper"
+  };
+};
+
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
   const assignedPlayers = new Set<string>();
   const playersPerTeam = Math.floor(players.length / 2);
-  const needsMinDefenders = playersPerTeam >= 9;
 
-  // 1 - First, try to distribute goalkeepers
   const goalkeepers = getPlayersForPosition(players, "Goalkeeper");
-  if (goalkeepers.length >= 2) {
+  if (goalkeepers.length > 0) {
     const shuffledGKs = shuffle(goalkeepers);
+    
     team1.push(shuffledGKs[0]);
-    team2.push(shuffledGKs[1]);
     assignedPlayers.add(shuffledGKs[0].id);
-    assignedPlayers.add(shuffledGKs[1].id);
-  } else if (goalkeepers.length === 1) {
-    (Math.random() < 0.5 ? team1 : team2).push(goalkeepers[0]);
-    assignedPlayers.add(goalkeepers[0].id);
+    
+    if (shuffledGKs.length > 1) {
+      team2.push(shuffledGKs[1]);
+      assignedPlayers.add(shuffledGKs[1].id);
+      
+      for (let i = 2; i < shuffledGKs.length; i++) {
+        const reassignedGK = assignExtraGoalkeeper(
+          shuffledGKs[i],
+          team1.length <= team2.length ? team1 : team2
+        );
+        
+        if (team1.length <= team2.length) {
+          team1.push(reassignedGK);
+        } else {
+          team2.push(reassignedGK);
+        }
+        assignedPlayers.add(shuffledGKs[i].id);
+      }
+    }
   }
 
-  // 2 - Distribute defenders
   const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
   let team1Defenders = countPlayersByPosition(team1, "Defender");
   let team2Defenders = countPlayersByPosition(team2, "Defender");
@@ -81,7 +118,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     }
   });
 
-  // 3 - Distribute remaining positions
   const positions = ["Midfielder", "Forward"];
   positions.forEach(position => {
     const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
@@ -91,7 +127,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       
       shuffledPlayers.forEach(player => {
         if (!assignedPlayers.has(player.id)) {
-          // For midfielders, check if we're not exceeding 5 per team
           if (position === "Midfielder") {
             const team1Midfielders = countPlayersByPosition(team1, "Midfielder");
             const team2Midfielders = countPlayersByPosition(team2, "Midfielder");
@@ -102,7 +137,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
               team2.push(player);
             }
           } else {
-            // For other positions, distribute evenly
             if (team1.length <= team2.length) {
               team1.push(player);
             } else {
@@ -115,7 +149,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
     }
   });
 
-  // Distribute remaining players evenly
   const remainingPlayers = players.filter(p => !assignedPlayers.has(p.id));
   if (remainingPlayers.length > 0) {
     distributeEvenly(remainingPlayers, team1, team2);
