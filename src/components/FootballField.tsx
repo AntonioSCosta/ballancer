@@ -21,21 +21,10 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   let position_x;
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
-  } else if (totalInPosition === 2) {
-    position_x = `${30 + (index * 40)}%`; // 30% and 70% for 2 players
-  } else if (totalInPosition === 3) {
-    const positions = [15, 45, 75]; // 15%, 45%, 75% for 3 players
-    position_x = `${positions[index]}%`;
-  } else if (totalInPosition === 4) {
-    const positions = [5, 35, 55, 85]; // 5%, 35%, 55%, 85% for 4 players
-    position_x = `${positions[index]}%`;
-  } else if (totalInPosition === 5) {
-    const positions = [5, 21, 37, 53, 69, 85]; // 5%, 21%, 37%, 53%, 69%, 85% for 5 players
-    position_x = `${positions[index]}%`;
   } else {
-    // Fallback for more than 5 players: evenly distribute across 80% of the field width
-    const spacingPercentage = 80 / (totalInPosition - 1);
-    position_x = `${10 + (index * spacingPercentage)}%`;
+    // Evenly distribute players across 80% of the field width
+    const spacingPercentage = 80 / (totalInPosition + 1); // Add 1 to create margins on both sides
+    position_x = `${10 + (index + 1) * spacingPercentage}%`; // Start at 10% to leave a margin
   }
 
   return {
@@ -107,7 +96,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               style={{ left: defaultCoords.x, top: defaultCoords.y }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
-                <div className="text-white text-xs font-medium mb-1 whitespace-nowrap">
+                <div className="text-white text-xs font-medium mb-1 text-center">
                   {nameParts.map((part, i) => (
                     <div key={i}>{part}</div>
                   ))}
