@@ -9,6 +9,7 @@ interface FootballFieldProps {
   rotate?: boolean;
 }
 
+
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
     "Goalkeeper": { x: "50%", y: "10%" },
