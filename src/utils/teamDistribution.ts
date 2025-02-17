@@ -117,6 +117,31 @@ const distributeGoalkeepers = (allPlayers: Player[], team1: Player[], team2: Pla
   }
 };
 
+const assignPlayerToSecondaryPosition = (player: Player, team: Player[], assignedPlayers: Set<string>) => {
+  if (player.secondaryPosition) {
+    team.push({
+      ...player,
+      position: player.secondaryPosition,
+      secondaryPosition: player.position
+    });
+    assignedPlayers.add(player.id);
+  } else {
+    // Assign to a necessary position (Defender, Midfielder, or Forward)
+    const positions = ["Defender", "Midfielder", "Forward"];
+    for (const position of positions) {
+      if (countPlayersByPosition(team, position) < 5) {
+        team.push({
+          ...player,
+          position: position as "Defender" | "Midfielder" | "Forward",
+          secondaryPosition: player.position
+        });
+        assignedPlayers.add(player.id);
+        break;
+      }
+    }
+  }
+};
+
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
   const team1: Player[] = [];
   const team2: Player[] = [];
@@ -124,6 +149,16 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
 
   // First, distribute goalkeepers
   distributeGoalkeepers(players, team1, team2, assignedPlayers);
+
+  // Handle extra goalkeepers by assigning them to their secondary positions
+  const extraGoalkeepers = players.filter(p => p.position === "Goalkeeper" && !assignedPlayers.has(p.id));
+  for (const gk of extraGoalkeepers) {
+    if (team1.length <= team2.length) {
+      assignPlayerToSecondaryPosition(gk, team1, assignedPlayers);
+    } else {
+      assignPlayerToSecondaryPosition(gk, team2, assignedPlayers);
+    }
+  }
 
   // Distribute remaining players
   const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
