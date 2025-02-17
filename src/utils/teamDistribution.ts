@@ -61,40 +61,59 @@ const distributeGoalkeepers = (allPlayers: Player[], team1: Player[], team2: Pla
   // Get all available goalkeepers (primary and secondary)
   const primaryGoalkeepers = allPlayers.filter(p => p.position === "Goalkeeper" && !assignedPlayers.has(p.id));
   const secondaryGoalkeepers = allPlayers.filter(p => p.secondaryPosition === "Goalkeeper" && !assignedPlayers.has(p.id));
-  
-  // Handle Team 1 goalkeeper
-  if (primaryGoalkeepers.length > 0) {
-    const gk = primaryGoalkeepers[0];
+
+  // Assign one goalkeeper to each team
+  if (primaryGoalkeepers.length >= 2) {
+    // Assign the first two primary goalkeepers to each team
+    team1.push(primaryGoalkeepers[0]);
+    assignedPlayers.add(primaryGoalkeepers[0].id);
+    team2.push(primaryGoalkeepers[1]);
+    assignedPlayers.add(primaryGoalkeepers[1].id);
+  } else if (primaryGoalkeepers.length === 1) {
+    // Assign the primary goalkeeper to Team 1 and a secondary goalkeeper to Team 2
+    team1.push(primaryGoalkeepers[0]);
+    assignedPlayers.add(primaryGoalkeepers[0].id);
+    if (secondaryGoalkeepers.length > 0) {
+      const gk = secondaryGoalkeepers[0];
+      const convertedGk = convertToGoalkeeper(gk);
+      team2.push(convertedGk);
+      assignedPlayers.add(gk.id);
+    }
+  } else if (secondaryGoalkeepers.length >= 2) {
+    // Assign the first two secondary goalkeepers to each team
+    const gk1 = convertToGoalkeeper(secondaryGoalkeepers[0]);
+    team1.push(gk1);
+    assignedPlayers.add(secondaryGoalkeepers[0].id);
+    const gk2 = convertToGoalkeeper(secondaryGoalkeepers[1]);
+    team2.push(gk2);
+    assignedPlayers.add(secondaryGoalkeepers[1].id);
+  } else if (secondaryGoalkeepers.length === 1) {
+    // Assign the secondary goalkeeper to Team 1 and convert the lowest-rated player to goalkeeper for Team 2
+    const gk = convertToGoalkeeper(secondaryGoalkeepers[0]);
     team1.push(gk);
-    assignedPlayers.add(gk.id);
-  } else if (secondaryGoalkeepers.length > 0) {
-    const gk = secondaryGoalkeepers[0];
-    const convertedGk = {
-      ...gk,
-      position: "Goalkeeper" as const,
-      secondaryPosition: gk.position
-    };
-    team1.push(convertedGk);
-    assignedPlayers.add(gk.id);
-  }
+    assignedPlayers.add(secondaryGoalkeepers[0].id);
+    const availablePlayers = allPlayers.filter(p => !assignedPlayers.has(p.id));
+    if (availablePlayers.length > 0) {
+      const lowestRated = findLowestRatedPlayer(availablePlayers);
+      const convertedGk = convertToGoalkeeper(lowestRated);
+      team2.push(convertedGk);
+      assignedPlayers.add(lowestRated.id);
+    }
+  } else {
+    // No goalkeepers available, convert the two lowest-rated players to goalkeepers
+    const availablePlayers = allPlayers.filter(p => !assignedPlayers.has(p.id));
+    if (availablePlayers.length >= 2) {
+      const lowestRated1 = findLowestRatedPlayer(availablePlayers);
+      const convertedGk1 = convertToGoalkeeper(lowestRated1);
+      team1.push(convertedGk1);
+      assignedPlayers.add(lowestRated1.id);
 
-  // Handle Team 2 goalkeeper
-  const remainingPrimaryGks = primaryGoalkeepers.filter(p => !assignedPlayers.has(p.id));
-  const remainingSecondaryGks = secondaryGoalkeepers.filter(p => !assignedPlayers.has(p.id));
-
-  if (remainingPrimaryGks.length > 0) {
-    const gk = remainingPrimaryGks[0];
-    team2.push(gk);
-    assignedPlayers.add(gk.id);
-  } else if (remainingSecondaryGks.length > 0) {
-    const gk = remainingSecondaryGks[0];
-    const convertedGk = {
-      ...gk,
-      position: "Goalkeeper" as const,
-      secondaryPosition: gk.position
-    };
-    team2.push(convertedGk);
-    assignedPlayers.add(gk.id);
+      const remainingPlayers = availablePlayers.filter(p => p.id !== lowestRated1.id);
+      const lowestRated2 = findLowestRatedPlayer(remainingPlayers);
+      const convertedGk2 = convertToGoalkeeper(lowestRated2);
+      team2.push(convertedGk2);
+      assignedPlayers.add(lowestRated2.id);
+    }
   }
 };
 
@@ -105,25 +124,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
 
   // First, distribute goalkeepers
   distributeGoalkeepers(players, team1, team2, assignedPlayers);
-
-  // If any team is missing a goalkeeper, assign the lowest rated unassigned player
-  if (team1.filter(p => p.position === "Goalkeeper").length === 0) {
-    const availablePlayers = players.filter(p => !assignedPlayers.has(p.id));
-    if (availablePlayers.length > 0) {
-      const lowestRated = findLowestRatedPlayer(availablePlayers);
-      team1.push(convertToGoalkeeper(lowestRated));
-      assignedPlayers.add(lowestRated.id);
-    }
-  }
-
-  if (team2.filter(p => p.position === "Goalkeeper").length === 0) {
-    const availablePlayers = players.filter(p => !assignedPlayers.has(p.id));
-    if (availablePlayers.length > 0) {
-      const lowestRated = findLowestRatedPlayer(availablePlayers);
-      team2.push(convertToGoalkeeper(lowestRated));
-      assignedPlayers.add(lowestRated.id);
-    }
-  }
 
   // Distribute remaining players
   const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
