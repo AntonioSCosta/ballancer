@@ -70,8 +70,37 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
             dataKey="attribute" 
             tick={{ fontSize: 12 }}
             className="text-xs md:text-sm"
-            orientation="horizontal"
-            angle={-45}  // Rotate labels so they're easier to read
+            tickFormatter={(value, index) => {
+              // Get the angle of the axis in radians (360/8 = 45 degrees per segment)
+              const angleRad = ((index * 45) * Math.PI) / 180;
+              // Add a rotation to make text perpendicular to the axis
+              const rotation = (index * 45 + 90) % 360;
+              return value;
+            }}
+            tick={(props) => {
+              const { x, y, payload } = props;
+              const angleRad = ((props.index * 45) * Math.PI) / 180;
+              // Calculate position slightly further from the center
+              const offsetX = x + (Math.sin(angleRad) * 15);
+              const offsetY = y - (Math.cos(angleRad) * 15);
+              const rotation = (props.index * 45 + 90) % 360;
+              
+              return (
+                <g transform={`translate(${offsetX},${offsetY})`}>
+                  <text
+                    x={0}
+                    y={0}
+                    dy={0}
+                    textAnchor="middle"
+                    fill="currentColor"
+                    fontSize={12}
+                    transform={`rotate(${rotation})`}
+                  >
+                    {payload.value}
+                  </text>
+                </g>
+              );
+            }}
           />
           <PolarRadiusAxis angle={30} domain={[0, 100]} />
           <Radar
