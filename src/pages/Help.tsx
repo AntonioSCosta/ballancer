@@ -10,6 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
+const AdPlaceholder = () => (
+  <div className="my-4 p-4 bg-gray-200 dark:bg-gray-800 text-center text-gray-700 dark:text-gray-300 rounded-lg">
+    [Ad Placeholder]
+  </div>
+);
+
 const Help = () => {
   const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
@@ -104,8 +110,10 @@ const Help = () => {
         <Separator className="my-4" />
       </div>
 
+      <AdPlaceholder />
+      
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {cards.map(({ title, icon, description, content }) => (
+        {cards.map(({ title, icon, description, content }, index) => (
           <motion.div
             key={title}
             layout
@@ -148,6 +156,7 @@ const Help = () => {
                 )}
               </AnimatePresence>
             </Card>
+            {(index + 1) % 2 === 0 && <AdPlaceholder />}
           </motion.div>
         ))}
       </div>
