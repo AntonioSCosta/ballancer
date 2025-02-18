@@ -70,6 +70,8 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
             dataKey="attribute" 
             tick={{ fontSize: 12 }}
             className="text-xs md:text-sm"
+            orientation="horizontal"
+            angle={-45}  // Rotate labels so they're easier to read
           />
           <PolarRadiusAxis angle={30} domain={[0, 100]} />
           <Radar

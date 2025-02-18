@@ -25,9 +25,9 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
   } else {
-    // Distribute players across 60% of the field width, starting at 20% for better centering
-    const spacingPercentage = 60 / (totalInPosition - 1);
-    position_x = `${20 + (index * spacingPercentage)}%`; // Start at 20% to shift everything right
+    // Use 80% of the field width for distribution, starting at 10%
+    const spacingPercentage = 80 / (totalInPosition + 1);
+    position_x = `${10 + ((index + 1) * spacingPercentage)}%`;
   }
 
   return {
