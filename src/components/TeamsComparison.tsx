@@ -83,7 +83,7 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
               // Calculate position slightly further from the center
               const offsetX = x + (Math.sin(angleRad) * 15);
               const offsetY = y - (Math.cos(angleRad) * 15);
-              const rotation = (props.index * 45 + 180) % 360;
+              const rotation = (props.index * 45 + 360) % 360;
               
               return (
                 <g transform={`translate(${offsetX},${offsetY})`}>
