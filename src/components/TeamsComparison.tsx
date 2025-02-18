@@ -74,7 +74,7 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
               // Get the angle of the axis in radians (360/8 = 45 degrees per segment)
               const angleRad = ((index * 45) * Math.PI) / 180;
               // Add a rotation to make text perpendicular to the axis
-              const rotation = (index * 45 + 270) % 360;
+              const rotation = (index * 45 ) % 360;
               return value;
             }}
             tick={(props) => {
