@@ -30,15 +30,15 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
    // position_x = `${ ((index + 1) * spacingPercentage)}%`;
    if (totalInPosition === 2) {
     const positions = [22.5, 77.5]; 
-    position_x = `${positions[index]}%`;
+    position_x = `${-5 + positions[index]}%`;
   } 
   if (totalInPosition === 3) {
     const positions = [22.5, 45, 77.5]; 
-    position_x = `${positions[index]}%`;
+    position_x = `${-5 + positions[index]}%`;
   } 
   if (totalInPosition === 4) {
     const positions = [11.25, 33.75, 56.25, 88.75]; 
-    position_x = `${positions[index]}%`; 
+    position_x = `${-5 + positions[index]}%`; 
   } 
   if (totalInPosition === 5) {
     const spacingPercentage = 100 / (totalInPosition + 1);
