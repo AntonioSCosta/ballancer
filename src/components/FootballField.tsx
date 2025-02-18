@@ -31,7 +31,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   }
 
   return {
-    x: position_x +`10%`,
+    x: position_x +`0.10%`,
     y: basePositions[position as keyof typeof basePositions]?.y || "50%"
   };
 };
