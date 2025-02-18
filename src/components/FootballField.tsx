@@ -23,7 +23,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   // Calculate horizontal spacing based on the number of players
   let position_x;
   if (totalInPosition === 1) {
-    position_x = "42%"; // Center the player if there's only one
+    position_x = "42,5%"; // Center the player if there's only one
   } //else {
     // Use 80% of the field width for distribution, starting at 10%
     //const spacingPercentage = 90 / (totalInPosition + 1);
