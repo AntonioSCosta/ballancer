@@ -48,13 +48,50 @@ const Help = () => {
         </ul>
       ),
     },
+    {
+      title: "Team Generation",
+      icon: <Users className="h-5 w-5 text-primary" />,
+      description: "Creating balanced teams",
+      content: (
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Balancing team skill levels</li>
+          <li>Considering both primary and secondary positions</li>
+          <li>Using appropriate attributes based on assigned position</li>
+          <li>Visualizing team formations with position-specific colors</li>
+        </ul>
+      ),
+    },
+    {
+      title: "Sharing Teams",
+      icon: <Share2 className="h-5 w-5 text-primary" />,
+      description: "Share generated teams easily",
+      content: (
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Copy teams to clipboard</li>
+          <li>View team formations</li>
+          <li>Quick team overview</li>
+        </ul>
+      ),
+    },
+    {
+      title: "Tips & Best Practices",
+      icon: <Info className="h-5 w-5 text-primary" />,
+      description: "Get the most out of the app",
+      content: (
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Add player photos for easy identification</li>
+          <li>Set accurate player attributes for better team balance</li>
+          <li>Use secondary positions for versatile players</li>
+          <li>Keep your player roster up to date</li>
+        </ul>
+      ),
+    },
   ];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
       className="container mx-auto px-4 py-6 max-w-7xl"
     >
       <div className="mb-8">
@@ -72,9 +109,9 @@ const Help = () => {
           <motion.div
             key={title}
             layout
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
             <Card className="shadow-md border dark:border-gray-700">
@@ -88,7 +125,7 @@ const Help = () => {
                     {title}
                     <motion.span
                       animate={{ rotate: expandedCard === title ? 180 : 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      transition={{ duration: 0.2 }}
                       className="ml-2 text-gray-500 dark:text-gray-400 text-xs"
                     >
                       ▼
@@ -103,7 +140,7 @@ const Help = () => {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
                     <CardContent className="space-y-4">{content}</CardContent>
