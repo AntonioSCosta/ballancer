@@ -2,6 +2,8 @@ import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
 import { useState } from "react";
+import { Button } from "./ui/button";
+import { Edit2, Check } from "lucide-react";
 
 interface FootballFieldProps {
   players: Player[];
@@ -22,9 +24,9 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
   } else {
-    // Evenly distribute players across 80% of the field width, centered
-    const spacingPercentage = 80 / (totalInPosition + 1); // Add 1 to create margins on both sides
-    position_x = `${10 + (index + 1) * spacingPercentage}%`; // Start at 10% to leave a margin
+    // Evenly distribute players across 70% of the field width, starting at 15% for better centering
+    const spacingPercentage = 70 / (totalInPosition + 1);
+    position_x = `${15 + (index + 1) * spacingPercentage}%`; // Start at 15% to shift everything right
   }
 
   return {
@@ -48,6 +50,13 @@ const getPlayersInPosition = (players: Player[], targetPosition: string, neededD
     const assignedPosition = determinePlayerPosition(player, neededDefenders, neededMidfielders);
     return assignedPosition === targetPosition;
   });
+};
+
+const formatPlayerName = (name: string) => {
+  const nameParts = name.split(" ");
+  return nameParts.map((part, i) => (
+    <div key={i}>{part}</div>
+  ));
 };
 
 export const FootballField = ({ players, rotate = false }: FootballFieldProps) => {
@@ -82,10 +91,6 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         positionPlayers.map((player, index) => {
           const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
-          
-
-          // Split the player name into parts (if it contains spaces)
-          const nameParts = player.name.split(" ");
 
           return (
             <motion.div
@@ -98,9 +103,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-xs font-medium mb-1 text-center">
-                  {nameParts.map((part, i) => (
-                    <div key={i}>{part}</div>
-                  ))}
+                  {formatPlayerName(player.name)}
                 </div>
                 <div 
                   className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`}
