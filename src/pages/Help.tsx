@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Users, UserPlus, Share2, Info } from "lucide-react";
 import {
   Card,
@@ -23,13 +23,12 @@ const Help = () => {
       icon: <BookOpen className="h-5 w-5 text-primary" />,
       description: "Essential basics to get you going",
       content: (
-          <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-            <li>Create players with their photos and details</li>
-            <li>Select players for the current game</li>
-            <li>Click generate to create balanced teams</li>
-            <li>Share teams by copying them to the clipboard</li>
-          </ul>
-       
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Create players with their photos and details</li>
+          <li>Select players for the current game</li>
+          <li>Click generate to create balanced teams</li>
+          <li>Share teams by copying them to the clipboard</li>
+        </ul>
       ),
     },
     {
@@ -49,50 +48,13 @@ const Help = () => {
         </ul>
       ),
     },
-    {
-      title: "Team Generation",
-      icon: <Users className="h-5 w-5 text-primary" />,
-      description: "Creating balanced teams",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Balancing team skill levels</li>
-          <li>Considering both primary and secondary positions</li>
-          <li>Using appropriate attributes based on assigned position</li>
-          <li>Visualizing team formations with position-specific colors</li>
-        </ul>
-      ),
-    },
-    {
-      title: "Sharing Teams",
-      icon: <Share2 className="h-5 w-5 text-primary" />,
-      description: "Share generated teams easily",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Copy teams to clipboard</li>
-          <li>View team formations</li>
-          <li>Quick team overview</li>
-        </ul>
-      ),
-    },
-    {
-      title: "Tips & Best Practices",
-      icon: <Info className="h-5 w-5 text-primary" />,
-      description: "Get the most out of the app",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Add player photos for easy identification</li>
-          <li>Set accurate player attributes for better team balance</li>
-          <li>Use secondary positions for versatile players</li>
-          <li>Keep your player roster up to date</li>
-        </ul>
-      ),
-    },
   ];
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
       className="container mx-auto px-4 py-6 max-w-7xl"
     >
       <div className="mb-8">
@@ -110,9 +72,9 @@ const Help = () => {
           <motion.div
             key={title}
             layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut", delay: 0.1 }}
             className="overflow-hidden"
           >
             <Card className="shadow-md border dark:border-gray-700">
@@ -126,7 +88,7 @@ const Help = () => {
                     {title}
                     <motion.span
                       animate={{ rotate: expandedCard === title ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="ml-2 text-gray-500 dark:text-gray-400 text-xs"
                     >
                       ▼
@@ -135,18 +97,19 @@ const Help = () => {
                 </div>
               </CardHeader>
               <CardDescription className="px-4">{description}</CardDescription>
-              <motion.div
-                layout
-                initial={false}
-                animate={{
-                  opacity: expandedCard === title ? 1 : 0,
-                  scale: expandedCard === title ? 1 : 0.95,
-                }}
-                transition={{ duration: 0.3 }}
-                className={`overflow-hidden ${expandedCard === title ? "block" : "hidden"}`}
-              >
-                <CardContent className="space-y-4">{content}</CardContent>
-              </motion.div>
+              <AnimatePresence>
+                {expandedCard === title && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    className="overflow-hidden"
+                  >
+                    <CardContent className="space-y-4">{content}</CardContent>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Card>
           </motion.div>
         ))}
