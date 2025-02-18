@@ -15,7 +15,7 @@ interface FootballFieldProps {
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
     "Goalkeeper": { x: "45%", y: "10%" },
-    "Defender": { x: "0", y: "30%" },
+    "Defender": { x: "0", y: "35%" },
     "Midfielder": { x: "0", y: "55%" },
     "Forward": { x: "0", y: "75%" }
   };
