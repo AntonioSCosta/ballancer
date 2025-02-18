@@ -79,7 +79,7 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
             }}
             tick={(props) => {
               const { x, y, payload } = props;
-              const angleRad = ((props.index * 45) * Math.PI) / 180;
+              const angleRad = ((props.index * 90) * Math.PI) / 180;
               // Calculate position slightly further from the center
               const offsetX = x + (Math.sin(angleRad) * 15);
               const offsetY = y - (Math.cos(angleRad) * 15);
