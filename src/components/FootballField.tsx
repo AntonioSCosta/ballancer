@@ -27,7 +27,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   } else {
     // Use 80% of the field width for distribution, starting at 10%
     const spacingPercentage = 80 / (totalInPosition + 1);
-    position_x = `${10 + ((index + 1) * spacingPercentage)}%`;
+    position_x = `${10 + ((index + 1) * spacingPercentage)}%`+10;
   }
 
   return {
