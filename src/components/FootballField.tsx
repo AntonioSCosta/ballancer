@@ -1,3 +1,4 @@
+
 import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
@@ -24,9 +25,9 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   if (totalInPosition === 1) {
     position_x = "50%"; // Center the player if there's only one
   } else {
-    // Evenly distribute players across 70% of the field width, starting at 15% for better centering
-    const spacingPercentage = 70 / (totalInPosition + 1);
-    position_x = `${15 + (index + 1) * spacingPercentage}%`; // Start at 15% to shift everything right
+    // Distribute players across 60% of the field width, starting at 20% for better centering
+    const spacingPercentage = 60 / (totalInPosition - 1);
+    position_x = `${20 + (index * spacingPercentage)}%`; // Start at 20% to shift everything right
   }
 
   return {

@@ -66,7 +66,11 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
           <PolarGrid />
-          <PolarAngleAxis dataKey="attribute" />
+          <PolarAngleAxis 
+            dataKey="attribute" 
+            tick={{ fontSize: 12 }}
+            className="text-xs md:text-sm"
+          />
           <PolarRadiusAxis angle={30} domain={[0, 100]} />
           <Radar
             name="Team 1"
@@ -82,7 +86,12 @@ const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
             fill="#10b981"
             fillOpacity={0.3}
           />
-          <Legend />
+          <Legend 
+            wrapperStyle={{
+              fontSize: '12px',
+              paddingTop: '20px'
+            }}
+          />
         </RadarChart>
       </ResponsiveContainer>
     </div>
