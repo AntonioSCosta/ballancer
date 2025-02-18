@@ -167,11 +167,11 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
 
   availableDefenders.forEach(defender => {
     if (!assignedPlayers.has(defender.id)) {
-      if (team1Defenders < 6 && (team1Defenders <= team2Defenders || team2Defenders >= 6)) {
+      if (team1Defenders < 5 && (team1Defenders <= team2Defenders || team2Defenders >= 5)) {
         team1.push(defender);
         assignedPlayers.add(defender.id);
         team1Defenders++;
-      } else if (team2Defenders < 6) {
+      } else if (team2Defenders < 5) {
         team2.push(defender);
         assignedPlayers.add(defender.id);
         team2Defenders++;
