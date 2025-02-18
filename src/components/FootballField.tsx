@@ -24,11 +24,27 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
   let position_x;
   if (totalInPosition === 1) {
     position_x = "45%"; // Center the player if there's only one
-  } else {
+  } //else {
     // Use 80% of the field width for distribution, starting at 10%
+    //const spacingPercentage = 90 / (totalInPosition + 1);
+   // position_x = `${ ((index + 1) * spacingPercentage)}%`;
+   if (totalInPosition === 2) {
+    const positions = [22.5, 77.5]; 
+    position_x = `${positions[index]}%`;
+  } 
+  if (totalInPosition === 3) {
+    const positions = [22.5, 45, 77.5]; 
+    position_x = `${positions[index]}%`;
+  } 
+  if (totalInPosition === 4) {
+    const positions = [11.25, 33.75, 56.25, 88.75]; 
+    position_x = `${positions[index]}%`; 
+  } 
+  if (totalInPosition === 5) {
     const spacingPercentage = 90 / (totalInPosition + 1);
     position_x = `${ ((index + 1) * spacingPercentage)}%`;
-  }
+  } 
+  
 
   return {
     x: position_x,
