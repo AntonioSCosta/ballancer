@@ -41,7 +41,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     position_x = `${positions[index]}%`; 
   } 
   if (totalInPosition === 5) {
-    const spacingPercentage = 90 / (totalInPosition + 1);
+    const spacingPercentage = 100 / (totalInPosition + 1);
     position_x = `${ ((index + 1) * spacingPercentage)}%`;
   } 
   
