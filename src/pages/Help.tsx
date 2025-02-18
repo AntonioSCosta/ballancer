@@ -67,6 +67,31 @@ const Help = () => {
         </ul>
       ),
     },
+    {
+      title: "Sharing Teams",
+      icon: <Share2 className="h-5 w-5 text-primary" />,
+      description: "Share generated teams easily",
+      content: (
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Copy teams to clipboard</li>
+          <li>View team formations</li>
+          <li>Quick team overview</li>
+        </ul>
+      ),
+    },
+    {
+      title: "Tips & Best Practices",
+      icon: <Info className="h-5 w-5 text-primary" />,
+      description: "Get the most out of the app",
+      content: (
+        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
+          <li>Add player photos for easy identification</li>
+          <li>Set accurate player attributes for better team balance</li>
+          <li>Use secondary positions for versatile players</li>
+          <li>Keep your player roster up to date</li>
+        </ul>
+      ),
+    },
   ];
 
   return (
