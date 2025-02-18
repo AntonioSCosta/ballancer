@@ -26,7 +26,7 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     position_x = "45%"; // Center the player if there's only one
   } else {
     // Use 80% of the field width for distribution, starting at 10%
-    const spacingPercentage = 80 / (totalInPosition + 1);
+    const spacingPercentage = 90 / (totalInPosition + 1);
     position_x = `${5 + ((index + 1) * spacingPercentage)}%`;
   }
 
