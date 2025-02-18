@@ -26,7 +26,7 @@ const Help = () => {
   const cards = [
     {
       title: "Getting Started",
-      icon: <BookOpen className="h-5 w-5 text-primary" />,
+      icon: <BookOpen className="h-5 w-5 text-primary" />, 
       description: "Essential basics to get you going",
       content: (
         <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
@@ -39,7 +39,7 @@ const Help = () => {
     },
     {
       title: "Player Skill Attributes",
-      icon: <UserPlus className="h-5 w-5 text-primary" />,
+      icon: <UserPlus className="h-5 w-5 text-primary" />, 
       description: "Managing your player roster",
       content: (
         <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
@@ -56,7 +56,7 @@ const Help = () => {
     },
     {
       title: "Team Generation",
-      icon: <Users className="h-5 w-5 text-primary" />,
+      icon: <Users className="h-5 w-5 text-primary" />, 
       description: "Creating balanced teams",
       content: (
         <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
@@ -64,31 +64,6 @@ const Help = () => {
           <li>Considering both primary and secondary positions</li>
           <li>Using appropriate attributes based on assigned position</li>
           <li>Visualizing team formations with position-specific colors</li>
-        </ul>
-      ),
-    },
-    {
-      title: "Sharing Teams",
-      icon: <Share2 className="h-5 w-5 text-primary" />,
-      description: "Share generated teams easily",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Copy teams to clipboard</li>
-          <li>View team formations</li>
-          <li>Quick team overview</li>
-        </ul>
-      ),
-    },
-    {
-      title: "Tips & Best Practices",
-      icon: <Info className="h-5 w-5 text-primary" />,
-      description: "Get the most out of the app",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Add player photos for easy identification</li>
-          <li>Set accurate player attributes for better team balance</li>
-          <li>Use secondary positions for versatile players</li>
-          <li>Keep your player roster up to date</li>
         </ul>
       ),
     },
@@ -110,8 +85,6 @@ const Help = () => {
         <Separator className="my-4" />
       </div>
 
-      <AdPlaceholder />
-      
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {cards.map(({ title, icon, description, content }, index) => (
           <motion.div
@@ -156,7 +129,7 @@ const Help = () => {
                 )}
               </AnimatePresence>
             </Card>
-            {(index + 1) % 2 === 0 && <AdPlaceholder />}
+            {index === 2 && <AdPlaceholder />}
           </motion.div>
         ))}
       </div>
