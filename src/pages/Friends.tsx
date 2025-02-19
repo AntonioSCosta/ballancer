@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, Check, X, Users, Search, Loader2 } from "lucide-react";
+import { UserPlus, Check, X, Users, Search, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
@@ -33,6 +32,7 @@ const Friends = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchUsername, setSearchUsername] = useState("");
+  const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null);
 
   // Fetch friend requests
   const { data: friendRequests, isLoading: isLoadingRequests } = useQuery({
@@ -234,6 +234,14 @@ const Friends = () => {
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                     >
                       <span className="font-medium">{friendship.friend.username}</span>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setSelectedFriend(friendship.friend)}
+                      >
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Message
+                      </Button>
                     </div>
                   ))}
                   {!friends?.length && (
@@ -309,6 +317,14 @@ const Friends = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {selectedFriend && (
+        <FriendProfile
+          friend={selectedFriend}
+          open={!!selectedFriend}
+          onClose={() => setSelectedFriend(null)}
+        />
+      )}
     </div>
   );
 };
