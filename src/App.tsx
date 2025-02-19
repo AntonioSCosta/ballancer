@@ -3,35 +3,84 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { AuthProvider } from "@/components/AuthProvider";
+import { useAuth } from "@/components/AuthProvider";
 import CreatePlayer from "./pages/CreatePlayer";
 import TeamGenerator from "./pages/TeamGenerator";
 import GeneratedTeams from "./pages/GeneratedTeams";
 import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
+import Auth from "./pages/Auth";
 
 // Initialize React Query client
 const queryClient = new QueryClient();
+
+// Protected Route wrapper
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
+  const { user } = useAuth();
+
+  return (
+    <div className="pt-16">
+      <Navigation />
+      <ThemeSwitcher />
+      <Routes>
+        <Route
+          path="/auth"
+          element={user ? <Navigate to="/" replace /> : <Auth />}
+        />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <CreatePlayer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/generator"
+          element={
+            <ProtectedRoute>
+              <TeamGenerator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/generated-teams"
+          element={
+            <ProtectedRoute>
+              <GeneratedTeams />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/help" element={<Help />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+      <Sonner />
+    </div>
+  );
+};
 
 const App = () => (
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="pt-16">
-          <Navigation />
-          <ThemeSwitcher />
-          <Routes>
-            <Route path="/" element={<CreatePlayer />} />
-            <Route path="/generator" element={<TeamGenerator />} />
-            <Route path="/generated-teams" element={<GeneratedTeams />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </div>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </BrowserRouter>

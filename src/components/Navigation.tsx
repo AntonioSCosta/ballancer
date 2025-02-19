@@ -1,15 +1,20 @@
 
-import { Menu } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Define navigation menu items
   const menuItems = [
@@ -18,6 +23,17 @@ export const Navigation = () => {
     { path: "/help", label: "Help" },
   ];
 
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate("/auth");
+      toast.success("Logged out successfully");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <nav className="fixed top-0 left-0 p-4 z-50">
       <DropdownMenu>
@@ -25,20 +41,37 @@ export const Navigation = () => {
           <Menu className="w-6 h-6 text-gray-700 dark:text-gray-100" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-48 mt-2 dark:bg-secondary">
-          {menuItems.map((item) => (
-            <DropdownMenuItem key={item.path} className="p-0">
+          {user ? (
+            <>
+              {menuItems.map((item) => (
+                <DropdownMenuItem key={item.path} className="p-0">
+                  <Link
+                    to={item.path}
+                    className={`w-full px-4 py-2 text-sm ${
+                      location.pathname === item.path
+                        ? "text-primary font-medium dark:text-primary-foreground"
+                        : "text-gray-700 dark:text-gray-100"
+                    } hover:bg-accent dark:hover:bg-accent/20`}
+                  >
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600">
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <DropdownMenuItem className="p-0">
               <Link
-                to={item.path}
-                className={`w-full px-4 py-2 text-sm ${
-                  location.pathname === item.path
-                    ? "text-primary font-medium dark:text-primary-foreground"
-                    : "text-gray-700 dark:text-gray-100"
-                } hover:bg-accent dark:hover:bg-accent/20`}
+                to="/auth"
+                className="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-accent dark:hover:bg-accent/20"
               >
-                {item.label}
+                Sign In
               </Link>
             </DropdownMenuItem>
-          ))}
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </nav>
