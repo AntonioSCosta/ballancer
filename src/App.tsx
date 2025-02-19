@@ -14,6 +14,7 @@ import GeneratedTeams from "./pages/GeneratedTeams";
 import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
 import Auth from "./pages/Auth";
+import Friends from "./pages/Friends";
 
 // Initialize React Query client
 const queryClient = new QueryClient();
@@ -62,6 +63,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <GeneratedTeams />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/friends"
+          element={
+            <ProtectedRoute>
+              <Friends />
             </ProtectedRoute>
           }
         />

@@ -1,5 +1,5 @@
 
-import { Menu, LogOut } from "lucide-react";
+import { Menu, LogOut, UserPlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +20,7 @@ export const Navigation = () => {
   const menuItems = [
     { path: "/", label: "Create Player" },
     { path: "/generator", label: "Team Generator" },
+    { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
     { path: "/help", label: "Help" },
   ];
 
@@ -47,12 +48,13 @@ export const Navigation = () => {
                 <DropdownMenuItem key={item.path} className="p-0">
                   <Link
                     to={item.path}
-                    className={`w-full px-4 py-2 text-sm ${
+                    className={`w-full px-4 py-2 text-sm flex items-center ${
                       location.pathname === item.path
                         ? "text-primary font-medium dark:text-primary-foreground"
                         : "text-gray-700 dark:text-gray-100"
                     } hover:bg-accent dark:hover:bg-accent/20`}
                   >
+                    {item.icon}
                     {item.label}
                   </Link>
                 </DropdownMenuItem>
