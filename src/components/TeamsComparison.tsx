@@ -1,131 +1,121 @@
 
+import { useMemo } from "react";
 import { Team } from "@/utils/teamDistribution";
 import {
-  Radar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 
 interface TeamsComparisonProps {
   teams: Team[];
 }
 
+interface StatComparison {
+  name: string;
+  "Team 1": number;
+  "Team 2": number;
+}
+
 const TeamsComparison = ({ teams }: TeamsComparisonProps) => {
-  const calculateTeamStats = (team: Team) => {
-    const players = team.players;
-    const stats = {
-      speed: 0,
-      physical: 0,
-      mental: 0,
-      passing: 0,
-      dribbling: 0,
-      shooting: 0,
-      heading: 0,
-      defending: 0,
+  const data = useMemo(() => {
+    if (teams.length !== 2) return [];
+
+    const calculateTeamStats = (team: Team) => {
+      const players = team.players;
+      return {
+        averageRating:
+          players.reduce((sum, p) => sum + p.rating, 0) / players.length,
+        totalSpeed:
+          players.reduce((sum, p) => sum + p.attributes.speed, 0) / players.length,
+        totalStrength:
+          players.reduce((sum, p) => sum + p.attributes.strength, 0) /
+          players.length,
+        totalAgility:
+          players.reduce((sum, p) => sum + p.attributes.agility, 0) /
+          players.length,
+        totalStamina:
+          players.reduce((sum, p) => sum + p.attributes.stamina, 0) /
+          players.length,
+      };
     };
 
-    players.forEach(player => {
-      stats.speed += player.attributes.speed || 0;
-      stats.physical += player.attributes.physical || 0;
-      stats.mental += player.attributes.mental || 0;
-      stats.passing += player.attributes.passing || 0;
-      stats.dribbling += player.attributes.dribbling || 0;
-      stats.shooting += player.attributes.shooting || 0;
-      stats.heading += player.attributes.heading || 0;
-      stats.defending += player.attributes.defending || 0;
-    });
+    const team1Stats = calculateTeamStats(teams[0]);
+    const team2Stats = calculateTeamStats(teams[1]);
 
-    // Calculate averages
-    Object.keys(stats).forEach(key => {
-      stats[key as keyof typeof stats] = Math.round(stats[key as keyof typeof stats] / players.length);
-    });
+    return [
+      {
+        name: "Rating",
+        "Team 1": Number(team1Stats.averageRating.toFixed(1)),
+        "Team 2": Number(team2Stats.averageRating.toFixed(1)),
+      },
+      {
+        name: "Speed",
+        "Team 1": Number(team1Stats.totalSpeed.toFixed(1)),
+        "Team 2": Number(team2Stats.totalSpeed.toFixed(1)),
+      },
+      {
+        name: "Strength",
+        "Team 1": Number(team1Stats.totalStrength.toFixed(1)),
+        "Team 2": Number(team2Stats.totalStrength.toFixed(1)),
+      },
+      {
+        name: "Agility",
+        "Team 1": Number(team1Stats.totalAgility.toFixed(1)),
+        "Team 2": Number(team2Stats.totalAgility.toFixed(1)),
+      },
+      {
+        name: "Stamina",
+        "Team 1": Number(team1Stats.totalStamina.toFixed(1)),
+        "Team 2": Number(team2Stats.totalStamina.toFixed(1)),
+      },
+    ];
+  }, [teams]);
 
-    return stats;
-  };
-
-  const team1Stats = calculateTeamStats(teams[0]);
-  const team2Stats = calculateTeamStats(teams[1]);
-
-  const data = [
-    { attribute: "Speed", team1: team1Stats.speed, team2: team2Stats.speed },
-    { attribute: "Physical", team1: team1Stats.physical, team2: team2Stats.physical },
-    { attribute: "Mental", team1: team1Stats.mental, team2: team2Stats.mental },
-    { attribute: "Passing", team1: team1Stats.passing, team2: team2Stats.passing },
-    { attribute: "Dribbling", team1: team1Stats.dribbling, team2: team2Stats.dribbling },
-    { attribute: "Shooting", team1: team1Stats.shooting, team2: team2Stats.shooting },
-    { attribute: "Heading", team1: team1Stats.heading, team2: team2Stats.heading },
-    { attribute: "Defending", team1: team1Stats.defending, team2: team2Stats.defending },
-  ];
+  if (teams.length !== 2) return null;
 
   return (
-    <div className="w-full h-[500px] p-4">
-      <ResponsiveContainer width="100%" height="100%">
-        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-          <PolarGrid />
-          <PolarAngleAxis 
-            dataKey="attribute" 
-            tick={{ fontSize: 12 }}
-            className="text-xs md:text-sm"
-            tickFormatter={(value, index) => {
-              // Get the angle of the axis in radians (360/8 = 45 degrees per segment)
-              const angleRad = ((index * 45) * Math.PI) / 180;
-              // Add a rotation to make text perpendicular to the axis
-              const rotation = (index * 45 ) % 360;
-              return value;
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Teams Comparison</CardTitle>
+        <CardDescription>
+          Compare average stats between teams
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={data}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
             }}
-            tick={(props) => {
-              const { x, y, payload } = props;
-              const angleRad = ((props.index * 45) * Math.PI) / 180;
-              // Calculate position slightly further from the center
-              const offsetX = x + (Math.sin(angleRad) * 5);
-              const offsetY = y - (Math.cos(angleRad) * 5);
-              const rotation = (props.index * 45 + 360) % 360;
-              
-              return (
-                <g transform={`translate(${offsetX},${offsetY})`}>
-                  <text
-                    x={0}
-                    y={0}
-                    dy={0}
-                    textAnchor="middle"
-                    fill="currentColor"
-                    fontSize={12}
-                    transform={`rotate(${rotation})`}
-                  >
-                    {payload.value}
-                  </text>
-                </g>
-              );
-            }}
-          />
-          <PolarRadiusAxis angle={30} domain={[0, 100]} />
-          <Radar
-            name="Team 1"
-            dataKey="team1"
-            stroke="#2563eb"
-            fill="#2563eb"
-            fillOpacity={0.3}
-          />
-          <Radar
-            name="Team 2"
-            dataKey="team2"
-            stroke="#10b981"
-            fill="#10b981"
-            fillOpacity={0.3}
-          />
-          <Legend 
-            wrapperStyle={{
-              fontSize: '12px',
-              paddingTop: '20px'
-            }}
-          />
-        </RadarChart>
-      </ResponsiveContainer>
-    </div>
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Team 1" fill="#8884d8" />
+            <Bar dataKey="Team 2" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
   );
 };
 
