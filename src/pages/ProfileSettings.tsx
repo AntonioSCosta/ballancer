@@ -23,13 +23,19 @@ const DEFAULT_ATTRIBUTES = {
   physical: 50,
 };
 
+interface Profile {
+  username: string;
+  favorite_position: PlayerPosition;
+  attributes: typeof DEFAULT_ATTRIBUTES;
+}
+
 const ProfileSettings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Profile>({
     username: "",
-    favorite_position: "Forward" as PlayerPosition,
+    favorite_position: "Forward",
     attributes: DEFAULT_ATTRIBUTES,
   });
 
@@ -44,7 +50,7 @@ const ProfileSettings = () => {
         .single();
       
       if (error) throw error;
-      return data;
+      return data as Profile;
     },
     enabled: !!user?.id
   });
@@ -53,14 +59,17 @@ const ProfileSettings = () => {
     if (profile) {
       setFormData({
         username: profile.username || "",
-        favorite_position: profile.favorite_position || "Forward",
-        attributes: profile.attributes || DEFAULT_ATTRIBUTES,
+        favorite_position: (profile.favorite_position as PlayerPosition) || "Forward",
+        attributes: {
+          ...DEFAULT_ATTRIBUTES,
+          ...(profile.attributes as typeof DEFAULT_ATTRIBUTES || {}),
+        },
       });
     }
   }, [profile]);
 
   const updateProfile = useMutation({
-    mutationFn: async (updates: typeof formData) => {
+    mutationFn: async (updates: Profile) => {
       const { error } = await supabase
         .from('profiles')
         .update(updates)
