@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,11 +14,10 @@ import Help from "./pages/Help";
 import Auth from "./pages/Auth";
 import Friends from "./pages/Friends";
 import Settings from "./pages/Settings";
+import Communities from "./pages/Communities";
 
-// Initialize React Query client
 const queryClient = new QueryClient();
 
-// Protected Route wrapper
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   
@@ -78,6 +76,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Settings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/communities"
+          element={
+            <ProtectedRoute>
+              <Communities />
             </ProtectedRoute>
           }
         />

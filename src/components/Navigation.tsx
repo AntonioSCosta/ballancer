@@ -20,6 +20,7 @@ export const Navigation = () => {
   const menuItems = [
     { path: "/", label: "Create Player" },
     { path: "/generator", label: "Team Generator" },
+    { path: "/communities", label: "Communities", icon: <Users className="w-4 h-4 mr-2" /> },
     { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
     { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
     { path: "/help", label: "Help" },
