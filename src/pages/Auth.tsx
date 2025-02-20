@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,11 @@ const Auth = () => {
         password,
       });
       if (error) throw error;
-      navigate("/");
+      
+      // Get the stored redirect path or default to home
+      const redirectTo = sessionStorage.getItem('redirectTo') || '/';
+      sessionStorage.removeItem('redirectTo'); // Clear the stored path
+      navigate(redirectTo);
       toast.success("Welcome back!");
     } catch (error: any) {
       toast.error(error.message);

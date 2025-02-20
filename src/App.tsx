@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,6 +23,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   
   if (!user) {
+    // Store the attempted path to redirect back after login
+    const currentPath = window.location.pathname;
+    sessionStorage.setItem('redirectTo', currentPath);
     return <Navigate to="/auth" replace />;
   }
   
@@ -35,31 +39,19 @@ const AppRoutes = () => {
     <div className="pt-16">
       <Navigation />
       <Routes>
+        {/* Public routes that don't require authentication */}
+        <Route path="/" element={<CreatePlayer />} />
+        <Route path="/generator" element={<TeamGenerator />} />
+        <Route path="/generated-teams" element={<GeneratedTeams />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
+
+        {/* Protected routes that require authentication */}
         <Route
-          path="/auth"
-          element={user ? <Navigate to="/" replace /> : <Auth />}
-        />
-        <Route
-          path="/"
+          path="/communities"
           element={
             <ProtectedRoute>
-              <CreatePlayer />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/generator"
-          element={
-            <ProtectedRoute>
-              <TeamGenerator />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/generated-teams"
-          element={
-            <ProtectedRoute>
-              <GeneratedTeams />
+              <Communities />
             </ProtectedRoute>
           }
         />
@@ -79,15 +71,6 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/communities"
-          element={
-            <ProtectedRoute>
-              <Communities />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/help" element={<Help />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
