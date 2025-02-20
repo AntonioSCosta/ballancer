@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -46,17 +46,18 @@ const ProfileSettings = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!user?.id,
-    onSuccess: (data) => {
-      if (data) {
-        setFormData({
-          username: data.username || "",
-          favorite_position: data.favorite_position || "Forward",
-          attributes: data.attributes || DEFAULT_ATTRIBUTES,
-        });
-      }
-    },
+    enabled: !!user?.id
   });
+
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        username: profile.username || "",
+        favorite_position: profile.favorite_position || "Forward",
+        attributes: profile.attributes || DEFAULT_ATTRIBUTES,
+      });
+    }
+  }, [profile]);
 
   const updateProfile = useMutation({
     mutationFn: async (updates: typeof formData) => {
