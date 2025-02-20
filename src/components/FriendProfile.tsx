@@ -49,33 +49,42 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
       if (error) throw error;
       return data as Message[];
     },
+    enabled: !!user && !!friend.id && user.id !== friend.id,
   });
 
   // Send message mutation
   const sendMessage = useMutation({
     mutationFn: async (content: string) => {
+      if (!user) throw new Error("You must be logged in to send messages");
+      if (user.id === friend.id) throw new Error("You cannot send messages to yourself");
+
       const { error } = await supabase
         .from('messages')
         .insert({
           content,
-          sender_id: user?.id,
+          sender_id: user.id,
           receiver_id: friend.id,
         });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('messages_sender_receiver_different')) {
+          throw new Error("You cannot send messages to yourself");
+        }
+        throw error;
+      }
     },
     onSuccess: () => {
       setNewMessage("");
       queryClient.invalidateQueries({ queryKey: ['messages', friend.id] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message);
     },
   });
 
   // Handle real-time updates
   useEffect(() => {
-    if (!open) return;
+    if (!open || !user || !friend.id || user.id === friend.id) return;
 
     const channel = supabase.channel('chat')
       .on(
@@ -84,7 +93,7 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `sender_id=eq.${friend.id},receiver_id=eq.${user?.id}`,
+          filter: `sender_id=eq.${friend.id},receiver_id=eq.${user.id}`,
         },
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ['messages', friend.id] });
@@ -158,7 +167,7 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-1"
               />
-              <Button type="submit" size="icon" disabled={sendMessage.isPending}>
+              <Button type="submit" size="icon" disabled={sendMessage.isPending || user?.id === friend.id}>
                 {sendMessage.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
