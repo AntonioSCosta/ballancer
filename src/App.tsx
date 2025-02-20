@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import Auth from "./pages/Auth";
 import Friends from "./pages/Friends";
 import Settings from "./pages/Settings";
 import Communities from "./pages/Communities";
+import CommunityDetails from "./pages/CommunityDetails";
 import ProfileSettings from "./pages/ProfileSettings";
 
 const queryClient = new QueryClient();
@@ -23,7 +25,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   
   if (!user) {
-    // Store the attempted path to redirect back after login
     const currentPath = window.location.pathname;
     sessionStorage.setItem('redirectTo', currentPath);
     return <Navigate to="/auth" replace />;
@@ -54,6 +55,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Communities />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/communities/:id"
+          element={
+            <ProtectedRoute>
+              <CommunityDetails />
             </ProtectedRoute>
           }
         />

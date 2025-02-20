@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { motion } from "framer-motion";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useNavigate } from "react-router-dom";
 
 interface Community {
   id: string;
@@ -37,6 +38,7 @@ interface Friend {
 
 const Communities = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [newCommunity, setNewCommunity] = useState({
@@ -46,15 +48,26 @@ const Communities = () => {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
 
   const { data: communities, isLoading } = useQuery({
-    queryKey: ['communities'],
+    queryKey: ['user-communities'],
     queryFn: async () => {
+      const { data: memberData, error: memberError } = await supabase
+        .from('community_members')
+        .select('community_id')
+        .eq('user_id', user?.id);
+
+      if (memberError) throw memberError;
+
+      const communityIds = memberData.map(m => m.community_id);
+
       const { data, error } = await supabase
         .from('communities')
-        .select('*, members:community_members(count)');
+        .select('*, members:community_members(count)')
+        .in('id', communityIds);
       
       if (error) throw error;
       return data as Community[];
     },
+    enabled: !!user?.id
   });
 
   const { data: friends } = useQuery({
@@ -81,7 +94,6 @@ const Communities = () => {
 
   const createCommunity = useMutation({
     mutationFn: async ({ communityData, memberIds }: { communityData: typeof newCommunity, memberIds: string[] }) => {
-      // Create community
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
@@ -93,24 +105,26 @@ const Communities = () => {
       
       if (communityError) throw communityError;
 
-      // Add members
-      if (memberIds.length > 0) {
-        const { error: membersError } = await supabase
-          .from('community_members')
-          .insert(
-            memberIds.map(memberId => ({
-              community_id: community.id,
-              user_id: memberId,
-            }))
-          );
-        
-        if (membersError) throw membersError;
-      }
+      // Add creator as a member
+      const membersToAdd = [
+        { community_id: community.id, user_id: user?.id, role: 'admin' },
+        ...memberIds.map(memberId => ({
+          community_id: community.id,
+          user_id: memberId,
+          role: 'member'
+        }))
+      ];
+
+      const { error: membersError } = await supabase
+        .from('community_members')
+        .insert(membersToAdd);
+      
+      if (membersError) throw membersError;
 
       return community;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['communities'] });
+      queryClient.invalidateQueries({ queryKey: ['user-communities'] });
       setIsCreating(false);
       setNewCommunity({ name: "", description: "" });
       setSelectedFriends([]);
@@ -137,11 +151,15 @@ const Communities = () => {
     );
   };
 
+  const handleCommunityClick = (communityId: string) => {
+    navigate(`/communities/${communityId}`);
+  };
+
   return (
     <div className="container max-w-6xl mx-auto p-6">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Communities</h1>
+          <h1 className="text-3xl font-bold">My Communities</h1>
           <p className="text-muted-foreground">Join or create communities to organize matches</p>
         </div>
         <Dialog open={isCreating} onOpenChange={setIsCreating}>
@@ -225,15 +243,12 @@ const Communities = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
+            onClick={() => handleCommunityClick(community.id)}
+            className="cursor-pointer"
           >
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  {community.name}
-                  <Button variant="outline" size="sm">
-                    Join
-                  </Button>
-                </CardTitle>
+                <CardTitle>{community.name}</CardTitle>
                 <CardDescription>{community.description}</CardDescription>
               </CardHeader>
               <CardContent>
