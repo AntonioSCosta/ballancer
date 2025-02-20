@@ -1,5 +1,5 @@
 
-import { Menu, LogOut, UserPlus, Settings, Users } from "lucide-react";
+import { Menu, LogOut, UserPlus, Settings, Users, PlusCircle, UsersRound, HelpCircle } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,12 +18,12 @@ export const Navigation = () => {
 
   // Define navigation menu items
   const menuItems = [
-    { path: "/", label: "Create Player" },
-    { path: "/generator", label: "Team Generator" },
+    { path: "/", label: "Create Player", icon: <PlusCircle className="w-4 h-4 mr-2" /> },
+    { path: "/generator", label: "Team Generator", icon: <UsersRound className="w-4 h-4 mr-2" /> },
     { path: "/communities", label: "Communities", icon: <Users className="w-4 h-4 mr-2" /> },
     { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
     { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
-    { path: "/help", label: "Help" },
+    { path: "/help", label: "Help", icon: <HelpCircle className="w-4 h-4 mr-2" /> },
   ];
 
   const handleLogout = async () => {
@@ -44,36 +44,25 @@ export const Navigation = () => {
           <Menu className="w-6 h-6 text-gray-700 dark:text-gray-100" />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-48 mt-2 dark:bg-secondary">
-          {user ? (
-            <>
-              {menuItems.map((item) => (
-                <DropdownMenuItem key={item.path} className="p-0">
-                  <Link
-                    to={item.path}
-                    className={`w-full px-4 py-2 text-sm flex items-center ${
-                      location.pathname === item.path
-                        ? "text-primary font-medium dark:text-primary-foreground"
-                        : "text-gray-700 dark:text-gray-100"
-                    } hover:bg-accent dark:hover:bg-accent/20`}
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </DropdownMenuItem>
-            </>
-          ) : (
-            <DropdownMenuItem className="p-0">
+          {menuItems.map((item) => (
+            <DropdownMenuItem key={item.path} className="p-0">
               <Link
-                to="/auth"
-                className="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-100 hover:bg-accent dark:hover:bg-accent/20"
+                to={item.path}
+                className={`w-full px-4 py-2 text-sm flex items-center ${
+                  location.pathname === item.path
+                    ? "text-primary font-medium dark:text-primary-foreground"
+                    : "text-gray-700 dark:text-gray-100"
+                } hover:bg-accent dark:hover:bg-accent/20`}
               >
-                Sign In
+                {item.icon}
+                {item.label}
               </Link>
+            </DropdownMenuItem>
+          ))}
+          {user && (
+            <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

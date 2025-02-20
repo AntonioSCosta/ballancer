@@ -1,164 +1,93 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Users, UserPlus, Share2, Info } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
-const AdPlaceholder = () => (
-  <div className="my-4 p-4 bg-gray-200 dark:bg-gray-800 text-center text-gray-700 dark:text-gray-300 rounded-lg">
-    [Ad Placeholder]
-  </div>
-);
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Help = () => {
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
-
-  const toggleCard = (title: string) => {
-    setExpandedCard(expandedCard === title ? null : title);
-  };
-
-  const cards = [
+  const features = [
     {
-      title: "Getting Started",
-      icon: <BookOpen className="h-5 w-5 text-primary" />, 
-      description: "Essential basics to get you going",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Create players with their photos and details</li>
-          <li>Select players for the current game</li>
-          <li>Click generate to create balanced teams</li>
-          <li>Share teams by copying them to the clipboard</li>
-        </ul>
-      ),
+      title: "Offline Features",
+      description: "These features work without an internet connection:",
+      items: [
+        "Create Player - Add and manage your player roster",
+        "Team Generator - Create balanced teams from your player pool",
+        "Basic app settings and preferences"
+      ]
     },
     {
-      title: "Player Skill Attributes",
-      icon: <UserPlus className="h-5 w-5 text-primary" />, 
-      description: "Managing your player roster",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Speed: How fast the player moves, both in sprints and acceleration.</li>
-          <li>Physical: Strength, stamina, and overall fitness level.</li>
-          <li>Passing: Accuracy and vision when distributing the ball.</li>
-          <li>Mental: Decision-making, composure, and game intelligence.</li>
-          <li>Shooting: Finishing, shot power, and accuracy in front of goal.</li>
-          <li>Defending: Tackling, positioning, and ability to stop opponents.</li>
-          <li>Heading: Aerial ability in both attacking and defensive situations.</li>
-          <li>Dribbling: Ball control, agility, and skill in taking on opponents.</li>
-        </ul>
-      ),
+      title: "Online Features",
+      description: "These features require an internet connection:",
+      items: [
+        "Communities - Create and join football communities",
+        "Friends - Connect with other players",
+        "Match Organization - Schedule and manage matches",
+        "Player Evaluations - Rate players after matches",
+        "Chat - Communicate within communities"
+      ]
     },
     {
       title: "Team Generation",
-      icon: <Users className="h-5 w-5 text-primary" />, 
-      description: "Creating balanced teams",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Balancing team skill levels</li>
-          <li>Considering both primary and secondary positions</li>
-          <li>Using appropriate attributes based on assigned position</li>
-          <li>Visualizing team formations with position-specific colors</li>
-        </ul>
-      ),
+      description: "How teams are generated:",
+      items: [
+        "Position-based distribution (optional)",
+        "Balanced skill ratings",
+        "Even team sizes",
+        "Consideration of player preferences"
+      ]
     },
     {
-      title: "Sharing Teams",
-      icon: <Share2 className="h-5 w-5 text-primary" />,
-      description: "Share generated teams easily",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Copy teams to clipboard</li>
-          <li>View team formations</li>
-          <li>Quick team overview</li>
-        </ul>
-      ),
+      title: "Communities",
+      description: "Community features include:",
+      items: [
+        "Create private or public communities",
+        "Invite friends to join",
+        "Organize matches",
+        "Chat with community members",
+        "Track match history and statistics"
+      ]
     },
     {
-      title: "Tips & Best Practices",
-      icon: <Info className="h-5 w-5 text-primary" />,
-      description: "Get the most out of the app",
-      content: (
-        <ul className="list-disc pl-4 text-sm text-gray-500 dark:text-gray-400 space-y-2">
-          <li>Add player photos for easy identification</li>
-          <li>Set accurate player attributes for better team balance</li>
-          <li>Use secondary positions for versatile players</li>
-          <li>Keep your player roster up to date</li>
-        </ul>
-      ),
-    },
+      title: "Player Profiles",
+      description: "Player profile features:",
+      items: [
+        "Personal statistics",
+        "Match history",
+        "Performance ratings",
+        "Preferred positions",
+        "Community memberships"
+      ]
+    }
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="container mx-auto px-4 py-6 max-w-7xl"
-    >
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 text-gray-900 dark:text-gray-100">
-          Help & Documentation
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Everything you need to know about using Team Generator
-        </p>
-        <Separator className="my-4" />
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {cards.map(({ title, icon, description, content }, index) => (
-          <motion.div
-            key={title}
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="overflow-hidden"
-          >
-            <Card className="shadow-md border dark:border-gray-700">
-              <CardHeader
-                onClick={() => toggleCard(title)}
-                className="cursor-pointer flex justify-between items-center"
-              >
-                <div className="flex items-center gap-2 w-full">
-                  {icon}
-                  <CardTitle className="flex-grow flex justify-between items-center">
-                    {title}
-                    <motion.span
-                      animate={{ rotate: expandedCard === title ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="ml-2 text-gray-500 dark:text-gray-400 text-xs"
-                    >
-                      ▼
-                    </motion.span>
-                  </CardTitle>
+    <div className="container max-w-4xl mx-auto p-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Help Center</CardTitle>
+          <CardDescription>
+            Learn how to use all features of the Football Team Generator
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ScrollArea className="h-[600px] pr-4">
+            <div className="space-y-8">
+              {features.map((section) => (
+                <div key={section.title} className="space-y-3">
+                  <h2 className="text-xl font-semibold">{section.title}</h2>
+                  <p className="text-sm text-muted-foreground">{section.description}</p>
+                  <ul className="list-disc list-inside space-y-2">
+                    {section.items.map((item) => (
+                      <li key={item} className="text-sm">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </CardHeader>
-              <CardDescription className="px-4">{description}</CardDescription>
-              <AnimatePresence>
-                {expandedCard === title && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <CardContent className="space-y-4">{content}</CardContent>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Card>
-            {index === 2 && <AdPlaceholder />}
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

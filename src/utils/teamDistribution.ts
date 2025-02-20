@@ -143,76 +143,57 @@ const assignPlayerToSecondaryPosition = (player: Player, team: Player[], assigne
 };
 
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
+  const considerPositions = localStorage.getItem("considerPositions");
+  const shouldConsiderPositions = considerPositions === null || JSON.parse(considerPositions);
+
   const team1: Player[] = [];
   const team2: Player[] = [];
   const assignedPlayers = new Set<string>();
 
-  // First, distribute goalkeepers
-  distributeGoalkeepers(players, team1, team2, assignedPlayers);
+  if (shouldConsiderPositions) {
+    // First, distribute goalkeepers
+    distributeGoalkeepers(players, team1, team2, assignedPlayers);
 
-  // Handle extra goalkeepers by assigning them to their secondary positions
-  const extraGoalkeepers = players.filter(p => p.position === "Goalkeeper" && !assignedPlayers.has(p.id));
-  for (const gk of extraGoalkeepers) {
-    if (team1.length <= team2.length) {
-      assignPlayerToSecondaryPosition(gk, team1, assignedPlayers);
-    } else {
-      assignPlayerToSecondaryPosition(gk, team2, assignedPlayers);
-    }
-  }
-
-  // Distribute remaining players
-  const availableDefenders = getPlayersForPosition(players, "Defender", assignedPlayers);
-  let team1Defenders = countPlayersByPosition(team1, "Defender");
-  let team2Defenders = countPlayersByPosition(team2, "Defender");
-
-  availableDefenders.forEach(defender => {
-    if (!assignedPlayers.has(defender.id)) {
-      if (team1Defenders < 5 && (team1Defenders <= team2Defenders || team2Defenders >= 5)) {
-        team1.push(defender);
-        assignedPlayers.add(defender.id);
-        team1Defenders++;
-      } else if (team2Defenders < 5) {
-        team2.push(defender);
-        assignedPlayers.add(defender.id);
-        team2Defenders++;
+    // Handle extra goalkeepers by assigning them to their secondary positions
+    const extraGoalkeepers = players.filter(p => p.position === "Goalkeeper" && !assignedPlayers.has(p.id));
+    for (const gk of extraGoalkeepers) {
+      if (team1.length <= team2.length) {
+        assignPlayerToSecondaryPosition(gk, team1, assignedPlayers);
+      } else {
+        assignPlayerToSecondaryPosition(gk, team2, assignedPlayers);
       }
     }
-  });
 
-  const positions = ["Midfielder", "Forward"];
-  positions.forEach(position => {
-    const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
-    
-    if (availablePlayers.length > 0) {
-      const shuffledPlayers = shuffle(availablePlayers);
+    // Distribute remaining players by position
+    const positions = ["Defender", "Midfielder", "Forward"];
+    for (const position of positions) {
+      const availablePlayers = getPlayersForPosition(players, position, assignedPlayers);
       
-      shuffledPlayers.forEach(player => {
-        if (!assignedPlayers.has(player.id)) {
-          if (position === "Midfielder") {
-            const team1Midfielders = countPlayersByPosition(team1, "Midfielder");
-            const team2Midfielders = countPlayersByPosition(team2, "Midfielder");
-            
-            if (team1Midfielders < 5 && team1.length <= team2.length) {
-              team1.push(player);
-            } else if (team2Midfielders < 5) {
-              team2.push(player);
-            }
-          } else {
+      if (availablePlayers.length > 0) {
+        const shuffledPlayers = shuffle(availablePlayers);
+        
+        shuffledPlayers.forEach(player => {
+          if (!assignedPlayers.has(player.id)) {
             if (team1.length <= team2.length) {
               team1.push(player);
             } else {
               team2.push(player);
             }
+            assignedPlayers.add(player.id);
           }
-          assignedPlayers.add(player.id);
-        }
-      });
+        });
+      }
     }
-  });
 
-  const remainingPlayers = players.filter(p => !assignedPlayers.has(p.id));
-  if (remainingPlayers.length > 0) {
-    distributeEvenly(remainingPlayers, team1, team2);
+    // Distribute any remaining players
+    const remainingPlayers = players.filter(p => !assignedPlayers.has(p.id));
+    if (remainingPlayers.length > 0) {
+      distributeEvenly(remainingPlayers, team1, team2);
+    }
+  } else {
+    // If not considering positions, just distribute evenly by rating
+    const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
+    distributeEvenly(sortedPlayers, team1, team2);
   }
 
   return [
