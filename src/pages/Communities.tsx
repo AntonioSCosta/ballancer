@@ -156,15 +156,15 @@ const Communities = () => {
   };
 
   return (
-    <div className="container max-w-6xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold">My Communities</h1>
-          <p className="text-muted-foreground">Join or create communities to organize matches</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">My Communities</h1>
+          <p className="text-sm text-muted-foreground">Join or create communities to organize matches</p>
         </div>
         <Dialog open={isCreating} onOpenChange={setIsCreating}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Create Community
             </Button>
@@ -236,7 +236,7 @@ const Communities = () => {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {communities?.map((community, index) => (
           <motion.div
             key={community.id}
@@ -247,12 +247,12 @@ const Communities = () => {
             className="cursor-pointer"
           >
             <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle>{community.name}</CardTitle>
-                <CardDescription>{community.description}</CardDescription>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">{community.name}</CardTitle>
+                <CardDescription className="line-clamp-2">{community.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <Users className="w-4 h-4 mr-1" />
                     {community.members[0]?.count || 0} members
