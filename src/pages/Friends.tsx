@@ -8,6 +8,7 @@ import { UserPlus, Check, X, Users, Search, Loader2, MessageCircle } from "lucid
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
+import { FriendProfile } from "@/components/FriendProfile";
 
 interface Profile {
   id: string;
@@ -34,7 +35,6 @@ const Friends = () => {
   const [searchUsername, setSearchUsername] = useState("");
   const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null);
 
-  // Fetch friend requests
   const { data: friendRequests, isLoading: isLoadingRequests } = useQuery({
     queryKey: ['friendRequests'],
     queryFn: async () => {
@@ -56,7 +56,6 @@ const Friends = () => {
     },
   });
 
-  // Fetch friends
   const { data: friends, isLoading: isLoadingFriends } = useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
@@ -79,7 +78,6 @@ const Friends = () => {
     },
   });
 
-  // Search users with loading state
   const { data: searchResults, isLoading: isSearching } = useQuery({
     queryKey: ['searchUsers', searchUsername],
     queryFn: async () => {
@@ -98,7 +96,6 @@ const Friends = () => {
     enabled: searchUsername.length >= 3,
   });
 
-  // Send friend request mutation
   const sendRequest = useMutation({
     mutationFn: async (receiverId: string) => {
       const { error } = await supabase
@@ -119,7 +116,6 @@ const Friends = () => {
     },
   });
 
-  // Accept friend request mutation
   const acceptRequest = useMutation({
     mutationFn: async (requestId: string) => {
       const { error } = await supabase
@@ -137,7 +133,6 @@ const Friends = () => {
     },
   });
 
-  // Decline friend request mutation
   const declineRequest = useMutation({
     mutationFn: async (requestId: string) => {
       const { error } = await supabase
