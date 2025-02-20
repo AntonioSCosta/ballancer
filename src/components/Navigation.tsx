@@ -1,5 +1,5 @@
 
-import { Menu, LogOut, UserPlus } from "lucide-react";
+import { Menu, LogOut, UserPlus, Settings, Users } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ export const Navigation = () => {
     { path: "/", label: "Create Player" },
     { path: "/generator", label: "Team Generator" },
     { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
+    { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
     { path: "/help", label: "Help" },
   ];
 

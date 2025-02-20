@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { AuthProvider } from "@/components/AuthProvider";
 import { useAuth } from "@/components/AuthProvider";
 import CreatePlayer from "./pages/CreatePlayer";
@@ -15,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
 import Auth from "./pages/Auth";
 import Friends from "./pages/Friends";
+import Settings from "./pages/Settings";
 
 // Initialize React Query client
 const queryClient = new QueryClient();
@@ -36,7 +36,6 @@ const AppRoutes = () => {
   return (
     <div className="pt-16">
       <Navigation />
-      <ThemeSwitcher />
       <Routes>
         <Route
           path="/auth"
@@ -71,6 +70,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Friends />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           }
         />

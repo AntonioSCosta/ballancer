@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Github, Mail, Loader2 } from "lucide-react";
@@ -74,8 +73,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-4rem)]">
-      <Card className="w-full max-w-md mx-auto">
+    <div className="min-h-screen flex items-center justify-center bg-[url('/photo-1483058712412-4245e9b90334')] bg-cover bg-center">
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/25 backdrop-blur-sm" />
+      <Card className="w-full max-w-md mx-4 relative z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur">
         <Tabs defaultValue="signin" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
