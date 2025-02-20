@@ -44,6 +44,7 @@ const AppRoutes = () => {
         <Route path="/generator" element={<TeamGenerator />} />
         <Route path="/generated-teams" element={<GeneratedTeams />} />
         <Route path="/help" element={<Help />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
 
         {/* Protected routes that require authentication */}
@@ -60,14 +61,6 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Friends />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
             </ProtectedRoute>
           }
         />

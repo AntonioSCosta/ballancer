@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { FriendProfile } from "@/components/FriendProfile";
+import { UserProfile } from "@/components/UserProfile";
 
 interface Profile {
   id: string;
@@ -33,7 +34,7 @@ const Friends = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchUsername, setSearchUsername] = useState("");
-  const [selectedFriend, setSelectedFriend] = useState<Profile | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const { data: friendRequests, isLoading: isLoadingRequests } = useQuery({
     queryKey: ['friendRequests'],
@@ -163,7 +164,7 @@ const Friends = () => {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="friends" className="space-y-4">
+        <TabsContent value="friends">
           <Card>
             <CardHeader>
               <CardTitle>Add New Friends</CardTitle>
@@ -190,7 +191,12 @@ const Friends = () => {
                       key={profile.id}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                     >
-                      <span className="font-medium">{profile.username}</span>
+                      <button
+                        className="font-medium hover:underline"
+                        onClick={() => setSelectedUserId(profile.id)}
+                      >
+                        {profile.username}
+                      </button>
                       <Button
                         size="sm"
                         onClick={() => sendRequest.mutate(profile.id)}
@@ -212,7 +218,7 @@ const Friends = () => {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="mt-6">
             <CardHeader>
               <CardTitle>Your Friends</CardTitle>
             </CardHeader>
@@ -228,7 +234,12 @@ const Friends = () => {
                       key={friendship.id}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                     >
-                      <span className="font-medium">{friendship.friend.username}</span>
+                      <button
+                        className="font-medium hover:underline"
+                        onClick={() => setSelectedUserId(friendship.friend.id)}
+                      >
+                        {friendship.friend.username}
+                      </button>
                       <Button
                         size="sm"
                         variant="secondary"
@@ -267,7 +278,12 @@ const Friends = () => {
                       key={request.id}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                     >
-                      <span className="font-medium">{request.sender.username}</span>
+                      <button
+                        className="font-medium hover:underline"
+                        onClick={() => setSelectedUserId(request.sender.id)}
+                      >
+                        {request.sender.username}
+                      </button>
                       <div className="flex gap-2">
                         <Button
                           size="sm"
@@ -318,6 +334,14 @@ const Friends = () => {
           friend={selectedFriend}
           open={!!selectedFriend}
           onClose={() => setSelectedFriend(null)}
+        />
+      )}
+
+      {selectedUserId && (
+        <UserProfile
+          userId={selectedUserId}
+          open={!!selectedUserId}
+          onClose={() => setSelectedUserId(null)}
         />
       )}
     </div>
