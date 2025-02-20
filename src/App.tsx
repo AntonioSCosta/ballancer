@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import Auth from "./pages/Auth";
 import Friends from "./pages/Friends";
 import Settings from "./pages/Settings";
 import Communities from "./pages/Communities";
+import ProfileSettings from "./pages/ProfileSettings";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +45,7 @@ const AppRoutes = () => {
         <Route path="/generated-teams" element={<GeneratedTeams />} />
         <Route path="/help" element={<Help />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/profile-settings" element={<ProfileSettings />} />
         <Route path="/auth" element={user ? <Navigate to="/" replace /> : <Auth />} />
 
         {/* Protected routes that require authentication */}
