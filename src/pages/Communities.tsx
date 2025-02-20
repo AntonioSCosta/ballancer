@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Users, Calendar, Trophy } from "lucide-react";
+import { Plus, Users, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
@@ -21,9 +21,9 @@ interface Community {
   creator_id: string;
   created_at: string;
   image_url: string | null;
-  _count?: {
-    members: number;
-  };
+  members: {
+    count: number;
+  }[];
 }
 
 const Communities = () => {
@@ -40,31 +40,26 @@ const Communities = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('communities')
-        .select(`
-          *,
-          members:community_members(count)
-        `);
+        .select('*, members:community_members(count)');
       
       if (error) throw error;
-      return data.map(community => ({
-        ...community,
-        _count: {
-          members: community.members[0].count
-        }
-      }));
+      return data as Community[];
     },
   });
 
   const createCommunity = useMutation({
     mutationFn: async (communityData: typeof newCommunity) => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('communities')
         .insert({
           ...communityData,
           creator_id: user?.id,
-        });
+        })
+        .select()
+        .single();
       
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['communities'] });
@@ -161,7 +156,7 @@ const Communities = () => {
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <Users className="w-4 h-4 mr-1" />
-                    {community._count?.members} members
+                    {community.members[0]?.count || 0} members
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />

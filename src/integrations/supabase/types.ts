@@ -9,6 +9,80 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      communities: {
+        Row: {
+          created_at: string
+          creator_id: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communities_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_members: {
+        Row: {
+          community_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friend_requests: {
         Row: {
           created_at: string
@@ -87,6 +161,60 @@ export type Database = {
           },
         ]
       }
+      matches: {
+        Row: {
+          community_id: string
+          created_at: string
+          created_by: string
+          id: string
+          scheduled_for: string
+          status: string
+          team1_players: Json | null
+          team1_score: number | null
+          team2_players: Json | null
+          team2_score: number | null
+        }
+        Insert: {
+          community_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          scheduled_for: string
+          status?: string
+          team1_players?: Json | null
+          team1_score?: number | null
+          team2_players?: Json | null
+          team2_score?: number | null
+        }
+        Update: {
+          community_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          scheduled_for?: string
+          status?: string
+          team1_players?: Json | null
+          team1_score?: number | null
+          team2_players?: Json | null
+          team2_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content: string
@@ -129,24 +257,91 @@ export type Database = {
           },
         ]
       }
+      player_evaluations: {
+        Row: {
+          comment: string | null
+          created_at: string
+          evaluator_id: string
+          id: string
+          match_id: string
+          player_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          evaluator_id: string
+          id?: string
+          match_id: string
+          player_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          evaluator_id?: string
+          id?: string
+          match_id?: string
+          player_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_evaluations_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_evaluations_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
           created_at: string
+          favorite_position: string | null
           id: string
+          losses: number | null
+          matches_played: number | null
           username: string | null
+          wins: number | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          favorite_position?: string | null
           id: string
+          losses?: number | null
+          matches_played?: number | null
           username?: string | null
+          wins?: number | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
+          favorite_position?: string | null
           id?: string
+          losses?: number | null
+          matches_played?: number | null
           username?: string | null
+          wins?: number | null
         }
         Relationships: []
       }

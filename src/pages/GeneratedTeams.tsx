@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -40,7 +39,6 @@ const GeneratedTeams = () => {
     const distributedTeams = distributePlayersByPosition(selectedPlayers);
     setTeams(distributedTeams);
 
-    // Initialize player goals
     const initialGoals: Record<string, number> = {};
     selectedPlayers.forEach(player => {
       initialGoals[player.id] = 0;
@@ -131,7 +129,7 @@ const GeneratedTeams = () => {
             </div>
           </TabsContent>
           <TabsContent value="comparison">
-            {teams.length === 2 && <TeamsComparison teams={teams} />}
+            {teams.length === 2 && <TeamsComparison team1={teams[0]} team2={teams[1]} />}
           </TabsContent>
         </Tabs>
       </div>
