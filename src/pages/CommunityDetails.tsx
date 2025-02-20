@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Users, Calendar, ArrowLeft, Send, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/components/AuthProvider";
-import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface CommunityMember {
   user_id: string;
@@ -36,7 +36,7 @@ interface Match {
   team2_players: any[];
 }
 
-interface Message {
+interface CommunityMessage {
   id: string;
   content: string;
   created_at: string;
@@ -50,6 +50,7 @@ const CommunityDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
   const [activeTab, setActiveTab] = useState("chat");
 
@@ -93,17 +94,11 @@ const CommunityDetails = () => {
     queryKey: ['community-messages', id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('community_messages')
-        .select(`
-          *,
-          sender:profiles(username)
-        `)
-        .eq('community_id', id)
-        .order('created_at', { ascending: false })
+        .rpc('get_community_messages', { community_id: id })
         .limit(50);
       
       if (error) throw error;
-      return data as Message[];
+      return data as CommunityMessage[];
     },
     enabled: !!id
   });
@@ -140,22 +135,19 @@ const CommunityDetails = () => {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      channel.unsubscribe();
     };
-  }, [id]);
+  }, [id, queryClient]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !user?.id) return;
 
     try {
-      const { error } = await supabase
-        .from('community_messages')
-        .insert({
-          content: newMessage.trim(),
-          community_id: id,
-          sender_id: user?.id,
-        });
+      const { error } = await supabase.rpc('send_community_message', {
+        p_community_id: id,
+        p_content: newMessage.trim()
+      });
 
       if (error) throw error;
       setNewMessage("");
