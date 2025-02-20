@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -6,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   Dialog,
   DialogContent,
@@ -13,8 +13,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Users, Calendar, ArrowLeft } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader2, Users, Calendar, ArrowLeft, Send, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
+import { useAuth } from "@/components/AuthProvider";
+import { useEffect } from "react";
 
 interface CommunityMember {
   user_id: string;
@@ -33,10 +36,22 @@ interface Match {
   team2_players: any[];
 }
 
+interface Message {
+  id: string;
+  content: string;
+  created_at: string;
+  sender_id: string;
+  sender: {
+    username: string;
+  };
+}
+
 const CommunityDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("overview");
+  const { user } = useAuth();
+  const [newMessage, setNewMessage] = useState("");
+  const [activeTab, setActiveTab] = useState("chat");
 
   const { data: community, isLoading: loadingCommunity } = useQuery({
     queryKey: ['community', id],
@@ -74,6 +89,25 @@ const CommunityDetails = () => {
     enabled: !!id
   });
 
+  const { data: messages, isLoading: loadingMessages } = useQuery({
+    queryKey: ['community-messages', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('community_messages')
+        .select(`
+          *,
+          sender:profiles(username)
+        `)
+        .eq('community_id', id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+      
+      if (error) throw error;
+      return data as Message[];
+    },
+    enabled: !!id
+  });
+
   const { data: matches, isLoading: loadingMatches } = useQuery({
     queryKey: ['community-matches', id],
     queryFn: async () => {
@@ -89,7 +123,48 @@ const CommunityDetails = () => {
     enabled: !!id
   });
 
-  if (loadingCommunity || loadingMembers || loadingMatches) {
+  useEffect(() => {
+    const channel = supabase.channel('community_chat')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'community_messages',
+          filter: `community_id=eq.${id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['community-messages', id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id]);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('community_messages')
+        .insert({
+          content: newMessage.trim(),
+          community_id: id,
+          sender_id: user?.id,
+        });
+
+      if (error) throw error;
+      setNewMessage("");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
+  if (loadingCommunity || loadingMembers || loadingMatches || loadingMessages) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <Loader2 className="w-6 h-6 animate-spin" />
@@ -111,23 +186,65 @@ const CommunityDetails = () => {
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl sm:text-3xl font-bold">{community.name}</h1>
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold">{community.name}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{community.description}</p>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="members">Members</TabsTrigger>
-          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="chat">
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Chat
+          </TabsTrigger>
+          <TabsTrigger value="members">
+            <Users className="w-4 h-4 mr-2" />
+            Members
+          </TabsTrigger>
+          <TabsTrigger value="matches">
+            <Calendar className="w-4 h-4 mr-2" />
+            Matches
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="chat" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>About</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{community.description}</p>
+            <CardContent className="p-4">
+              <ScrollArea className="h-[400px]">
+                <div className="space-y-4">
+                  {messages?.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${
+                        message.sender_id === user?.id ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] px-4 py-2 rounded-lg ${
+                          message.sender_id === user?.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        }`}
+                      >
+                        <p className="text-xs font-medium mb-1">{message.sender.username}</p>
+                        <p className="text-sm">{message.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
+                <Input
+                  placeholder="Type a message..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="submit" size="icon">
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </TabsContent>
@@ -164,7 +281,6 @@ const CommunityDetails = () => {
                 <DialogHeader>
                   <DialogTitle>Schedule New Match</DialogTitle>
                 </DialogHeader>
-                {/* Match scheduling form will be implemented in the next iteration */}
                 <p className="text-muted-foreground">Match scheduling coming soon!</p>
               </DialogContent>
             </Dialog>

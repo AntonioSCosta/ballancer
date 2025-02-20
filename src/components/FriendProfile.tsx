@@ -5,8 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Send, MessageCircle } from "lucide-react";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Loader2, Send, MessageCircle, UserMinus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
@@ -34,6 +42,7 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState("");
+  const [showUnfriendDialog, setShowUnfriendDialog] = useState(false);
   const [channel, setChannel] = useState<any>(null);
 
   // Fetch messages
@@ -82,6 +91,26 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
     },
   });
 
+  // Unfriend mutation
+  const unfriend = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('friends')
+        .delete()
+        .or(`and(user_id_1.eq.${user?.id},user_id_2.eq.${friend.id}),and(user_id_1.eq.${friend.id},user_id_2.eq.${user?.id})`);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['friends'] });
+      onClose();
+      toast.success(`Unfriended ${friend.username}`);
+    },
+    onError: (error: any) => {
+      toast.error(error.message);
+    },
+  });
+
   // Handle real-time updates
   useEffect(() => {
     if (!open || !user || !friend.id || user.id === friend.id) return;
@@ -115,69 +144,110 @@ export const FriendProfile = ({ friend, open, onClose }: FriendProfileProps) => 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <MessageCircle className="w-5 h-5" />
-            Chat with {friend.username}
-          </DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                Chat with {friend.username}
+              </div>
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={() => setShowUnfriendDialog(true)}
+              >
+                <UserMinus className="w-4 h-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
 
-        <Card>
-          <CardContent className="p-4">
-            <ScrollArea className="h-[300px] pr-4">
-              {isLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {messages?.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${
-                        message.sender_id === user?.id ? "justify-end" : "justify-start"
-                      }`}
-                    >
+          <Card>
+            <CardContent className="p-4">
+              <ScrollArea className="h-[300px] pr-4">
+                {isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages?.map((message) => (
                       <div
-                        className={`max-w-[80%] px-4 py-2 rounded-lg ${
-                          message.sender_id === user?.id
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
+                        key={message.id}
+                        className={`flex ${
+                          message.sender_id === user?.id ? "justify-end" : "justify-start"
                         }`}
                       >
-                        <p className="text-sm">{message.content}</p>
+                        <div
+                          className={`max-w-[80%] px-4 py-2 rounded-lg ${
+                            message.sender_id === user?.id
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <p className="text-sm">{message.content}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  {!messages?.length && (
-                    <p className="text-center text-muted-foreground py-4">
-                      No messages yet. Start the conversation!
-                    </p>
-                  )}
-                </div>
-              )}
-            </ScrollArea>
-
-            <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
-              <Input
-                placeholder="Type a message..."
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                className="flex-1"
-              />
-              <Button type="submit" size="icon" disabled={sendMessage.isPending || user?.id === friend.id}>
-                {sendMessage.isPending ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Send className="w-4 h-4" />
+                    ))}
+                    {!messages?.length && (
+                      <p className="text-center text-muted-foreground py-4">
+                        No messages yet. Start the conversation!
+                      </p>
+                    )}
+                  </div>
                 )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </DialogContent>
-    </Dialog>
+              </ScrollArea>
+
+              <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
+                <Input
+                  placeholder="Type a message..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="flex-1"
+                />
+                <Button type="submit" size="icon" disabled={sendMessage.isPending || user?.id === friend.id}>
+                  {sendMessage.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showUnfriendDialog} onOpenChange={setShowUnfriendDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Unfriend {friend.username}</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to remove {friend.username} from your friends list? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button 
+              variant="destructive"
+              onClick={() => unfriend.mutate()}
+              disabled={unfriend.isPending}
+            >
+              {unfriend.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Unfriending...
+                </>
+              ) : (
+                'Unfriend'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
