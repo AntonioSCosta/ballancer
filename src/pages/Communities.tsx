@@ -1,20 +1,10 @@
 
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Users, Calendar } from "lucide-react";
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
-import { motion } from "framer-motion";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useNavigate } from "react-router-dom";
+import CreateCommunityDialog from "@/components/community/CreateCommunityDialog";
+import CommunityCard from "@/components/community/CommunityCard";
 
 interface Community {
   id: string;
@@ -39,13 +29,6 @@ interface Friend {
 const Communities = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [isCreating, setIsCreating] = useState(false);
-  const [newCommunity, setNewCommunity] = useState({
-    name: "",
-    description: "",
-  });
-  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
 
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
@@ -95,80 +78,6 @@ const Communities = () => {
     enabled: !!user?.id
   });
 
-  const createCommunity = useMutation({
-    mutationFn: async ({ communityData, memberIds }: { communityData: typeof newCommunity, memberIds: string[] }) => {
-      // First create the community
-      const { data: community, error: communityError } = await supabase
-        .from('communities')
-        .insert({
-          ...communityData,
-          creator_id: user?.id,
-        })
-        .select()
-        .single();
-      
-      if (communityError) throw communityError;
-
-      // Add creator as admin member
-      const { error: creatorError } = await supabase
-        .from('community_members')
-        .insert({
-          community_id: community.id,
-          user_id: user?.id,
-          role: 'admin'
-        });
-      
-      if (creatorError) throw creatorError;
-
-      // Add selected friends as members if any
-      if (memberIds.length > 0) {
-        const membersToAdd = memberIds.map(memberId => ({
-          community_id: community.id,
-          user_id: memberId,
-          role: 'member'
-        }));
-
-        const { error: membersError } = await supabase
-          .from('community_members')
-          .insert(membersToAdd);
-        
-        if (membersError) throw membersError;
-      }
-
-      return community;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-communities'] });
-      setIsCreating(false);
-      setNewCommunity({ name: "", description: "" });
-      setSelectedFriends([]);
-      toast.success("Community created successfully!");
-    },
-    onError: (error: any) => {
-      toast.error(error.message);
-    },
-  });
-
-  const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCommunity.name.trim() || !newCommunity.description.trim()) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-    createCommunity.mutate({
-      communityData: newCommunity,
-      memberIds: selectedFriends,
-    });
-  };
-
-  const toggleFriend = (friendId: string) => {
-    setSelectedFriends(prev =>
-      prev.includes(friendId)
-        ? prev.filter(id => id !== friendId)
-        : [...prev, friendId]
-    );
-  };
-
   const handleCommunityClick = (communityId: string) => {
     navigate(`/communities/${communityId}`);
   };
@@ -180,109 +89,17 @@ const Communities = () => {
           <h1 className="text-2xl sm:text-3xl font-bold">My Communities</h1>
           <p className="text-sm text-muted-foreground">Join or create communities to organize matches</p>
         </div>
-        <Dialog open={isCreating} onOpenChange={setIsCreating}>
-          <DialogTrigger asChild>
-            <Button className="w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Community
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <form onSubmit={handleCreate}>
-              <DialogHeader>
-                <DialogTitle>Create New Community</DialogTitle>
-                <DialogDescription>
-                  Create a new community to organize matches and connect with players
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={newCommunity.name}
-                    onChange={(e) => setNewCommunity(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter community name"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={newCommunity.description}
-                    onChange={(e) => setNewCommunity(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Describe your community"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Invite Friends</Label>
-                  <ScrollArea className="h-[200px] border rounded-md p-4">
-                    <div className="space-y-2">
-                      {friends?.map((friendship) => (
-                        <div
-                          key={friendship.id}
-                          className="flex items-center space-x-2"
-                        >
-                          <Checkbox
-                            checked={selectedFriends.includes(friendship.friend.id)}
-                            onCheckedChange={() => toggleFriend(friendship.friend.id)}
-                          />
-                          <Label>{friendship.friend.username}</Label>
-                        </div>
-                      ))}
-                      {!friends?.length && (
-                        <p className="text-sm text-muted-foreground">
-                          Add friends to invite them to your community
-                        </p>
-                      )}
-                    </div>
-                  </ScrollArea>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  type="submit"
-                  disabled={createCommunity.isPending}
-                >
-                  {createCommunity.isPending ? "Creating..." : "Create Community"}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <CreateCommunityDialog friends={friends} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {communities?.map((community, index) => (
-          <motion.div
+          <CommunityCard
             key={community.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-            onClick={() => handleCommunityClick(community.id)}
-            className="cursor-pointer"
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardHeader className="p-4 sm:p-6">
-                <CardTitle className="text-lg sm:text-xl">{community.name}</CardTitle>
-                <CardDescription className="line-clamp-2">{community.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
-                <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Users className="w-4 h-4 mr-1" />
-                    {community.members[0]?.count || 0} members
-                  </div>
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {new Date(community.created_at).toLocaleDateString()}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+            community={community}
+            index={index}
+            onClick={handleCommunityClick}
+          />
         ))}
       </div>
     </div>
