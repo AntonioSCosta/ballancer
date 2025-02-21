@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,7 @@ interface Profile {
   username: string | null;
   avatar_url: string | null;
   bio: string | null;
-  favorite_position: string | null;
+  favorite_position: PlayerPosition | null;
   attributes: {
     speed: number;
     shooting: number;
@@ -74,14 +75,8 @@ const ProfileSettings = () => {
 
       return {
         ...data,
-        attributes: data.attributes || {
-          speed: 50,
-          shooting: 50,
-          passing: 50,
-          dribbling: 50,
-          defending: 50,
-          physical: 50,
-        },
+        attributes: data.attributes || DEFAULT_ATTRIBUTES,
+        favorite_position: (data.favorite_position as PlayerPosition) || "Forward"
       } as Profile;
     },
     enabled: !!user?.id,
@@ -94,10 +89,10 @@ const ProfileSettings = () => {
         username: profile.username || "",
         avatar_url: profile.avatar_url || "",
         bio: profile.bio || "",
-        favorite_position: (profile.favorite_position as string) || "Forward",
+        favorite_position: profile.favorite_position || "Forward",
         attributes: {
           ...DEFAULT_ATTRIBUTES,
-          ...(profile.attributes as typeof DEFAULT_ATTRIBUTES || {}),
+          ...(profile.attributes || {}),
         },
         matches_played: profile.matches_played || 0,
         wins: profile.wins || 0,
@@ -174,7 +169,7 @@ const ProfileSettings = () => {
               <Label htmlFor="username">Username</Label>
               <Input
                 id="username"
-                value={formData.username}
+                value={formData.username || ""}
                 onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                 placeholder="Enter your username"
               />
@@ -183,8 +178,8 @@ const ProfileSettings = () => {
             <div className="space-y-2">
               <Label htmlFor="position">Preferred Position</Label>
               <Select
-                value={formData.favorite_position}
-                onValueChange={(value: string) => 
+                value={formData.favorite_position || "Forward"}
+                onValueChange={(value: PlayerPosition) => 
                   setFormData(prev => ({ ...prev, favorite_position: value }))
                 }
               >
@@ -201,7 +196,7 @@ const ProfileSettings = () => {
             </div>
 
             <PlayerAttributes
-              position={formData.favorite_position}
+              position={formData.favorite_position || "Forward"}
               attributes={formData.attributes}
               onAttributeChange={handleAttributeChange}
             />
