@@ -206,7 +206,10 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          location: string
+          pitch_price: number
           scheduled_for: string
+          start_time: string
           status: string
           team1_players: Json | null
           team1_score: number | null
@@ -218,7 +221,10 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          location: string
+          pitch_price: number
           scheduled_for: string
+          start_time: string
           status?: string
           team1_players?: Json | null
           team1_score?: number | null
@@ -230,7 +236,10 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          location?: string
+          pitch_price?: number
           scheduled_for?: string
+          start_time?: string
           status?: string
           team1_players?: Json | null
           team1_score?: number | null
