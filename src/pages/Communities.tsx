@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,21 +104,29 @@ const Communities = () => {
       
       if (communityError) throw communityError;
 
-      // Add creator as a member
-      const membersToAdd = [
-        { community_id: community.id, user_id: user?.id, role: 'admin' },
-        ...memberIds.map(memberId => ({
+      const { error: creatorError } = await supabase
+        .from('community_members')
+        .insert({
+          community_id: community.id,
+          user_id: user?.id,
+          role: 'admin'
+        });
+      
+      if (creatorError) throw creatorError;
+
+      if (memberIds.length > 0) {
+        const membersToAdd = memberIds.map(memberId => ({
           community_id: community.id,
           user_id: memberId,
           role: 'member'
-        }))
-      ];
+        }));
 
-      const { error: membersError } = await supabase
-        .from('community_members')
-        .insert(membersToAdd);
-      
-      if (membersError) throw membersError;
+        const { error: membersError } = await supabase
+          .from('community_members')
+          .insert(membersToAdd);
+        
+        if (membersError) throw membersError;
+      }
 
       return community;
     },
