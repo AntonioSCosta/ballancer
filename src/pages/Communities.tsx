@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Users, Calendar, Check } from "lucide-react";
+import { Plus, Users, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
@@ -56,6 +57,8 @@ const Communities = () => {
 
       if (memberError) throw memberError;
 
+      if (!memberData?.length) return [];
+
       const communityIds = memberData.map(m => m.community_id);
 
       const { data, error } = await supabase
@@ -89,10 +92,12 @@ const Communities = () => {
         friend: friendship.user_id_1 === user?.id ? friendship.friend : friendship.friend
       })) as Friend[];
     },
+    enabled: !!user?.id
   });
 
   const createCommunity = useMutation({
     mutationFn: async ({ communityData, memberIds }: { communityData: typeof newCommunity, memberIds: string[] }) => {
+      // First create the community
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
@@ -104,6 +109,7 @@ const Communities = () => {
       
       if (communityError) throw communityError;
 
+      // Add creator as admin member
       const { error: creatorError } = await supabase
         .from('community_members')
         .insert({
@@ -114,6 +120,7 @@ const Communities = () => {
       
       if (creatorError) throw creatorError;
 
+      // Add selected friends as members if any
       if (memberIds.length > 0) {
         const membersToAdd = memberIds.map(memberId => ({
           community_id: community.id,
@@ -144,6 +151,10 @@ const Communities = () => {
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newCommunity.name.trim() || !newCommunity.description.trim()) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
     createCommunity.mutate({
       communityData: newCommunity,
       memberIds: selectedFriends,
