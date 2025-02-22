@@ -37,27 +37,40 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
 
   const createCommunity = useMutation({
     mutationFn: async ({ communityData, memberIds }: { communityData: typeof newCommunity, memberIds: string[] }) => {
+      if (!user?.id) {
+        throw new Error("You must be logged in to create a community");
+      }
+
+      // First create the community
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
           ...communityData,
-          creator_id: user?.id,
+          creator_id: user.id,
         })
         .select()
         .single();
       
-      if (communityError) throw communityError;
+      if (communityError) {
+        console.error("Error creating community:", communityError);
+        throw new Error("Failed to create community");
+      }
 
+      // Add creator as admin member
       const { error: creatorError } = await supabase
         .from('community_members')
         .insert({
           community_id: community.id,
-          user_id: user?.id,
+          user_id: user.id,
           role: 'admin'
         });
       
-      if (creatorError) throw creatorError;
+      if (creatorError) {
+        console.error("Error adding creator as member:", creatorError);
+        throw new Error("Failed to add creator as member");
+      }
 
+      // Add selected friends as members if any
       if (memberIds.length > 0) {
         const membersToAdd = memberIds.map(memberId => ({
           community_id: community.id,
@@ -69,7 +82,10 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
           .from('community_members')
           .insert(membersToAdd);
         
-        if (membersError) throw membersError;
+        if (membersError) {
+          console.error("Error adding members:", membersError);
+          throw new Error("Failed to add members");
+        }
       }
 
       return community;
@@ -81,17 +97,24 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
       setSelectedFriends([]);
       toast.success("Community created successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message);
+      console.error("Community creation error:", error);
     },
   });
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.id) {
+      toast.error("You must be logged in to create a community");
+      return;
+    }
+    
     if (!newCommunity.name.trim() || !newCommunity.description.trim()) {
       toast.error("Please fill in all required fields");
       return;
     }
+
     createCommunity.mutate({
       communityData: newCommunity,
       memberIds: selectedFriends,
