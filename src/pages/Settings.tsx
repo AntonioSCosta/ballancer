@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [pendingTheme, setPendingTheme] = useState(theme);
   const [considerPositions, setConsiderPositions] = useState(() => {
     const stored = localStorage.getItem("considerPositions");
     return stored ? JSON.parse(stored) : true;
@@ -20,14 +19,6 @@ const Settings = () => {
   useEffect(() => {
     localStorage.setItem("considerPositions", JSON.stringify(considerPositions));
   }, [considerPositions]);
-
-  const handleThemeChange = () => {
-    const newTheme = pendingTheme === 'dark' ? 'light' : 'dark';
-    setPendingTheme(newTheme);
-    setTimeout(() => {
-      toggleTheme();
-    }, 200);
-  };
 
   return (
     <div className="container max-w-2xl mx-auto p-6 space-y-8">
@@ -58,8 +49,8 @@ const Settings = () => {
             <div className="flex items-center space-x-2">
               <Sun className="h-4 w-4" />
               <Switch
-                checked={pendingTheme === 'dark'}
-                onCheckedChange={handleThemeChange}
+                checked={theme === 'dark'}
+                onCheckedChange={toggleTheme}
               />
               <Moon className="h-4 w-4" />
             </div>
