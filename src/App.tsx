@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { AuthProvider } from "@/components/AuthProvider";
 import { useAuth } from "@/components/AuthProvider";
 import CreatePlayer from "./pages/CreatePlayer";
@@ -39,6 +40,7 @@ const AppRoutes = () => {
   return (
     <div className="pt-16">
       <Navigation />
+      <ThemeSwitcher />
       <Routes>
         {/* Public routes that don't require authentication */}
         <Route path="/" element={<CreatePlayer />} />
