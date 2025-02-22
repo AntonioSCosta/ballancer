@@ -13,6 +13,7 @@ import { PlayerPosition } from "@/components/PlayerCard";
 import PlayerAttributes from "@/components/PlayerAttributes";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import PlayerPhotoUpload from "@/components/PlayerPhotoUpload";
 
 interface Profile {
   id: string;
@@ -59,10 +60,8 @@ const ProfileSettings = () => {
     losses: 0,
     created_at: "",
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
-  const { data: profile, isLoading } = useQuery<Profile>({
+  const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -84,21 +83,7 @@ const ProfileSettings = () => {
 
   useEffect(() => {
     if (profile) {
-      setFormData({
-        id: profile.id,
-        username: profile.username || "",
-        avatar_url: profile.avatar_url || "",
-        bio: profile.bio || "",
-        favorite_position: profile.favorite_position || "Forward",
-        attributes: {
-          ...DEFAULT_ATTRIBUTES,
-          ...(profile.attributes || {}),
-        },
-        matches_played: profile.matches_played || 0,
-        wins: profile.wins || 0,
-        losses: profile.losses || 0,
-        created_at: profile.created_at || "",
-      });
+      setFormData(profile);
     }
   }, [profile]);
 
@@ -119,6 +104,47 @@ const ProfileSettings = () => {
       toast.error(error.message);
     },
   });
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file || !user?.id) return;
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`;
+
+      // Upload the file to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update the profile with the new avatar URL
+      setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
+      
+      // Save immediately
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast.success('Profile photo updated successfully');
+    } catch (error: any) {
+      console.error('Error uploading photo:', error);
+      toast.error('Failed to update profile photo');
+    }
+  };
 
   const handleAttributeChange = (attr: string, value: number[]) => {
     setFormData(prev => ({
@@ -165,6 +191,13 @@ const ProfileSettings = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <PlayerPhotoUpload
+              photo={formData.avatar_url || ""}
+              hasPhoto={!!formData.avatar_url}
+              name="avatar"
+              onPhotoChange={handlePhotoChange}
+            />
+
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
               <Input
