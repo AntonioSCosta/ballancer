@@ -1,5 +1,4 @@
 
-import { Slider } from "@/components/ui/slider";
 import { PlayerPosition } from "@/components/PlayerCard";
 import { renderAttributes } from "@/utils/playerUtils";
 
@@ -7,10 +6,17 @@ interface PlayerAttributesProps {
   position: PlayerPosition;
   secondaryPosition?: PlayerPosition;
   attributes: Record<string, number>;
-  onAttributeChange: (attr: string, value: number[]) => void;
+  onAttributeChange?: (attr: string, value: number[]) => void;
+  readOnly?: boolean;
 }
 
-const PlayerAttributes = ({ position, secondaryPosition, attributes, onAttributeChange }: PlayerAttributesProps) => {
+const PlayerAttributes = ({ 
+  position, 
+  secondaryPosition, 
+  attributes, 
+  onAttributeChange,
+  readOnly = false 
+}: PlayerAttributesProps) => {
   return (
     <div className="space-y-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Attributes</h2>
@@ -25,13 +31,25 @@ const PlayerAttributes = ({ position, secondaryPosition, attributes, onAttribute
                 {attributes[key]}
               </span>
             </div>
-            <Slider
-              value={[attributes[key]]}
-              onValueChange={(value) => onAttributeChange(key, value)}
-              max={100}
-              step={1}
-              className="[&_[role=slider]]:bg-primary"
-            />
+            {readOnly ? (
+              <div className="relative w-full h-2 bg-secondary rounded-full">
+                <div 
+                  className="absolute h-full bg-primary rounded-full" 
+                  style={{ width: `${attributes[key]}%` }}
+                />
+              </div>
+            ) : (
+              <div className="[&_[role=slider]]:bg-primary">
+                {onAttributeChange && (
+                  <div className="relative w-full h-2 bg-secondary rounded-full">
+                    <div 
+                      className="absolute h-full bg-primary rounded-full" 
+                      style={{ width: `${attributes[key]}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -40,3 +58,4 @@ const PlayerAttributes = ({ position, secondaryPosition, attributes, onAttribute
 };
 
 export default PlayerAttributes;
+

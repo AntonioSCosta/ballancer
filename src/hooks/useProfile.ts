@@ -95,16 +95,6 @@ export const useProfile = () => {
     }
   };
 
-  const handleAttributeChange = (attr: string, value: number[]) => {
-    setFormData(prev => ({
-      ...prev,
-      attributes: {
-        ...prev.attributes,
-        [attr]: value[0],
-      },
-    }));
-  };
-
   const handleFormDataChange = (updates: Partial<Profile>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
@@ -115,8 +105,8 @@ export const useProfile = () => {
     isLoading: isLoading || updateProfile.isPending,
     updateProfile,
     handlePhotoChange,
-    handleAttributeChange,
     handleFormDataChange,
     setFormData,
   };
 };
+

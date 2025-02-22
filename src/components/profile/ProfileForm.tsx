@@ -33,7 +33,7 @@ const ProfileForm = ({
         <CardHeader>
           <CardTitle>Profile Information</CardTitle>
           <CardDescription>
-            Manage your profile information and attributes
+            Manage your profile information. Attributes can only be changed through player evaluations.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -51,6 +51,16 @@ const ProfileForm = ({
               value={formData.username || ""}
               onChange={(e) => onFormDataChange({ username: e.target.value })}
               placeholder="Enter your username"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Input
+              id="bio"
+              value={formData.bio || ""}
+              onChange={(e) => onFormDataChange({ bio: e.target.value })}
+              placeholder="Tell us about yourself"
             />
           </div>
 
@@ -77,7 +87,7 @@ const ProfileForm = ({
           <PlayerAttributes
             position={formData.favorite_position || "Forward"}
             attributes={formData.attributes}
-            onAttributeChange={onAttributeChange}
+            readOnly={true}
           />
 
           <div className="flex justify-end pt-6 border-t">
@@ -102,3 +112,4 @@ const ProfileForm = ({
 };
 
 export default ProfileForm;
+

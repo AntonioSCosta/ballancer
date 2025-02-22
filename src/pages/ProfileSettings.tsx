@@ -14,7 +14,6 @@ const ProfileSettings = () => {
     isLoading,
     updateProfile,
     handlePhotoChange,
-    handleAttributeChange,
     handleFormDataChange,
     setFormData,
   } = useProfile();
@@ -48,11 +47,12 @@ const ProfileSettings = () => {
         isLoading={isLoading}
         onSubmit={handleSubmit}
         onPhotoChange={handlePhotoChange}
-        onAttributeChange={handleAttributeChange}
         onFormDataChange={handleFormDataChange}
+        onAttributeChange={() => {}}
       />
     </div>
   );
 };
 
 export default ProfileSettings;
+
