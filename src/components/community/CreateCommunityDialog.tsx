@@ -38,8 +38,12 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
   const createCommunity = useMutation({
     mutationFn: async ({ communityData, memberIds }: { communityData: typeof newCommunity, memberIds: string[] }) => {
       if (!user?.id) {
-        throw new Error("You must be logged in to create a community");
+        console.error("User ID is undefined");
+        toast.error("You must be logged in to create a community");
+        throw new Error("User ID is missing");
       }
+  
+      console.log("Creating community with user ID:", user.id);
 
       // First create the community
       const { data: community, error: communityError } = await supabase
