@@ -50,6 +50,9 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
         })
         .select()
         .single();
+
+      console.log("Supabase Response:", { community, communityError });
+      
       
       if (communityError) {
         console.error("Error creating community:", communityError);
