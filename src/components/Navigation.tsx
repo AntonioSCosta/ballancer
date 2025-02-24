@@ -1,72 +1,153 @@
-
-import { Menu, LogOut, UserPlus, Settings, Users, PlusCircle, UsersRound, HelpCircle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import ThemeSwitcher from "./ThemeSwitcher";
+import { useAuth } from "./AuthProvider";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export const Navigation = () => {
+const Navigation = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useAuth();
 
-  // Define navigation menu items
-  const menuItems = [
-    { path: "/", label: "Create Player", icon: <PlusCircle className="w-4 h-4 mr-2" /> },
-    { path: "/generator", label: "Team Generator", icon: <UsersRound className="w-4 h-4 mr-2" /> },
-    { path: "/communities", label: "Communities", icon: <Users className="w-4 h-4 mr-2" /> },
-    { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
-    { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
-    { path: "/help", label: "Help", icon: <HelpCircle className="w-4 h-4 mr-2" /> },
-  ];
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
+  const { data: notifications } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      
       if (error) throw error;
-      navigate("/auth");
-      toast.success("Logged out successfully");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
-  };
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const unreadCount = notifications?.filter(n => !n.read_at).length || 0;
 
   return (
-    <nav className="fixed top-0 left-0 p-4 z-50">
-      <DropdownMenu>
-        <DropdownMenuTrigger className="p-2 rounded-lg bg-white dark:bg-secondary dark:hover:bg-secondary/80 shadow-lg hover:bg-gray-50 transition-colors">
-          <Menu className="w-6 h-6 text-gray-700 dark:text-gray-100" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 mt-2 dark:bg-secondary">
-          {menuItems.map((item) => (
-            <DropdownMenuItem key={item.path} className="p-0">
-              <Link
-                to={item.path}
-                className={`w-full px-4 py-2 text-sm flex items-center ${
-                  location.pathname === item.path
-                    ? "text-primary font-medium dark:text-primary-foreground"
-                    : "text-gray-700 dark:text-gray-100"
-                } hover:bg-accent dark:hover:bg-accent/20`}
-              >
-                {item.icon}
-                {item.label}
+    <nav className="border-b">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
+            <div className="shrink-0 flex items-center">
+              <Link to="/">
+                <span className="font-bold">Footy Finder</span>
               </Link>
-            </DropdownMenuItem>
-          ))}
-          {user && (
-            <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </div>
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+              <Link
+                to="/communities"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === "/communities"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                Communities
+              </Link>
+              <Link
+                to="/friends"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === "/friends"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
+              >
+                Friends
+              </Link>
+              {user && (
+                <Link
+                  to="/matches"
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    location.pathname === "/matches"
+                      ? "border-primary text-primary"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  Matches
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {user && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="icon" className="relative">
+                    <Bell className="h-4 w-4" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80">
+                  {notifications?.length ? (
+                    notifications.map((notification) => (
+                      <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-4">
+                        <div className="font-medium">{notification.content}</div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <DropdownMenuItem disabled>
+                      No notifications
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            
+            <ThemeSwitcher />
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Avatar>
+                      <AvatarImage src={user?.user_metadata?.avatar_url as string} />
+                      <AvatarFallback>{user?.user_metadata?.username?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => supabase.auth.signOut()}>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="space-x-2">
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">Register</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </nav>
   );
 };
+
+export default Navigation;
