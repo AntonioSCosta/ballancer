@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Profile, DEFAULT_ATTRIBUTES } from "@/types/profile";
+import { Profile } from "@/types/profile";
+import { DEFAULT_ATTRIBUTES } from "@/utils/defaultAttributes";
 import { useAuth } from "@/components/AuthProvider";
 
 export const useProfile = () => {
@@ -109,4 +110,3 @@ export const useProfile = () => {
     setFormData,
   };
 };
-

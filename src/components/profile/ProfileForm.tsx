@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { PlayerPosition } from "@/components/PlayerCard";
+import { PlayerPosition } from "@/types/player";
 import PlayerAttributes from "@/components/PlayerAttributes";
 import PlayerPhotoUpload from "@/components/PlayerPhotoUpload";
 import { Profile } from "@/types/profile";
