@@ -1,6 +1,5 @@
-
 import { Link, useLocation } from "react-router-dom";
-import { ThemeSwitcher } from "./ThemeSwitcher";
+import ThemeSwitcher from "./ThemeSwitcher";
 import { useAuth } from "./AuthProvider";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -14,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Notification } from "@/types/notification";
 
 const Navigation = () => {
   const location = useLocation();
@@ -30,7 +28,7 @@ const Navigation = () => {
         .limit(5);
       
       if (error) throw error;
-      return data as Notification[];
+      return data;
     },
     enabled: !!user,
   });
