@@ -9,6 +9,19 @@ export interface PlayerAttributes {
   defending: number;
   physical: number;
   mental: number;
+  handling?: number;
+  diving?: number;
+  positioning?: number;
+  reflexes?: number;
+  heading?: number;
+}
+
+export interface PlayerStats {
+  matches: number;
+  goals: number;
+  assists: number;
+  cleanSheets: number;
+  rating: number;
 }
 
 export interface Player {
@@ -18,4 +31,5 @@ export interface Player {
   photo?: string;
   rating: number;
   attributes: PlayerAttributes;
+  stats?: PlayerStats;
 }

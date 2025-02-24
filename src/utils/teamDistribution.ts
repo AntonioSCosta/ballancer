@@ -1,6 +1,6 @@
 
 import type { Player } from "@/types/player";
-import type { Team } from "@/types/team";
+import { Team, calculateTeamRating } from "@/types/team";
 import { determinePlayerPosition } from "./positionUtils";
 
 export const distributePlayersByPosition = (players: Player[]): Team[] => {
@@ -18,13 +18,6 @@ export const distributePlayersByPosition = (players: Player[]): Team[] => {
       team2Players.push(player);
     }
   });
-
-  // Calculate team ratings
-  const calculateTeamRating = (teamPlayers: Player[]) => {
-    return Math.round(
-      teamPlayers.reduce((sum, player) => sum + player.rating, 0) / teamPlayers.length
-    );
-  };
 
   const teams: Team[] = [
     {
