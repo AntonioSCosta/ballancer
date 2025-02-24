@@ -29,3 +29,27 @@ export const getPositionColor = (position: string): string => {
   };
   return colors[position as keyof typeof colors] || "bg-gray-500";
 };
+
+export const determinePlayerPosition = (
+  player: Player,
+  currentDefenders: number,
+  currentMidfielders: number
+): string => {
+  // If player is a goalkeeper, keep them as goalkeeper
+  if (player.position === "Goalkeeper") {
+    return "Goalkeeper";
+  }
+
+  // If we need defenders (less than 4), prioritize defensive positions
+  if (currentDefenders < 4 && (player.position === "Defender" || player.attributes.defending > 70)) {
+    return "Defender";
+  }
+
+  // If we need midfielders (less than 3), and player has good passing
+  if (currentMidfielders < 3 && (player.position === "Midfielder" || player.attributes.passing > 70)) {
+    return "Midfielder";
+  }
+
+  // Default to forward if no other position is assigned
+  return "Forward";
+};
