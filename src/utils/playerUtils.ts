@@ -1,4 +1,4 @@
-import type { Player, PlayerPosition } from '@/types/player';
+import { Player, PlayerPosition } from "@/components/PlayerCard";
 
 export const calculateRating = (attrs: Record<string, number>, pos: PlayerPosition) => {
   if (pos === "Goalkeeper") {

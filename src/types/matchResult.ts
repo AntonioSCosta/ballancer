@@ -1,13 +1,10 @@
 
-import { Team } from "./team";
+import { Team } from "@/utils/teamDistribution";
 
 export interface MatchResult {
-  id: string;
-  winner: Team;
-  loser: Team;
   date: string;
-  score: {
-    winner: number;
-    loser: number;
-  };
+  teams: Team[];
+  winner: number;
+  playerIds: string[];
+  playerGoals: Record<string, number>;
 }
