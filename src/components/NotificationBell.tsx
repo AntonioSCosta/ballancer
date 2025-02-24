@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
+import type { Notification } from "@/types/notification";
 
 export const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,7 @@ export const NotificationBell = () => {
         .limit(5);
       
       if (error) throw error;
-      return data;
+      return data as Notification[];
     },
   });
 
