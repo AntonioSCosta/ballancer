@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Team } from "@/types/team";
-import { Player } from "./PlayerCard";
+import type { Player } from "@/types/player";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, Legend } from 'recharts';
 
 interface TeamsComparisonProps {

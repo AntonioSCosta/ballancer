@@ -1,22 +1,31 @@
+import type { Player } from '@/types/player';
 
-import { Player } from "@/components/PlayerCard";
-
-export const determinePlayerPosition = (player: Player, defenders: number, midfielders: number) => {
-  if (player.position === "Goalkeeper") return "Goalkeeper";
-  
-  if (player.position === "Defender") return "Defender";
-  
-  if (defenders < 3 && player.secondaryPosition === "Defender") {
-    return "Defender";
-  }
-  
-  if (player.position === "Midfielder" && midfielders < 5) {
-    return "Midfielder";
-  }
-  
-  if (player.secondaryPosition === "Midfielder" && midfielders < 5) {
-    return "Midfielder";
-  }
-  
+export const getPlayerPosition = (player: Player): string => {
   return player.position;
+};
+
+export const isPlayerForward = (player: Player): boolean => {
+  return player.position === "Forward";
+};
+
+export const isPlayerMidfielder = (player: Player): boolean => {
+  return player.position === "Midfielder";
+};
+
+export const isPlayerDefender = (player: Player): boolean => {
+  return player.position === "Defender";
+};
+
+export const isPlayerGoalkeeper = (player: Player): boolean => {
+  return player.position === "Goalkeeper";
+};
+
+export const getPositionColor = (position: string): string => {
+  const colors = {
+    "Goalkeeper": "bg-orange-500",
+    "Defender": "bg-blue-500",
+    "Midfielder": "bg-purple-500",
+    "Forward": "bg-emerald-500"
+  };
+  return colors[position as keyof typeof colors] || "bg-gray-500";
 };

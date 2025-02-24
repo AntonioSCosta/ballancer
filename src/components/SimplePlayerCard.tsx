@@ -1,5 +1,5 @@
 
-import { Player } from "./PlayerCard";
+import type { Player } from "@/types/player";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 interface SimplePlayerCardProps {
