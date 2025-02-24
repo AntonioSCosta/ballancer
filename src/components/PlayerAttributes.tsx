@@ -1,6 +1,7 @@
 
-import { PlayerPosition } from "@/components/PlayerCard";
+import { PlayerPosition } from "@/types/player";
 import { renderAttributes } from "@/utils/playerUtils";
+import { Slider } from "@/components/ui/slider";
 
 interface PlayerAttributesProps {
   position: PlayerPosition;
@@ -41,12 +42,13 @@ const PlayerAttributes = ({
             ) : (
               <div className="[&_[role=slider]]:bg-primary">
                 {onAttributeChange && (
-                  <div className="relative w-full h-2 bg-secondary rounded-full">
-                    <div 
-                      className="absolute h-full bg-primary rounded-full" 
-                      style={{ width: `${attributes[key]}%` }}
-                    />
-                  </div>
+                  <Slider
+                    value={[attributes[key]]}
+                    onValueChange={(value) => onAttributeChange(key, value)}
+                    min={0}
+                    max={99}
+                    step={1}
+                  />
                 )}
               </div>
             )}
@@ -58,4 +60,3 @@ const PlayerAttributes = ({
 };
 
 export default PlayerAttributes;
-
