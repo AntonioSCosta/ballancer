@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Player, PlayerPosition } from "@/types/player";
+import { DEFAULT_ATTRIBUTES } from "@/utils/defaultAttributes";
 
 const CreatePlayer = () => {
   const navigate = useNavigate();
@@ -10,18 +11,13 @@ const CreatePlayer = () => {
     name: "",
     position: "Midfielder",
     photo: "",
-    rating: 0,
-    attributes: {
-      speed: 0,
-      shooting: 0,
-      passing: 0,
-      dribbling: 0,
-      defending: 0,
-      physical: 0,
-    },
+    rating: 50,
+    attributes: DEFAULT_ATTRIBUTES
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setPlayer((prev) => ({
       ...prev,

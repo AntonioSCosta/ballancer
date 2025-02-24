@@ -1,14 +1,15 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
-import { Player } from "@/components/PlayerCard";
+import type { Player } from "@/types/player";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamActions from "@/components/TeamActions";
 import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/utils/teamResultUtils";
-import type { Team } from "@/utils/teamDistribution";
+import type { Team } from "@/types/team";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamsComparison from "@/components/TeamsComparison";
 

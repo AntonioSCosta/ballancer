@@ -8,6 +8,7 @@ export interface PlayerAttributes {
   dribbling: number;
   defending: number;
   physical: number;
+  mental: number;
 }
 
 export interface Player {

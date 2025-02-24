@@ -1,59 +1,45 @@
-import type { Player } from '@/types/player';
 
-export interface Team {
-  id: string;
-  players: Player[];
-  rating: number;
-}
+import type { Player } from "@/types/player";
+import type { Team } from "@/types/team";
+import { determinePlayerPosition } from "./positionUtils";
 
-const calculateTeamRating = (players: Player[]): number => {
-  if (players.length === 0) return 0;
-  return players.reduce((sum, player) => sum + player.rating, 0) / players.length;
-};
-
-const findBestTeamCombination = (
-  players: Player[],
-  teamSize: number,
-  maxAttempts = 1000
-): [Team[], number] => {
-  let bestDifference = Infinity;
-  let bestTeams: Team[] = [];
-
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
-    const teams: Team[] = [];
-    
-    for (let i = 0; i < shuffledPlayers.length; i += teamSize) {
-      const teamPlayers = shuffledPlayers.slice(i, i + teamSize);
-      teams.push({
-        id: `team-${teams.length + 1}`,
-        players: teamPlayers,
-        rating: calculateTeamRating(teamPlayers)
-      });
-    }
-
-    const ratings = teams.map(team => team.rating);
-    const difference = Math.max(...ratings) - Math.min(...ratings);
-
-    if (difference < bestDifference) {
-      bestDifference = difference;
-      bestTeams = teams;
-    }
-
-    if (difference === 0) break;
-  }
-
-  return [bestTeams, bestDifference];
-};
-
-const distributeTeams = (players: Player[], numberOfTeams: number = 2): Team[] => {
-  if (players.length === 0) return [];
+export const distributePlayersByPosition = (players: Player[]): Team[] => {
+  // Sort players by rating descending for fair distribution
+  const sortedPlayers = [...players].sort((a, b) => b.rating - a.rating);
   
-  const teamSize = Math.floor(players.length / numberOfTeams);
-  if (teamSize === 0) return [];
+  // Split players into two teams
+  const team1Players: Player[] = [];
+  const team2Players: Player[] = [];
+  
+  sortedPlayers.forEach((player, index) => {
+    if (index % 2 === 0) {
+      team1Players.push(player);
+    } else {
+      team2Players.push(player);
+    }
+  });
 
-  const [teams] = findBestTeamCombination(players, teamSize);
+  // Calculate team ratings
+  const calculateTeamRating = (teamPlayers: Player[]) => {
+    return Math.round(
+      teamPlayers.reduce((sum, player) => sum + player.rating, 0) / teamPlayers.length
+    );
+  };
+
+  const teams: Team[] = [
+    {
+      id: "team1",
+      name: "Team 1",
+      players: team1Players,
+      rating: calculateTeamRating(team1Players)
+    },
+    {
+      id: "team2",
+      name: "Team 2",
+      players: team2Players,
+      rating: calculateTeamRating(team2Players)
+    }
+  ];
+
   return teams;
 };
-
-export { distributeTeams, calculateTeamRating };
