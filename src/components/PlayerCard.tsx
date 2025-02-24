@@ -1,8 +1,7 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Player } from "@/types/player";
+import { Player, PlayerPosition } from "@/types/player";
 import { AttributeBar } from "./player/AttributeBar";
 import { PlayerStatsDisplay } from "./player/PlayerStats";
 import { getPlayerStats, calculateWinRate, getInitials, getAttributes } from "@/utils/playerCardUtils";
@@ -89,3 +88,5 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
     </motion.div>
   );
 };
+
+export { Player, PlayerPosition };
