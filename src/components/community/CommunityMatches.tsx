@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -64,12 +65,12 @@ export const CommunityMatches = ({ communityId }: CommunityMatchesProps) => {
       const { data: newMatch, error: matchError } = await supabase
         .rpc('create_match_with_notifications', {
           p_community_id: communityId,
-          p_created_by: user?.id,
+          p_created_by: user?.id ?? '',
           p_scheduled_for: `${data.date}T${data.time}`,
           p_location: data.location,
           p_pitch_price: parseFloat(data.price),
           p_start_time: data.time
-        });
+        }) as { data: string | null; error: Error | null };
 
       if (matchError) throw matchError;
       return newMatch;

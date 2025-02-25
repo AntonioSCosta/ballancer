@@ -461,6 +461,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      create_match_with_notifications: {
+        Args: {
+          p_community_id: string
+          p_created_by: string
+          p_scheduled_for: string
+          p_location: string
+          p_pitch_price: number
+          p_start_time: string
+        }
+        Returns: string
+      }
       decline_friend_request: {
         Args: {
           request_id: string
