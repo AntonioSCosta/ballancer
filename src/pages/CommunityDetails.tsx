@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Calendar, ArrowLeft, MessageCircle, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { CommunityChat } from "@/components/community/CommunityChat";
@@ -46,6 +47,23 @@ const CommunityDetails = () => {
         `)
         .eq('id', id)
         .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id
+  });
+
+  // Query for upcoming matches
+  const { data: upcomingMatches } = useQuery({
+    queryKey: ['upcoming-matches', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('matches')
+        .select('*')
+        .eq('community_id', id)
+        .gte('scheduled_for', new Date().toISOString())
+        .order('scheduled_for', { ascending: true });
       
       if (error) throw error;
       return data;
@@ -107,6 +125,8 @@ const CommunityDetails = () => {
     return <div>Community not found</div>;
   }
 
+  const hasUpcomingMatches = upcomingMatches && upcomingMatches.length > 0;
+
   return (
     <div className="container max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
@@ -151,9 +171,17 @@ const CommunityDetails = () => {
             <Users className="w-4 h-4 mr-2" />
             Members
           </TabsTrigger>
-          <TabsTrigger value="matches">
+          <TabsTrigger value="matches" className="relative">
             <Calendar className="w-4 h-4 mr-2" />
             Matches
+            {hasUpcomingMatches && activeTab !== "matches" && (
+              <Badge 
+                variant="secondary" 
+                className="absolute -top-1 -right-1 min-w-[1.25rem] h-5 flex items-center justify-center"
+              >
+                {upcomingMatches.length}
+              </Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
