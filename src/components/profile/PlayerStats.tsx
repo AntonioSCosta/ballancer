@@ -95,13 +95,13 @@ export const PlayerStats = ({ profile }: PlayerStatsProps) => {
           </CardHeader>
           <ScrollArea className="h-[200px]">
             <CardContent>
-              {evaluations.map((eval: any) => (
-                <div key={eval.id} className="py-4 border-b last:border-0">
+              {evaluations.map((evaluation: any) => (
+                <div key={evaluation.id} className="py-4 border-b last:border-0">
                   <div className="text-sm text-muted-foreground">
-                    {new Date(eval.created_at).toLocaleDateString()}
+                    {new Date(evaluation.created_at).toLocaleDateString()}
                   </div>
-                  {eval.comment && (
-                    <p className="mt-2 text-sm">{eval.comment}</p>
+                  {evaluation.comment && (
+                    <p className="mt-2 text-sm">{evaluation.comment}</p>
                   )}
                 </div>
               ))}

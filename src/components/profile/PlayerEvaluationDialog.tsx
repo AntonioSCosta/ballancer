@@ -15,6 +15,7 @@ import { PlayerPosition } from "@/types/player";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAuth } from "@/components/AuthProvider";
 
 interface PlayerEvaluationDialogProps {
   open: boolean;
@@ -32,19 +33,29 @@ export const PlayerEvaluationDialog = ({
   playerPosition,
 }: PlayerEvaluationDialogProps) => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [attributes, setAttributes] = useState(DEFAULT_ATTRIBUTES);
   const [comment, setComment] = useState("");
 
   const submitEvaluation = useMutation({
     mutationFn: async () => {
+      if (!user) throw new Error("User not authenticated");
+      
+      // Calculate average rating from attributes
+      const rating = Math.round(
+        Object.values(attributes).reduce((a, b) => a + b, 0) / 
+        Object.keys(attributes).length
+      );
+
       const { error } = await supabase
         .from('player_evaluations')
         .insert({
           player_id: playerId,
+          evaluator_id: user.id,
           match_id: matchId,
-          attributes,
+          rating,
           comment,
-          rating: Object.values(attributes).reduce((a, b) => a + b, 0) / Object.keys(attributes).length
+          created_at: new Date().toISOString()
         });
 
       if (error) throw error;
