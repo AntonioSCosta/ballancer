@@ -1,10 +1,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import CreateCommunityDialog from "@/components/community/CreateCommunityDialog";
 import CommunityCard from "@/components/community/CommunityCard";
+import { SearchBar } from "@/components/SearchBar";
 
 interface Community {
   id: string;
@@ -29,6 +31,7 @@ interface Friend {
 const Communities = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
@@ -86,6 +89,11 @@ const Communities = () => {
     navigate(`/communities/${communityId}`);
   };
 
+  const filteredCommunities = communities?.filter(community => 
+    community.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    community.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
@@ -96,8 +104,17 @@ const Communities = () => {
         <CreateCommunityDialog friends={friends} />
       </div>
 
+      <div className="mb-6">
+        <SearchBar
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder="Search communities by name or description..."
+          className="w-full"
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {communities?.map((community, index) => (
+        {filteredCommunities?.map((community, index) => (
           <CommunityCard
             key={community.id}
             community={community}
