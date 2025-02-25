@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,9 +48,8 @@ const Auth = () => {
       });
       if (error) throw error;
       
-      // Get the stored redirect path or default to home
       const redirectTo = sessionStorage.getItem('redirectTo') || '/';
-      sessionStorage.removeItem('redirectTo'); // Clear the stored path
+      sessionStorage.removeItem('redirectTo');
       navigate(redirectTo);
       toast.success("Welcome back!");
     } catch (error: any) {
@@ -77,7 +76,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[url('/photo-1483058712412-4245e9b90334')] bg-cover bg-center">
+    <div className="min-h-screen flex items-center justify-center bg-[url('/lovable-uploads/381571f0-23f7-433b-988a-934daf5df8c2.png')] bg-cover bg-center">
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-black/25 backdrop-blur-sm" />
       <Card className="w-full max-w-md mx-4 relative z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur">
         <Tabs defaultValue="signin" className="w-full">
