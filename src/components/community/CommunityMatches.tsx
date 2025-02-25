@@ -62,44 +62,17 @@ export const CommunityMatches = ({ communityId }: CommunityMatchesProps) => {
   const createMatch = useMutation({
     mutationFn: async (data: typeof formData) => {
       const { data: newMatch, error: matchError } = await supabase
-        .from('matches')
-        .insert({
-          community_id: communityId,
-          created_by: user?.id,
-          scheduled_for: `${data.date}T${data.time}`,
-          location: data.location,
-          pitch_price: parseFloat(data.price),
-          start_time: data.time,
-          status: 'scheduled'
-        })
-        .select()
-        .single();
+        .rpc('create_match_with_notifications', {
+          p_community_id: communityId,
+          p_created_by: user?.id,
+          p_scheduled_for: `${data.date}T${data.time}`,
+          p_location: data.location,
+          p_pitch_price: parseFloat(data.price),
+          p_start_time: data.time
+        });
 
       if (matchError) throw matchError;
-
-      const { data: members, error: membersError } = await supabase
-        .from('community_members')
-        .select('user_id')
-        .eq('community_id', communityId);
-
-      if (membersError) throw membersError;
-
-      if (members) {
-        const notifications = members.map(member => ({
-          user_id: member.user_id,
-          type: 'match_scheduled',
-          title: 'New Match Scheduled',
-          content: `A new match has been scheduled for ${new Date(`${data.date}T${data.time}`).toLocaleDateString()} at ${data.location}`,
-          match_id: newMatch.id,
-          community_id: communityId,
-        }));
-
-        const { error: notificationError } = await supabase
-          .from('notifications')
-          .insert(notifications);
-
-        if (notificationError) throw notificationError;
-      }
+      return newMatch;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['community-matches', communityId] });
