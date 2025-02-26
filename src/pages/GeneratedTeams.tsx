@@ -1,123 +1,139 @@
-import { Player } from "@/types/player";
-import { Team } from "@/types/team";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { FootballField } from "@/components/FootballField";
+import { Player } from "@/components/PlayerCard";
+import { distributePlayersByPosition } from "@/utils/teamDistribution";
+import TeamActions from "@/components/TeamActions";
+import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/utils/teamResultUtils";
+import type { Team } from "@/utils/teamDistribution";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TeamsComparison from "@/components/TeamsComparison";
 
 const GeneratedTeams = () => {
-  const calculateTeamRating = (players: Player[]) => {
-    const totalRating = players.reduce((sum, player) => sum + player.rating, 0);
-    return totalRating / players.length;
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [showResultDialog, setShowResultDialog] = useState(false);
+  const [playerGoals, setPlayerGoals] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (!location.state?.selectedPlayerIds) {
+      navigate("/generator");
+      return;
+    }
+
+    const storedPlayers = localStorage.getItem("players");
+    if (!storedPlayers) {
+      navigate("/generator");
+      return;
+    }
+
+    const allPlayers: Player[] = JSON.parse(storedPlayers);
+    const selectedPlayers = allPlayers.filter((p) =>
+      location.state.selectedPlayerIds.includes(p.id)
+    );
+    
+    const distributedTeams = distributePlayersByPosition(selectedPlayers);
+    setTeams(distributedTeams);
+
+    const initialGoals: Record<string, number> = {};
+    selectedPlayers.forEach(player => {
+      initialGoals[player.id] = 0;
+    });
+    setPlayerGoals(initialGoals);
+  }, [location.state, navigate]);
+
+  const handleRegenerateTeams = () => {
+    const storedPlayers = localStorage.getItem("players");
+    if (!storedPlayers) return;
+
+    const allPlayers: Player[] = JSON.parse(storedPlayers);
+    const selectedPlayers = allPlayers.filter((p) =>
+      location.state.selectedPlayerIds.includes(p.id)
+    );
+    
+    const distributedTeams = distributePlayersByPosition(selectedPlayers);
+    setTeams(distributedTeams);
   };
 
-  const team1Players: Player[] = [
-    {
-      id: "player1",
-      name: "Player 1",
-      position: "Forward",
-      photo: "https://example.com/player1.jpg",
-      attributes: {
-        speed: 90,
-        physical: 85,
-        mental: 80,
-        passing: 75,
-        dribbling: 88,
-        shooting: 92,
-        heading: 78,
-        defending: 45,
-      },
-      rating: 86,
-    },
-    {
-      id: "player2",
-      name: "Player 2",
-      position: "Midfielder",
-      photo: "https://example.com/player2.jpg",
-      attributes: {
-        speed: 85,
-        physical: 78,
-        mental: 88,
-        passing: 92,
-        dribbling: 85,
-        shooting: 78,
-        heading: 70,
-        defending: 75,
-      },
-      rating: 82,
-    },
-  ];
+  const handleGoalChange = (playerId: string, goals: number) => {
+    setPlayerGoals(prev => ({
+      ...prev,
+      [playerId]: Math.max(0, goals)
+    }));
+  };
 
-  const team2Players: Player[] = [
-    {
-      id: "player3",
-      name: "Player 3",
-      position: "Defender",
-      photo: "https://example.com/player3.jpg",
-      attributes: {
-        speed: 75,
-        physical: 92,
-        mental: 78,
-        passing: 70,
-        dribbling: 65,
-        shooting: 50,
-        heading: 85,
-        defending: 90,
-      },
-      rating: 78,
-    },
-    {
-      id: "player4",
-      name: "Player 4",
-      position: "Goalkeeper",
-      photo: "https://example.com/player4.jpg",
-      attributes: {
-        speed: 60,
-        physical: 70,
-        mental: 80,
-        passing: 50,
-        dribbling: 40,
-        shooting: 30,
-        heading: 40,
-        defending: 60,
-        handling: 92,
-        diving: 88,
-        positioning: 85,
-        reflexes: 90,
-      },
-      rating: 80,
-    },
-  ];
-
-  const teams: Team[] = [
-    {
-      id: "team1",
-      name: "Team 1",
-      players: team1Players,
-      rating: calculateTeamRating(team1Players),
-    },
-    {
-      id: "team2",
-      name: "Team 2",
-      players: team2Players,
-      rating: calculateTeamRating(team2Players),
-    },
-  ];
+  const handleSaveResult = (winner: number) => {
+    if (saveMatchResult(teams, winner, playerGoals)) {
+      setShowResultDialog(false);
+    }
+  };
 
   return (
-    <div>
-      <h1>Generated Teams</h1>
-      {teams.map((team) => (
-        <div key={team.id}>
-          <h2>{team.name}</h2>
-          <p>Rating: {team.rating.toFixed(2)}</p>
-          <h3>Players:</h3>
-          <ul>
-            {team.players.map((player) => (
-              <li key={player.id}>
-                {player.name} - {player.position} (Rating: {player.rating})
-              </li>
-            ))}
-          </ul>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="container max-w-2xl mx-auto py-4 px-4 md:py-8"
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/generator")}
+            className="p-2"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Generated Teams
+          </h1>
+          <div className="w-8" />
         </div>
-      ))}
-    </div>
+        
+        <TeamActions
+          onRegenerateTeams={handleRegenerateTeams}
+          onShareWhatsApp={() => shareTeamsToWhatsApp(teams)}
+          onCopyTeams={() => copyTeamsToClipboard(teams)}
+          teams={teams}
+        />
+
+        <Tabs defaultValue="tactical" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="tactical">Tactical View</TabsTrigger>
+            <TabsTrigger value="comparison">Team Comparison</TabsTrigger>
+          </TabsList>
+          <TabsContent value="tactical">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {teams.map((team, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  className="overflow-x-auto"
+                >
+                  <div className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Team {index + 1} - Rating: {team.rating}
+                  </div>
+                  <FootballField 
+                    players={team.players} 
+                    teamName={`Team ${index + 1}`}
+                    rotate={index === 1}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="comparison">
+            {teams.length === 2 && <TeamsComparison team1={teams[0]} team2={teams[1]} />}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </motion.div>
   );
 };
 
