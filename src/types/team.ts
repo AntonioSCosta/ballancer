@@ -1,9 +1,7 @@
 
-import type { Player } from "./player";
-
 export interface Team {
-  id: string;
-  name: string;
-  players: Player[];
+  id?: string;
+  name?: string;
+  players: import("../components/PlayerCard").Player[];
   rating: number;
 }

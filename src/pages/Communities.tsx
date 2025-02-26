@@ -1,12 +1,10 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import CreateCommunityDialog from "@/components/community/CreateCommunityDialog";
 import CommunityCard from "@/components/community/CommunityCard";
-import { SearchBar } from "@/components/SearchBar";
 
 interface Community {
   id: string;
@@ -31,33 +29,28 @@ interface Friend {
 const Communities = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
     queryFn: async () => {
-      // Get communities through the community_members table first
-      const { data: memberships, error } = await supabase
+      const { data: memberData, error: memberError } = await supabase
         .from('community_members')
-        .select(`
-          community:communities (
-            id,
-            name,
-            description,
-            creator_id,
-            created_at,
-            image_url,
-            members:community_members(count)
-          )
-        `)
+        .select('community_id')
         .eq('user_id', user?.id);
 
-      if (error) throw error;
+      if (memberError) throw memberError;
+
+      if (!memberData?.length) return [];
+
+      const communityIds = memberData.map(m => m.community_id);
+
+      const { data, error } = await supabase
+        .from('communities')
+        .select('*, members:community_members(count)')
+        .in('id', communityIds);
       
-      // Transform the data to match our Community interface
-      return memberships
-        .map(membership => membership.community)
-        .filter(Boolean) as Community[];
+      if (error) throw error;
+      return data as Community[];
     },
     enabled: !!user?.id
   });
@@ -89,11 +82,6 @@ const Communities = () => {
     navigate(`/communities/${communityId}`);
   };
 
-  const filteredCommunities = communities?.filter(community => 
-    community.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    community.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="container px-4 sm:px-6 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
@@ -104,17 +92,8 @@ const Communities = () => {
         <CreateCommunityDialog friends={friends} />
       </div>
 
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search communities by name or description..."
-          className="w-full"
-        />
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {filteredCommunities?.map((community, index) => (
+        {communities?.map((community, index) => (
           <CommunityCard
             key={community.id}
             community={community}

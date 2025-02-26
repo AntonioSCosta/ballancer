@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,21 +18,6 @@ const CommunityDetails = () => {
   const [activeTab, setActiveTab] = useState("chat");
   const queryClient = useQueryClient();
   const { user } = useAuth();
-
-  const { data: membership } = useQuery({
-    queryKey: ['community-membership', id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('community_members')
-        .select('*')
-        .match({ community_id: id, user_id: user?.id })
-        .single();
-      
-      if (error) return null;
-      return data;
-    },
-    enabled: !!id && !!user?.id,
-  });
 
   const { data: community, isLoading } = useQuery({
     queryKey: ['community', id],
@@ -53,14 +38,6 @@ const CommunityDetails = () => {
     enabled: !!id
   });
 
-  // Redirect if user is not a member
-  useEffect(() => {
-    if (!isLoading && !membership) {
-      navigate('/communities');
-      toast.error("You are not a member of this community");
-    }
-  }, [membership, isLoading, navigate]);
-
   const leaveCommunity = useMutation({
     mutationFn: async () => {
       const { error } = await supabase
@@ -76,7 +53,6 @@ const CommunityDetails = () => {
     onSuccess: () => {
       toast.success("Successfully left the community");
       queryClient.invalidateQueries({ queryKey: ['user-communities'] });
-      queryClient.invalidateQueries({ queryKey: ['community-membership', id] });
       navigate('/communities');
     },
     onError: (error: any) => {
@@ -95,7 +71,7 @@ const CommunityDetails = () => {
     }
   };
 
-  if (isLoading || !membership) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <Loader2 className="w-6 h-6 animate-spin" />
