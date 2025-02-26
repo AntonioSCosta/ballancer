@@ -62,18 +62,19 @@ export const CommunityMatches = ({ communityId }: CommunityMatchesProps) => {
 
   const createMatch = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const { data: newMatch, error: matchError } = await supabase
-        .rpc('create_match_with_notifications', {
-          p_community_id: communityId,
-          p_created_by: user?.id ?? '',
-          p_scheduled_for: `${data.date}T${data.time}`,
-          p_location: data.location,
-          p_pitch_price: parseFloat(data.price),
-          p_start_time: data.time
-        }) as { data: string | null; error: Error | null };
+      const { error } = await supabase
+        .from('matches')
+        .insert({
+          community_id: communityId,
+          created_by: user?.id,
+          scheduled_for: `${data.date}T${data.time}`,
+          location: data.location,
+          pitch_price: parseFloat(data.price),
+          start_time: data.time,
+          status: 'scheduled'
+        });
 
-      if (matchError) throw matchError;
-      return newMatch;
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['community-matches', communityId] });

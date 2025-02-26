@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { PlayerPosition } from "@/components/PlayerCard";
+import PlayerAttributes from "@/components/PlayerAttributes";
 import PlayerPhotoUpload from "@/components/PlayerPhotoUpload";
 import { Profile } from "@/types/profile";
 
@@ -83,6 +84,12 @@ const ProfileForm = ({
             </Select>
           </div>
 
+          <PlayerAttributes
+            position={formData.favorite_position || "Forward"}
+            attributes={formData.attributes}
+            readOnly={true}
+          />
+
           <div className="flex justify-end pt-6 border-t">
             <Button
               type="submit"
@@ -105,3 +112,4 @@ const ProfileForm = ({
 };
 
 export default ProfileForm;
+
