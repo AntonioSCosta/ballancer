@@ -1,7 +1,10 @@
 
-import { Player } from "@/types/player";
+import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Edit2, Check } from "lucide-react";
 
 interface FootballFieldProps {
   players: Player[];
@@ -17,24 +20,35 @@ const getPositionCoordinates = (position: string, index: number, totalInPosition
     "Forward": { x: "0", y: "75%" }
   };
 
+  // Calculate horizontal spacing based on the number of players
   let position_x;
-  let position_offset = 0;
+  let position_offset;
+
+  position_offset =0;
 
   if (totalInPosition === 1) {
-    position_x = "45%";
-  } else if (totalInPosition === 2) {
+    position_x = "45%"; // Center the player if there's only one
+  } //else {
+    // Use 80% of the field width for distribution, starting at 10%
+    //const spacingPercentage = 90 / (totalInPosition + 1);
+   // position_x = `${ ((index + 1) * spacingPercentage)}%`;
+   if (totalInPosition === 2) {
     const positions = [22.5, 72.5]; 
-    position_x = `${position_offset + positions[index]}%`;
-  } else if (totalInPosition === 3) {
+    position_x = `${ position_offset + positions[index]}%`;
+  } 
+  if (totalInPosition === 3) {
     const positions = [22.5, 45, 72.5]; 
-    position_x = `${position_offset + positions[index]}%`;
-  } else if (totalInPosition === 4) {
+    position_x = `${position_offset  + positions[index]}%`;
+  } 
+  if (totalInPosition === 4) {
     const positions = [11.25, 33.75, 56.25, 82.75]; 
     position_x = `${position_offset + positions[index]}%`; 
-  } else {
+  } 
+  if (totalInPosition === 5) {
     const spacingPercentage = 100 / (totalInPosition + 1);
-    position_x = `${position_offset + ((index + 1) * spacingPercentage)}%`;
-  }
+    position_x = `${position_offset+ ((index + 1) * spacingPercentage)}%`;
+  } 
+  
 
   return {
     x: position_x,
@@ -52,6 +66,13 @@ const getPositionColor = (position: string) => {
   return colors[position as keyof typeof colors] || "bg-gray-500";
 };
 
+const getPlayersInPosition = (players: Player[], targetPosition: string, neededDefenders: number, neededMidfielders: number) => {
+  return players.filter(player => {
+    const assignedPosition = determinePlayerPosition(player, neededDefenders, neededMidfielders);
+    return assignedPosition === targetPosition;
+  });
+};
+
 const formatPlayerName = (name: string) => {
   const nameParts = name.split(" ");
   return nameParts.map((part, i) => (
@@ -63,10 +84,10 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const currentDefenders = players.filter(p => p.position === "Defender").length;
   const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
 
-  const goalkeepers = players.filter(p => determinePlayerPosition(p, currentDefenders, currentMidfielders) === "Goalkeeper");
-  const defenders = players.filter(p => determinePlayerPosition(p, currentDefenders, currentMidfielders) === "Defender");
-  const midfielders = players.filter(p => determinePlayerPosition(p, currentDefenders, currentMidfielders) === "Midfielder");
-  const forwards = players.filter(p => determinePlayerPosition(p, currentDefenders, currentMidfielders) === "Forward");
+  const goalkeepers = getPlayersInPosition(players, "Goalkeeper", currentDefenders, currentMidfielders);
+  const defenders = getPlayersInPosition(players, "Defender", currentDefenders, currentMidfielders);
+  const midfielders = getPlayersInPosition(players, "Midfielder", currentDefenders, currentMidfielders);
+  const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
     <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'transform rotate-180' : ''}`}>
@@ -76,7 +97,10 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         <div className="absolute h-[15%] w-[25%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
         <div className="absolute bottom-0 left-0 right-0 border-2 border-white/40" />
         <div className="absolute h-[25%] aspect-square -bottom-[12.5%] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full" />
-        <div className="absolute h-[33%] aspect-square top-[10px] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full [clip-path:polygon(22%_33%,22%_100%,78%_100%,78%_33%)]" />
+        <div className="absolute h-[33%] aspect-square top-[10px] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full 
+                      [clip-path:polygon(22%_33%,22%_100%,78%_100%,78%_33%)]" />
+        <div className="absolute h-[5%] w-[3%] top-0 left-0 border-b-2 border-r-2 border-white/40 rounded-br-full" />
+        <div className="absolute h-[5%] w-[3%] top-0 right-0 border-b-2 border-l-2 border-white/40 rounded-bl-full" />
       </div>
 
       {[

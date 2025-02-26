@@ -1,10 +1,5 @@
-
 import { Player } from "@/types/player";
 import { Team } from "@/types/team";
-import { FootballField } from "@/components/FootballField";
-import TeamsComparison from "@/components/TeamsComparison";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const GeneratedTeams = () => {
   const calculateTeamRating = (players: Player[]) => {
@@ -106,37 +101,22 @@ const GeneratedTeams = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Generated Teams</h1>
-      
-      <Tabs defaultValue="tactical" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="tactical">Tactical View</TabsTrigger>
-          <TabsTrigger value="comparison">Team Comparison</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="tactical" className="space-y-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <Card>
-              <CardContent className="pt-6">
-                <h2 className="text-xl font-semibold mb-4">Team 1</h2>
-                <FootballField players={team1Players} teamName="Team 1" />
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="pt-6">
-                <h2 className="text-xl font-semibold mb-4">Team 2</h2>
-                <FootballField players={team2Players} teamName="Team 2" rotate />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="comparison">
-          <TeamsComparison team1={teams[0]} team2={teams[1]} />
-        </TabsContent>
-      </Tabs>
+    <div>
+      <h1>Generated Teams</h1>
+      {teams.map((team) => (
+        <div key={team.id}>
+          <h2>{team.name}</h2>
+          <p>Rating: {team.rating.toFixed(2)}</p>
+          <h3>Players:</h3>
+          <ul>
+            {team.players.map((player) => (
+              <li key={player.id}>
+                {player.name} - {player.position} (Rating: {player.rating})
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 };
