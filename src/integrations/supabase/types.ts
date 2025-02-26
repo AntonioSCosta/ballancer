@@ -305,6 +305,60 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          community_id: string | null
+          content: string
+          created_at: string | null
+          id: string
+          match_id: string | null
+          read: boolean | null
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          community_id?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          match_id?: string | null
+          read?: boolean | null
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          community_id?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          match_id?: string | null
+          read?: boolean | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       player_evaluations: {
         Row: {
           comment: string | null
@@ -406,6 +460,17 @@ export type Database = {
           request_id: string
         }
         Returns: undefined
+      }
+      create_match_with_notifications: {
+        Args: {
+          p_community_id: string
+          p_created_by: string
+          p_scheduled_for: string
+          p_location: string
+          p_pitch_price: number
+          p_start_time: string
+        }
+        Returns: string
       }
       decline_friend_request: {
         Args: {

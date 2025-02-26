@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { PlayerCard, Player } from "@/components/PlayerCard";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 const TeamGenerator = () => {
@@ -46,6 +47,10 @@ const TeamGenerator = () => {
     });
   };
 
+  const handleCreatePlayer = () => {
+    navigate("/");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -63,12 +68,18 @@ const TeamGenerator = () => {
               Select players to generate balanced teams
             </p>
           </div>
-          <SearchBar
-            value={search}
-            onChange={setSearch}
-            placeholder="Search players..."
-            className="w-full"
-          />
+          <div className="flex gap-4">
+            <SearchBar
+              value={search}
+              onChange={setSearch}
+              placeholder="Search players..."
+              className="flex-1"
+            />
+            <Button onClick={handleCreatePlayer} variant="outline" className="shrink-0">
+              <UserPlus className="w-4 h-4 mr-2" />
+              Create Player
+            </Button>
+          </div>
         </div>
 
         {filteredPlayers.length > 0 ? (
