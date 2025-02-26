@@ -33,24 +33,19 @@ const Communities = () => {
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
     queryFn: async () => {
-      const { data: memberData, error: memberError } = await supabase
-        .from('community_members')
-        .select('community_id')
-        .eq('user_id', user?.id);
-
-      if (memberError) throw memberError;
-
-      if (!memberData?.length) return [];
-
-      const communityIds = memberData.map(m => m.community_id);
-
-      const { data, error } = await supabase
+      // First, get all communities where the user is an active member
+      const { data: communities, error } = await supabase
         .from('communities')
-        .select('*, members:community_members(count)')
-        .in('id', communityIds);
-      
+        .select(`
+          *,
+          members:community_members!inner(count),
+          is_member:community_members!inner(user_id)
+        `)
+        .eq('community_members.user_id', user?.id);
+
       if (error) throw error;
-      return data as Community[];
+      
+      return communities as Community[];
     },
     enabled: !!user?.id
   });
