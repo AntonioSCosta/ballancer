@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { PlayerCard, Player } from "@/components/PlayerCard";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Users, PlusCircle } from "lucide-react";
+import { Users } from "lucide-react";
 import { toast } from "sonner";
 
 const TeamGenerator = () => {
@@ -34,11 +33,7 @@ const TeamGenerator = () => {
   };
 
   const handleEditPlayer = (playerId: string) => {
-    navigate(`/?edit=${playerId}`);
-  };
-
-  const handleCreatePlayer = () => {
-    navigate("/");
+    navigate(`/create-player?edit=${playerId}`);
   };
 
   const handleGenerateTeams = () => {
@@ -60,19 +55,13 @@ const TeamGenerator = () => {
     >
       <div className="space-y-6">
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Team Generator
-              </h1>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">
-                Select players to generate balanced teams
-              </p>
-            </div>
-            <Button onClick={handleCreatePlayer} className="flex items-center gap-2">
-              <PlusCircle className="w-4 h-4" />
-              Create Player
-            </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Team Generator
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              Select players to generate balanced teams
+            </p>
           </div>
           <SearchBar
             value={search}
