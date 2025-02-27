@@ -64,23 +64,26 @@ const CommunityDetails = () => {
 
   const leaveCommunity = useMutation({
     mutationFn: async () => {
+      if (!id || !user?.id) {
+        throw new Error("Missing community ID or user ID");
+      }
+      
+      // Delete the community membership
       const { error } = await supabase
         .from('community_members')
         .delete()
-        .match({
-          community_id: id,
-          user_id: user?.id
-        });
+        .eq('community_id', id)
+        .eq('user_id', user.id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success("Successfully left the community");
       queryClient.invalidateQueries({ queryKey: ['user-communities'] });
-      queryClient.invalidateQueries({ queryKey: ['community-membership', id] });
       navigate('/communities');
     },
     onError: (error: any) => {
+      console.error("Error leaving community:", error);
       toast.error(error.message || "Failed to leave community");
     }
   });
