@@ -33,15 +33,15 @@ const Communities = () => {
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
     queryFn: async () => {
-      // First, get all communities where the user is an active member
+      // Get communities where the user is a member
       const { data: communities, error } = await supabase
         .from('communities')
         .select(`
           *,
-          members:community_members!inner(count),
+          members:community_members(count),
           is_member:community_members!inner(user_id)
         `)
-        .eq('community_members.user_id', user?.id);
+        .eq('is_member.user_id', user?.id);
 
       if (error) throw error;
       
