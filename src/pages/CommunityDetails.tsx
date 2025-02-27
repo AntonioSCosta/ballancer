@@ -5,7 +5,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Loader2, Users, Calendar, ArrowLeft, MessageCircle, LogOut } from "lucide-react";
+import { 
+  Loader2, 
+  Users, 
+  Calendar, 
+  ArrowLeft, 
+  MessageCircle, 
+  LogOut, 
+  Trash2, 
+  CalendarCheck 
+} from "lucide-react";
 import { toast } from "sonner";
 import { CommunityChat } from "@/components/community/CommunityChat";
 import { CommunityMembers } from "@/components/community/CommunityMembers";
@@ -62,6 +71,24 @@ const CommunityDetails = () => {
     enabled: !!id && !!membership // Only fetch if user is a member
   });
 
+  // Check if there are any scheduled matches
+  const { data: scheduledMatches } = useQuery({
+    queryKey: ['community-scheduled-matches', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('matches')
+        .select('id')
+        .eq('community_id', id)
+        .eq('status', 'scheduled');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!membership
+  });
+
+  const hasScheduledMatches = scheduledMatches && scheduledMatches.length > 0;
+
   const leaveCommunity = useMutation({
     mutationFn: async () => {
       if (!id || !user?.id) {
@@ -88,6 +115,55 @@ const CommunityDetails = () => {
     }
   });
 
+  const deleteCommunity = useMutation({
+    mutationFn: async () => {
+      if (!id || !user?.id) {
+        throw new Error("Missing community ID or user ID");
+      }
+
+      // First delete all community_members
+      const { error: membersError } = await supabase
+        .from('community_members')
+        .delete()
+        .eq('community_id', id);
+
+      if (membersError) throw membersError;
+
+      // Delete all community messages
+      const { error: messagesError } = await supabase
+        .from('community_messages')
+        .delete()
+        .eq('community_id', id);
+
+      if (messagesError) throw messagesError;
+
+      // Delete all matches for this community
+      const { error: matchesError } = await supabase
+        .from('matches')
+        .delete()
+        .eq('community_id', id);
+
+      if (matchesError) throw matchesError;
+
+      // Finally delete the community itself
+      const { error: communityError } = await supabase
+        .from('communities')
+        .delete()
+        .eq('id', id);
+
+      if (communityError) throw communityError;
+    },
+    onSuccess: () => {
+      toast.success("Community deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ['user-communities'] });
+      navigate('/communities');
+    },
+    onError: (error: any) => {
+      console.error("Error deleting community:", error);
+      toast.error(error.message || "Failed to delete community");
+    }
+  });
+
   const handleLeaveCommunity = () => {
     if (community?.creator_id === user?.id) {
       toast.error("Community creators cannot leave their own community");
@@ -96,6 +172,12 @@ const CommunityDetails = () => {
     
     if (confirm("Are you sure you want to leave this community?")) {
       leaveCommunity.mutate();
+    }
+  };
+
+  const handleDeleteCommunity = () => {
+    if (confirm("Are you sure you want to delete this community? This action cannot be undone.")) {
+      deleteCommunity.mutate();
     }
   };
 
@@ -110,6 +192,8 @@ const CommunityDetails = () => {
   if (!membership || !community) {
     return null;
   }
+
+  const isCreator = user?.id === community.creator_id;
 
   return (
     <div className="container max-w-6xl mx-auto p-4 sm:p-6">
@@ -128,21 +212,37 @@ const CommunityDetails = () => {
           </div>
         </div>
         
-        {user?.id !== community.creator_id && (
-          <Button 
-            variant="destructive" 
-            onClick={handleLeaveCommunity}
-            disabled={leaveCommunity.isPending}
-            className="gap-2"
-          >
-            {leaveCommunity.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <LogOut className="h-4 w-4" />
-            )}
-            Leave Community
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {isCreator ? (
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteCommunity}
+              disabled={deleteCommunity.isPending}
+              className="gap-2"
+            >
+              {deleteCommunity.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Delete Community
+            </Button>
+          ) : (
+            <Button 
+              variant="destructive" 
+              onClick={handleLeaveCommunity}
+              disabled={leaveCommunity.isPending}
+              className="gap-2"
+            >
+              {leaveCommunity.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LogOut className="h-4 w-4" />
+              )}
+              Leave Community
+            </Button>
+          )}
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -155,9 +255,12 @@ const CommunityDetails = () => {
             <Users className="w-4 h-4 mr-2" />
             Members
           </TabsTrigger>
-          <TabsTrigger value="matches">
+          <TabsTrigger value="matches" className="relative">
             <Calendar className="w-4 h-4 mr-2" />
             Matches
+            {hasScheduledMatches && (
+              <CalendarCheck className="w-4 h-4 absolute -top-1 -right-1 text-green-500" />
+            )}
           </TabsTrigger>
         </TabsList>
 
