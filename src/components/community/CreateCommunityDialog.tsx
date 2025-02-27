@@ -40,6 +40,7 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
       if (!user?.id) {
         console.error("User ID is undefined");
         toast.error("You must be logged in to create a community");
+        
         throw new Error("User ID is missing");
       }
   
