@@ -33,19 +33,28 @@ const Communities = () => {
   const { data: communities, isLoading } = useQuery({
     queryKey: ['user-communities'],
     queryFn: async () => {
-      // Get communities where the user is a member
-      const { data: communities, error } = await supabase
-        .from('communities')
+      // Get communities where the user is a member through community_members
+      const { data: userCommunities, error } = await supabase
+        .from('community_members')
         .select(`
-          *,
-          members:community_members(count),
-          is_member:community_members!inner(user_id)
+          communities (
+            id,
+            name,
+            description,
+            creator_id,
+            created_at,
+            image_url,
+            members:community_members(count)
+          )
         `)
-        .eq('is_member.user_id', user?.id);
+        .eq('user_id', user?.id);
 
       if (error) throw error;
       
-      return communities as Community[];
+      // Transform the data to match the Community interface
+      return userCommunities.map(uc => ({
+        ...uc.communities,
+      })) as Community[];
     },
     enabled: !!user?.id
   });

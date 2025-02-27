@@ -19,22 +19,31 @@ const CommunityDetails = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  const { data: membership } = useQuery({
+  const { data: membership, isLoading: membershipLoading } = useQuery({
     queryKey: ['community-membership', id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('community_members')
         .select('*')
-        .match({ community_id: id, user_id: user?.id })
-        .single();
+        .eq('community_id', id)
+        .eq('user_id', user?.id)
+        .maybeSingle();
       
-      if (error) return null;
+      if (error) throw error;
       return data;
     },
     enabled: !!id && !!user?.id,
   });
 
-  const { data: community, isLoading } = useQuery({
+  // Immediately redirect if not a member
+  useEffect(() => {
+    if (!membershipLoading && !membership) {
+      toast.error("You are not a member of this community");
+      navigate('/communities');
+    }
+  }, [membership, membershipLoading, navigate]);
+
+  const { data: community, isLoading: communityLoading } = useQuery({
     queryKey: ['community', id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -50,16 +59,8 @@ const CommunityDetails = () => {
       if (error) throw error;
       return data;
     },
-    enabled: !!id
+    enabled: !!id && !!membership // Only fetch if user is a member
   });
-
-  // Redirect if user is not a member
-  useEffect(() => {
-    if (!isLoading && !membership) {
-      navigate('/communities');
-      toast.error("You are not a member of this community");
-    }
-  }, [membership, isLoading, navigate]);
 
   const leaveCommunity = useMutation({
     mutationFn: async () => {
@@ -95,7 +96,7 @@ const CommunityDetails = () => {
     }
   };
 
-  if (isLoading || !membership) {
+  if (membershipLoading || communityLoading) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <Loader2 className="w-6 h-6 animate-spin" />
@@ -103,8 +104,8 @@ const CommunityDetails = () => {
     );
   }
 
-  if (!community) {
-    return <div>Community not found</div>;
+  if (!membership || !community) {
+    return null;
   }
 
   return (
