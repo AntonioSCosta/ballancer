@@ -40,34 +40,35 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
       if (!user?.id) {
         console.error("User ID is undefined");
         toast.error("You must be logged in to create a community");
-        
         throw new Error("User ID is missing");
       }
   
       console.log("Creating community with user ID:", user.id);
 
-      // First create the community
+      // Step 1: Create the community
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
           name: communityData.name,
           description: communityData.description,
           creator_id: user.id,
-          created_at: new Date().toISOString(),
         })
         .select()
         .single();
 
-      console.log("Supabase Response:", { community, communityError });
+      console.log("Community creation response:", { community, communityError });
       
       if (communityError) {
-        console.error("Supabase Error:", communityError.message, communityError.details);
-        throw new Error("Failed to create community");
+        console.error("Error creating community:", communityError.message);
+        throw new Error(`Failed to create community: ${communityError.message}`);
       }
 
-      // Now do a separate query to add the creator as admin
-      // This avoids the infinite recursion in RLS policies
-      const { error: creatorError } = await supabase
+      if (!community) {
+        throw new Error("Failed to create community: No community data returned");
+      }
+
+      // Step 2: Add the creator as an admin member
+      const { error: creatorMemberError } = await supabase
         .from('community_members')
         .insert({
           community_id: community.id,
@@ -75,12 +76,14 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
           role: 'admin'
         });
       
-      if (creatorError) {
-        console.error("Error adding creator as member:", creatorError);
-        throw new Error("Failed to add creator as member");
+      if (creatorMemberError) {
+        console.error("Error adding creator as member:", creatorMemberError);
+        throw new Error(`Failed to add creator as member: ${creatorMemberError.message}`);
       }
 
-      // Add selected friends as members in a separate query if any
+      console.log("Creator added as admin member");
+
+      // Step 3: Add selected friends as members
       if (memberIds.length > 0) {
         const membersToAdd = memberIds.map(memberId => ({
           community_id: community.id,
@@ -94,7 +97,9 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
         
         if (membersError) {
           console.error("Error adding members:", membersError);
-          throw new Error("Failed to add members");
+          toast.error("Community created, but there was an error adding some members");
+        } else {
+          console.log("Added friends as members:", memberIds.length);
         }
       }
 
