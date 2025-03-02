@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,6 +44,7 @@ const CommunityDetails = () => {
     enabled: !!id && !!user?.id,
   });
 
+  // Immediately redirect if not a member
   useEffect(() => {
     if (!membershipLoading && !membership) {
       toast.error("You are not a member of this community");
@@ -55,27 +57,51 @@ const CommunityDetails = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('communities')
-        .select('*')
+        .select(`
+          *,
+          members:community_members(count),
+          creator_id
+        `)
         .eq('id', id)
         .single();
       
       if (error) throw error;
       return data;
     },
-    enabled: !!id && !!membership,
+    enabled: !!id && !!membership // Only fetch if user is a member
   });
+
+  // Check if there are any scheduled matches
+  const { data: scheduledMatches } = useQuery({
+    queryKey: ['community-scheduled-matches', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('matches')
+        .select('id')
+        .eq('community_id', id)
+        .eq('status', 'scheduled');
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!membership
+  });
+
+  const hasScheduledMatches = scheduledMatches && scheduledMatches.length > 0;
 
   const leaveCommunity = useMutation({
     mutationFn: async () => {
-      if (!id || !user?.id) throw new Error("Missing community ID or user ID");
-      console.log("Attempting to leave community...");
+      if (!id || !user?.id) {
+        throw new Error("Missing community ID or user ID");
+      }
       
+      // Delete the community membership
       const { error } = await supabase
         .from('community_members')
         .delete()
         .eq('community_id', id)
         .eq('user_id', user.id);
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -84,69 +110,165 @@ const CommunityDetails = () => {
       navigate('/communities');
     },
     onError: (error: any) => {
+      console.error("Error leaving community:", error);
       toast.error(error.message || "Failed to leave community");
     }
   });
 
   const deleteCommunity = useMutation({
     mutationFn: async () => {
-      if (!id || !user?.id) throw new Error("Missing community ID or user ID");
+      if (!id || !user?.id) {
+        throw new Error("Missing community ID or user ID");
+      }
+  
       console.log("Starting community deletion process for ID:", id);
-      
+  
+      const supabaseClient = supabase;
+  
+      // Run all deletions in parallel
       const [{ error: membersError }, { error: messagesError }, { error: matchesError }] = await Promise.all([
-        supabase.from('community_members').delete().eq('community_id', id),
-        supabase.from('community_messages').delete().eq('community_id', id),
-        supabase.from('matches').delete().eq('community_id', id),
+        supabaseClient.from("community_members").delete().eq("community_id", id),
+        supabaseClient.from("community_messages").delete().eq("community_id", id),
+        supabaseClient.from("matches").delete().eq("community_id", id),
       ]);
-
+  
       if (membersError) throw membersError;
       if (messagesError) throw messagesError;
       if (matchesError) throw matchesError;
-      
-      const { error: communityError } = await supabase
-        .from('communities')
+  
+      // Finally, delete the community
+      const { error: communityError } = await supabaseClient
+        .from("communities")
         .delete()
-        .eq('id', id);
-      
+        .eq("id", id);
+  
       if (communityError) throw communityError;
+  
+      console.log("Community deleted successfully");
     },
     onSuccess: () => {
       toast.success("Community deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ['user-communities'] });
-      navigate('/communities');
+      queryClient.invalidateQueries({ queryKey: ["user-communities"] });
+      navigate("/communities");
     },
     onError: (error: any) => {
+      console.error("Error deleting community:", error);
       toast.error(error.message || "Failed to delete community");
-    }
+    },
   });
 
+  const handleLeaveCommunity = () => {
+    if (community?.creator_id === user?.id) {
+      toast.error("Community creators cannot leave their own community");
+      return;
+    }
+    
+    if (confirm("Are you sure you want to leave this community?")) {
+      leaveCommunity.mutate();
+    }
+  };
+
+  const handleDeleteCommunity = () => {
+    if (confirm("Are you sure you want to delete this community? This action cannot be undone.")) {
+      console.log("User confirmed community deletion");
+      deleteCommunity.mutate();
+    }
+  };
+
   if (membershipLoading || communityLoading) {
-    return <div className="flex justify-center items-center min-h-[200px]"><Loader2 className="w-6 h-6 animate-spin" /></div>;
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        <Loader2 className="w-6 h-6 animate-spin" />
+      </div>
+    );
   }
 
-  if (!membership || !community) return null;
+  if (!membership || !community) {
+    return null;
+  }
+
+  const isCreator = user?.id === community.creator_id;
 
   return (
     <div className="container max-w-6xl mx-auto p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <Button variant="ghost" onClick={() => navigate("/communities")} className="p-2">
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-2xl sm:text-3xl font-bold">{community.name}</h1>
-        <Button variant="destructive" onClick={() => deleteCommunity.mutate()}>
-          <Trash2 className="h-4 w-4" /> Delete
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate("/communities")}
+            className="p-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold">{community.name}</h1>
+            <p className="text-sm text-muted-foreground mt-1">{community.description}</p>
+          </div>
+        </div>
+        
+        <div className="flex gap-2">
+          {isCreator ? (
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteCommunity}
+              disabled={deleteCommunity.isPending}
+              className="gap-2"
+            >
+              {deleteCommunity.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Delete Community
+            </Button>
+          ) : (
+            <Button 
+              variant="destructive" 
+              onClick={handleLeaveCommunity}
+              disabled={leaveCommunity.isPending}
+              className="gap-2"
+            >
+              {leaveCommunity.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <LogOut className="h-4 w-4" />
+              )}
+              Leave Community
+            </Button>
+          )}
+        </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="chat"><MessageCircle className="w-4 h-4" /> Chat</TabsTrigger>
-          <TabsTrigger value="members"><Users className="w-4 h-4" /> Members</TabsTrigger>
-          <TabsTrigger value="matches"><Calendar className="w-4 h-4" /> Matches</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="w-full sm:w-auto">
+          <TabsTrigger value="chat">
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Chat
+          </TabsTrigger>
+          <TabsTrigger value="members">
+            <Users className="w-4 h-4 mr-2" />
+            Members
+          </TabsTrigger>
+          <TabsTrigger value="matches" className="relative">
+            <Calendar className="w-4 h-4 mr-2" />
+            Matches
+            {hasScheduledMatches && (
+              <CalendarCheck className="w-4 h-4 absolute -top-1 -right-1 text-green-500" />
+            )}
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="chat"><CommunityChat communityId={id!} /></TabsContent>
-        <TabsContent value="members"><CommunityMembers communityId={id!} /></TabsContent>
-        <TabsContent value="matches"><CommunityMatches communityId={id!} /></TabsContent>
+
+        <TabsContent value="chat">
+          <CommunityChat communityId={id!} />
+        </TabsContent>
+
+        <TabsContent value="members">
+          <CommunityMembers communityId={id!} />
+        </TabsContent>
+
+        <TabsContent value="matches">
+          <CommunityMatches communityId={id!} />
+        </TabsContent>
       </Tabs>
     </div>
   );
