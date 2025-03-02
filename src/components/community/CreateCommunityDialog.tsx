@@ -58,13 +58,13 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
 
       console.log("Supabase Response:", { community, communityError });
       
-      
       if (communityError) {
         console.error("Error creating community:", communityError);
         throw new Error("Failed to create community");
       }
 
-      // Add creator as admin member
+      // Now do a separate query to add the creator as admin
+      // This avoids the infinite recursion in RLS policies
       const { error: creatorError } = await supabase
         .from('community_members')
         .insert({
@@ -78,7 +78,7 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
         throw new Error("Failed to add creator as member");
       }
 
-      // Add selected friends as members if any
+      // Add selected friends as members in a separate query if any
       if (memberIds.length > 0) {
         const membersToAdd = memberIds.map(memberId => ({
           community_id: community.id,
