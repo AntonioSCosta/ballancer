@@ -120,41 +120,75 @@ const CommunityDetails = () => {
       if (!id || !user?.id) {
         throw new Error("Missing community ID or user ID");
       }
-  
+
       console.log("Starting community deletion process for ID:", id);
-  
-      const supabaseClient = supabase;
-  
-      // Run all deletions in parallel
-      const [{ error: membersError }, { error: messagesError }, { error: matchesError }] = await Promise.all([
-        supabaseClient.from("community_members").delete().eq("community_id", id),
-        supabaseClient.from("community_messages").delete().eq("community_id", id),
-        supabaseClient.from("matches").delete().eq("community_id", id),
-      ]);
-  
-      if (membersError) throw membersError;
-      if (messagesError) throw messagesError;
-      if (matchesError) throw matchesError;
-  
-      // Finally, delete the community
-      const { error: communityError } = await supabaseClient
-        .from("communities")
+
+      // First delete all community_members
+      const { data: membersData, error: membersError } = await supabase
+        .from('community_members')
         .delete()
-        .eq("id", id);
-  
-      if (communityError) throw communityError;
-  
-      console.log("Community deleted successfully");
+        .eq('community_id', id)
+        .select();
+
+      if (membersError) {
+        console.error("Error deleting community members:", membersError);
+        throw membersError;
+      }
+      
+      console.log("Deleted community members:", membersData?.length || 0);
+
+      // Delete all community messages
+      const { data: messagesData, error: messagesError } = await supabase
+        .from('community_messages')
+        .delete()
+        .eq('community_id', id)
+        .select();
+
+      if (messagesError) {
+        console.error("Error deleting community messages:", messagesError);
+        throw messagesError;
+      }
+      
+      console.log("Deleted community messages:", messagesData?.length || 0);
+
+      // Delete all matches for this community
+      const { data: matchesData, error: matchesError } = await supabase
+        .from('matches')
+        .delete()
+        .eq('community_id', id)
+        .select();
+
+      if (matchesError) {
+        console.error("Error deleting community matches:", matchesError);
+        throw matchesError;
+      }
+      
+      console.log("Deleted community matches:", matchesData?.length || 0);
+
+      // Finally delete the community itself
+      const { data: communityData, error: communityError } = await supabase
+        .from('communities')
+        .delete()
+        .eq('id', id)
+        .select();
+
+      if (communityError) {
+        console.error("Error deleting community:", communityError);
+        throw communityError;
+      }
+      
+      console.log("Community deleted successfully:", communityData);
+      return communityData;
     },
     onSuccess: () => {
       toast.success("Community deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["user-communities"] });
-      navigate("/communities");
+      queryClient.invalidateQueries({ queryKey: ['user-communities'] });
+      navigate('/communities');
     },
     onError: (error: any) => {
       console.error("Error deleting community:", error);
       toast.error(error.message || "Failed to delete community");
-    },
+    }
   });
 
   const handleLeaveCommunity = () => {
