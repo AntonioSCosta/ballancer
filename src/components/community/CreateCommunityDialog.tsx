@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -216,7 +216,12 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
               type="submit"
               disabled={createCommunity.isPending}
             >
-              {createCommunity.isPending ? "Creating..." : "Create Community"}
+              {createCommunity.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : "Create Community"}
             </Button>
           </DialogFooter>
         </form>
