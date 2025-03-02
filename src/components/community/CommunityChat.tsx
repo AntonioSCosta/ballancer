@@ -51,6 +51,7 @@ export const CommunityChat = ({ communityId }: CommunityChatProps) => {
     enabled: !!communityId
   });
 
+  
   useEffect(() => {
     const channel = supabase.channel('community_chat')
       .on(
