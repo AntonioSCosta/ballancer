@@ -478,13 +478,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      is_community_creator: {
-        Args: {
-          community_id: string
-          user_id: string
-        }
-        Returns: boolean
-      }
       is_member_of_community: {
         Args: {
           community_id: string
