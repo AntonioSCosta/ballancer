@@ -38,37 +38,28 @@ const Communities = () => {
       
       console.log("Fetching communities for user:", user.id);
       
-      // Get communities where the user is a member
-      const { data: userCommunities, error } = await supabase
-        .from('community_members')
+      // Method 1: Get communities using the is_member_of_community function
+      const { data, error } = await supabase
+        .from('communities')
         .select(`
-          community_id,
-          community:communities(
-            id,
-            name,
-            description,
-            creator_id,
-            created_at,
-            image_url,
-            members:community_members(count)
-          )
+          id,
+          name,
+          description,
+          creator_id,
+          created_at,
+          image_url,
+          members:community_members(count)
         `)
-        .eq('user_id', user.id);
+        .or(`creator_id.eq.${user.id},id.in.(select community_id from community_members where user_id = '${user.id}')`)
+        .order('created_at', { ascending: false });
   
       if (error) {
         console.error("Error fetching communities:", error);
         throw error;
       }
       
-      console.log("Received user communities data:", userCommunities);
-      
-      // Extract communities correctly
-      const extractedCommunities = userCommunities
-        .filter(uc => uc.community) // Filter out null values
-        .map(uc => uc.community) as Community[];
-        
-      console.log("Extracted communities:", extractedCommunities);
-      return extractedCommunities;
+      console.log("Received communities data:", data);
+      return data as Community[];
     },
     enabled: !!user?.id
   });
