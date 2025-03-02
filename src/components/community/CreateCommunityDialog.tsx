@@ -50,8 +50,10 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
-          ...communityData,
+          name: communityData.name,
+          description: communityData.description,
           creator_id: user.id,
+          created_at: new Date().toISOString(),
         })
         .select()
         .single();
@@ -59,7 +61,7 @@ const CreateCommunityDialog = ({ friends }: CreateCommunityDialogProps) => {
       console.log("Supabase Response:", { community, communityError });
       
       if (communityError) {
-        console.error("Error creating community:", communityError);
+        console.error("Supabase Error:", communityError.message, communityError.details);
         throw new Error("Failed to create community");
       }
 
