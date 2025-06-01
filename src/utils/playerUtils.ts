@@ -1,14 +1,65 @@
+
 import { Player, PlayerPosition } from "@/components/PlayerCard";
 
+const getDefaultWeights = () => ({
+  Goalkeeper: {
+    handling: 25,
+    diving: 25,
+    positioning: 20,
+    reflexes: 20,
+    mental: 5,
+    passing: 3,
+    speed: 2,
+  },
+  Defender: {
+    defending: 30,
+    physical: 20,
+    mental: 15,
+    heading: 15,
+    speed: 10,
+    passing: 5,
+    dribbling: 3,
+    shooting: 2,
+  },
+  Midfielder: {
+    passing: 25,
+    mental: 20,
+    dribbling: 15,
+    speed: 15,
+    physical: 10,
+    shooting: 8,
+    defending: 4,
+    heading: 3,
+  },
+  Forward: {
+    shooting: 30,
+    speed: 20,
+    dribbling: 20,
+    mental: 10,
+    physical: 10,
+    passing: 5,
+    heading: 3,
+    defending: 2,
+  },
+});
+
 export const calculateRating = (attrs: Record<string, number>, pos: PlayerPosition) => {
+  const storedWeights = localStorage.getItem("ratingWeights");
+  const weights = storedWeights ? JSON.parse(storedWeights) : getDefaultWeights();
+  const positionWeights = weights[pos];
+
   if (pos === "Goalkeeper") {
-    return Math.round(
-      (attrs.handling + attrs.diving + attrs.positioning + attrs.reflexes + attrs.mental + attrs.passing + attrs.speed) / 7
-    );
+    const weightedSum = Object.entries(positionWeights).reduce((sum, [attr, weight]) => {
+      return sum + (attrs[attr] || 0) * (weight / 100);
+    }, 0);
+    return Math.round(weightedSum);
   }
-  return Math.round(
-    (attrs.speed + attrs.physical + attrs.mental + attrs.passing + attrs.dribbling + attrs.shooting + attrs.heading + attrs.defending) / 8
-  );
+
+  const weightedSum = Object.entries(positionWeights).reduce((sum, [attr, weight]) => {
+    return sum + (attrs[attr] || 0) * (weight / 100);
+  }, 0);
+  
+  return Math.round(weightedSum);
 };
 
 export const getDefaultAttributes = (position: PlayerPosition, secondaryPosition?: PlayerPosition) => {

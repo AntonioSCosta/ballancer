@@ -69,6 +69,13 @@ const CreatePlayer = () => {
   const [photo, setPhoto] = useState("https://via.placeholder.com/300");
   const [hasPhoto, setHasPhoto] = useState(false);
   const [attributes, setAttributes] = useState(getDefaultAttributes("Midfielder"));
+  const [currentRating, setCurrentRating] = useState(50);
+
+  // Update rating whenever attributes or position changes
+  useEffect(() => {
+    const newRating = calculateRating(attributes, position);
+    setCurrentRating(newRating);
+  }, [attributes, position]);
 
   useEffect(() => {
     if (playerToEdit) {
@@ -249,12 +256,20 @@ const CreatePlayer = () => {
                 name={name}
                 onPhotoChange={handlePhotoChange}
               />
-              <PlayerAttributes
-                position={position}
-                secondaryPosition={secondaryPosition}
-                attributes={attributes}
-                onAttributeChange={handleAttributeChange}
-              />
+
+              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                <div className="text-center mb-4">
+                  <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Current Rating: {currentRating}
+                  </span>
+                </div>
+                <PlayerAttributes
+                  position={position}
+                  secondaryPosition={secondaryPosition}
+                  attributes={attributes}
+                  onAttributeChange={handleAttributeChange}
+                />
+              </div>
 
               <Button type="submit" className="w-full">
                 {playerToEdit ? "Update Player" : "Add Player"}

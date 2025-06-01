@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import RatingWeights from "@/components/RatingWeights";
 
 const Settings = () => {
   const [considerPositions, setConsiderPositions] = useState(() => {
@@ -18,9 +19,9 @@ const Settings = () => {
     <div className="container max-w-2xl mx-auto p-6 space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Settings</CardTitle>
+          <CardTitle>Team Generation Settings</CardTitle>
           <CardDescription>
-            Manage your application preferences
+            Manage your team generation preferences
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -38,6 +39,8 @@ const Settings = () => {
           </div>
         </CardContent>
       </Card>
+
+      <RatingWeights />
     </div>
   );
 };

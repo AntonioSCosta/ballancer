@@ -73,6 +73,13 @@ const GeneratedTeams = () => {
     }
   };
 
+  // Transform teams for TeamsComparison component
+  const transformedTeams = teams.map((team, index) => ({
+    ...team,
+    id: `team-${index + 1}`,
+    name: `Team ${index + 1}`
+  }));
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -130,7 +137,7 @@ const GeneratedTeams = () => {
             </div>
           </TabsContent>
           <TabsContent value="comparison">
-            {teams.length === 2 && <TeamsComparison team1={teams[0]} team2={teams[1]} />}
+            {transformedTeams.length === 2 && <TeamsComparison team1={transformedTeams[0]} team2={transformedTeams[1]} />}
           </TabsContent>
         </Tabs>
       </div>
