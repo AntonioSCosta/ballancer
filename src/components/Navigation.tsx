@@ -1,41 +1,22 @@
 
-import { Menu, LogOut, UserPlus, Settings, Users, UsersRound, HelpCircle, UserCircle } from "lucide-react";
+import { Menu, HelpCircle, Settings, UsersRound } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "./AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { Link, useLocation } from "react-router-dom";
 
 export const Navigation = () => {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user } = useAuth();
 
   // Define navigation menu items
   const menuItems = [
     { path: "/generator", label: "Team Generator", icon: <UsersRound className="w-4 h-4 mr-2" /> },
-    { path: "/communities", label: "Communities", icon: <Users className="w-4 h-4 mr-2" /> },
-    { path: "/friends", label: "Friends", icon: <UserPlus className="w-4 h-4 mr-2" /> },
-    { path: "/profile-settings", label: "Profile", icon: <UserCircle className="w-4 h-4 mr-2" /> },
     { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
     { path: "/help", label: "Help", icon: <HelpCircle className="w-4 h-4 mr-2" /> },
   ];
-
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      navigate("/auth");
-      toast.success("Logged out successfully");
-    } catch (error: any) {
-      toast.error(error.message);
-    }
-  };
 
   return (
     <nav className="fixed top-0 left-0 p-4 z-50">
@@ -59,12 +40,6 @@ export const Navigation = () => {
               </Link>
             </DropdownMenuItem>
           ))}
-          {user && (
-            <DropdownMenuItem onClick={handleLogout} className="text-red-500 hover:text-red-600">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </DropdownMenuItem>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </nav>
