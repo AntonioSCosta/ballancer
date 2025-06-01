@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 
 interface RatingWeightsProps {
-  onWeightsChange?: (weights: Record<string, number>) => void;
+  onWeightsChange?: (weights: Record<string, Record<string, number>>) => void;
 }
 
 const defaultWeights = {
@@ -67,7 +67,7 @@ const RatingWeights = ({ onWeightsChange }: RatingWeightsProps) => {
   }, [weights, onWeightsChange]);
 
   const handleWeightChange = (attribute: string, value: number[]) => {
-    setWeights(prev => ({
+    setWeights((prev: typeof defaultWeights) => ({
       ...prev,
       [selectedPosition]: {
         ...prev[selectedPosition],
@@ -83,19 +83,19 @@ const RatingWeights = ({ onWeightsChange }: RatingWeightsProps) => {
 
   const normalizeWeights = () => {
     const currentWeights = weights[selectedPosition];
-    const total = Object.values(currentWeights).reduce((sum, weight) => sum + weight, 0);
+    const total = Object.values(currentWeights).reduce((sum: number, weight: number) => sum + weight, 0);
     
     if (total === 100) {
       toast.info("Weights are already normalized");
       return;
     }
 
-    const normalizedWeights = Object.entries(currentWeights).reduce((acc, [key, weight]) => {
+    const normalizedWeights = Object.entries(currentWeights).reduce((acc: Record<string, number>, [key, weight]) => {
       acc[key] = Math.round((weight / total) * 100);
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
-    setWeights(prev => ({
+    setWeights((prev: typeof defaultWeights) => ({
       ...prev,
       [selectedPosition]: normalizedWeights,
     }));
@@ -104,7 +104,7 @@ const RatingWeights = ({ onWeightsChange }: RatingWeightsProps) => {
   };
 
   const currentWeights = weights[selectedPosition];
-  const totalWeight = Object.values(currentWeights).reduce((sum, weight) => sum + weight, 0);
+  const totalWeight = Object.values(currentWeights).reduce((sum: number, weight: number) => sum + weight, 0);
 
   return (
     <Card>

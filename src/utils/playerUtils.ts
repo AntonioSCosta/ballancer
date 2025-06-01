@@ -49,14 +49,14 @@ export const calculateRating = (attrs: Record<string, number>, pos: PlayerPositi
   const positionWeights = weights[pos];
 
   if (pos === "Goalkeeper") {
-    const weightedSum = Object.entries(positionWeights).reduce((sum, [attr, weight]) => {
-      return sum + (attrs[attr] || 0) * (weight / 100);
+    const weightedSum = Object.entries(positionWeights).reduce((sum: number, [attr, weight]) => {
+      return sum + ((attrs[attr] || 0) * (weight as number) / 100);
     }, 0);
     return Math.round(weightedSum);
   }
 
-  const weightedSum = Object.entries(positionWeights).reduce((sum, [attr, weight]) => {
-    return sum + (attrs[attr] || 0) * (weight / 100);
+  const weightedSum = Object.entries(positionWeights).reduce((sum: number, [attr, weight]) => {
+    return sum + ((attrs[attr] || 0) * (weight as number) / 100);
   }, 0);
   
   return Math.round(weightedSum);
