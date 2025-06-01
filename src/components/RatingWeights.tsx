@@ -1,18 +1,26 @@
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlayerPosition } from "@/types/player";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
-interface RatingWeightsProps {
-  onWeightsChange?: (weights: Record<string, Record<string, number>>) => void;
+type PlayerPosition = "Goalkeeper" | "Defender" | "Midfielder" | "Forward";
+
+interface PositionWeights {
+  [key: string]: number;
 }
 
-const defaultWeights = {
+interface RatingWeights {
+  Goalkeeper: PositionWeights;
+  Defender: PositionWeights;
+  Midfielder: PositionWeights;
+  Forward: PositionWeights;
+}
+
+const getDefaultWeights = (): RatingWeights => ({
   Goalkeeper: {
     handling: 25,
     diving: 25,
@@ -52,115 +60,126 @@ const defaultWeights = {
     heading: 3,
     defending: 2,
   },
-};
+});
 
-const RatingWeights = ({ onWeightsChange }: RatingWeightsProps) => {
-  const [selectedPosition, setSelectedPosition] = useState<PlayerPosition>("Midfielder");
-  const [weights, setWeights] = useState(() => {
-    const stored = localStorage.getItem("ratingWeights");
-    return stored ? JSON.parse(stored) : defaultWeights;
-  });
+const RatingWeights = () => {
+  const [weights, setWeights] = useState<RatingWeights>(getDefaultWeights());
 
   useEffect(() => {
-    localStorage.setItem("ratingWeights", JSON.stringify(weights));
-    onWeightsChange?.(weights);
-  }, [weights, onWeightsChange]);
+    const storedWeights = localStorage.getItem("ratingWeights");
+    if (storedWeights) {
+      setWeights(JSON.parse(storedWeights));
+    }
+  }, []);
 
-  const handleWeightChange = (attribute: string, value: number[]) => {
-    setWeights((prev: typeof defaultWeights) => ({
+  const handleWeightChange = (position: PlayerPosition, attribute: string, value: string) => {
+    const numValue = parseFloat(value) || 0;
+    setWeights(prev => ({
       ...prev,
-      [selectedPosition]: {
-        ...prev[selectedPosition],
-        [attribute]: value[0],
-      },
+      [position]: {
+        ...prev[position],
+        [attribute]: numValue
+      }
     }));
+  };
+
+  const normalizeWeights = (position: PlayerPosition) => {
+    const positionWeights = weights[position];
+    const total = Object.values(positionWeights).reduce((sum: number, weight: number) => sum + weight, 0);
+    
+    if (total === 0) return;
+    
+    const normalizedWeights: PositionWeights = {};
+    Object.entries(positionWeights).forEach(([attr, weight]) => {
+      normalizedWeights[attr] = Math.round((weight / total) * 100);
+    });
+    
+    setWeights(prev => ({
+      ...prev,
+      [position]: normalizedWeights
+    }));
+  };
+
+  const saveWeights = () => {
+    localStorage.setItem("ratingWeights", JSON.stringify(weights));
+    toast.success("Rating weights saved successfully!");
   };
 
   const resetToDefaults = () => {
+    const defaultWeights = getDefaultWeights();
     setWeights(defaultWeights);
-    toast.success("Rating weights reset to defaults");
+    localStorage.setItem("ratingWeights", JSON.stringify(defaultWeights));
+    toast.success("Rating weights reset to defaults!");
   };
 
-  const normalizeWeights = () => {
-    const currentWeights = weights[selectedPosition];
-    const total = Object.values(currentWeights).reduce((sum: number, weight: number) => sum + weight, 0);
-    
-    if (total === 100) {
-      toast.info("Weights are already normalized");
-      return;
-    }
+  const renderPositionWeights = (position: PlayerPosition) => {
+    const positionWeights = weights[position];
+    const total = Object.values(positionWeights).reduce((sum: number, weight: number) => sum + weight, 0);
 
-    const normalizedWeights = Object.entries(currentWeights).reduce((acc: Record<string, number>, [key, weight]) => {
-      acc[key] = Math.round((weight / total) * 100);
-      return acc;
-    }, {});
-
-    setWeights((prev: typeof defaultWeights) => ({
-      ...prev,
-      [selectedPosition]: normalizedWeights,
-    }));
-    
-    toast.success("Weights normalized to 100%");
+    return (
+      <div className="space-y-4">
+        <div className="grid gap-4">
+          {Object.entries(positionWeights).map(([attribute, weight]) => (
+            <div key={attribute} className="flex items-center gap-4">
+              <Label className="w-24 capitalize">{attribute}</Label>
+              <Input
+                type="number"
+                min="0"
+                max="100"
+                value={weight}
+                onChange={(e) => handleWeightChange(position, attribute, e.target.value)}
+                className="w-20"
+              />
+              <span className="text-sm text-muted-foreground w-12">
+                {total > 0 ? Math.round((weight / total) * 100) : 0}%
+              </span>
+            </div>
+          ))}
+        </div>
+        
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => normalizeWeights(position)}
+          >
+            Normalize to 100%
+          </Button>
+          <div className="text-sm text-muted-foreground flex items-center">
+            Total: {total}
+          </div>
+        </div>
+      </div>
+    );
   };
-
-  const currentWeights = weights[selectedPosition];
-  const totalWeight = Object.values(currentWeights).reduce((sum: number, weight: number) => sum + weight, 0);
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Rating Weights by Position</CardTitle>
-        <CardDescription>
+        <CardTitle>Player Rating Weights</CardTitle>
+        <p className="text-sm text-muted-foreground">
           Customize how much each attribute contributes to a player's overall rating based on their position.
-        </CardDescription>
+        </p>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label>Position</Label>
-          <Select value={selectedPosition} onValueChange={(value: PlayerPosition) => setSelectedPosition(value)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Goalkeeper">Goalkeeper</SelectItem>
-              <SelectItem value="Defender">Defender</SelectItem>
-              <SelectItem value="Midfielder">Midfielder</SelectItem>
-              <SelectItem value="Forward">Forward</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h4 className="font-medium">Attribute Weights</h4>
-            <span className={`text-sm ${totalWeight === 100 ? 'text-green-600' : 'text-orange-600'}`}>
-              Total: {totalWeight}%
-            </span>
-          </div>
+      <CardContent>
+        <Tabs defaultValue="Goalkeeper" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="Goalkeeper">Goalkeeper</TabsTrigger>
+            <TabsTrigger value="Defender">Defender</TabsTrigger>
+            <TabsTrigger value="Midfielder">Midfielder</TabsTrigger>
+            <TabsTrigger value="Forward">Forward</TabsTrigger>
+          </TabsList>
           
-          {Object.entries(currentWeights).map(([attribute, weight]) => (
-            <div key={attribute} className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label className="capitalize">{attribute}</Label>
-                <span className="text-sm text-gray-500">{weight}%</span>
-              </div>
-              <Slider
-                value={[weight]}
-                onValueChange={(value) => handleWeightChange(attribute, value)}
-                min={0}
-                max={50}
-                step={1}
-                className="[&_[role=slider]]:bg-primary"
-              />
-            </div>
+          {(["Goalkeeper", "Defender", "Midfielder", "Forward"] as PlayerPosition[]).map((position) => (
+            <TabsContent key={position} value={position}>
+              {renderPositionWeights(position)}
+            </TabsContent>
           ))}
-        </div>
+        </Tabs>
 
-        <div className="flex gap-2">
-          <Button onClick={normalizeWeights} variant="outline" size="sm">
-            Normalize to 100%
-          </Button>
-          <Button onClick={resetToDefaults} variant="outline" size="sm">
+        <div className="flex gap-4 mt-6">
+          <Button onClick={saveWeights}>Save Weights</Button>
+          <Button variant="outline" onClick={resetToDefaults}>
             Reset to Defaults
           </Button>
         </div>
