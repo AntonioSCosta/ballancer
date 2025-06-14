@@ -3,9 +3,28 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/components/AuthProvider'
 
+export interface Profile {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+export interface FriendRequest {
+  id: string;
+  sender: Profile;
+  receiver: Profile;
+  status: string;
+  created_at: string;
+}
+
+export interface Friend {
+  id: string;
+  friend: Profile;
+}
+
 export const useFriends = () => {
   const { user } = useAuth()
-  const [friends, setFriends] = useState([])
+  const [friends, setFriends] = useState<Friend[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -18,8 +37,11 @@ export const useFriends = () => {
       try {
         const { data, error } = await supabase
           .from('friends')
-          .select('*')
-          .or(`user_id_1.eq.${user.id},user_id_2.eq.${user.id}`)
+          .select(`
+            id,
+            friend:profiles!friends_user_id_2_fkey(id, username, avatar_url)
+          `)
+          .eq('user_id_1', user.id)
 
         if (error) throw error
         setFriends(data || [])

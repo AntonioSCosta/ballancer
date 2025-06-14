@@ -10,6 +10,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import CreatePlayer from "./pages/CreatePlayer";
 import TeamGenerator from "./pages/TeamGenerator";
 import GeneratedTeams from "./pages/GeneratedTeams";
+import Friends from "./pages/Friends";
 import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/" element={<CreatePlayer />} />
               <Route path="/generator" element={<TeamGenerator />} />
               <Route path="/generated-teams" element={<GeneratedTeams />} />
+              <Route path="/friends" element={<Friends />} />
               <Route path="/help" element={<Help />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
