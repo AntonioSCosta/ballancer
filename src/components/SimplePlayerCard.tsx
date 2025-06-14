@@ -1,6 +1,7 @@
 
 import { Player } from "./PlayerCard";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { getPlayerGradient, getInitials } from "@/utils/playerCardUtils";
 
 interface SimplePlayerCardProps {
   player: Player;
@@ -22,15 +23,6 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
     return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   const stats = getPlayerStats();
 
   return (
@@ -44,7 +36,7 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
               className="object-cover"
             />
           ) : (
-            <AvatarFallback className={`text-white ${getPositionColor(player.position)}`}>
+            <AvatarFallback className={`text-white ${getPlayerGradient(player.name, player.position)}`}>
               {getInitials(player.name)}
             </AvatarFallback>
           )}

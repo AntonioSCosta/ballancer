@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { Player, PlayerPosition } from "@/types/player";
 import { AttributeBar } from "./player/AttributeBar";
 import { PlayerStatsDisplay } from "./player/PlayerStats";
-import { getPlayerStats, calculateWinRate, getInitials, getAttributes } from "@/utils/playerCardUtils";
+import { getPlayerStats, calculateWinRate, getInitials, getAttributes, getPlayerGradient } from "@/utils/playerCardUtils";
 
 interface PlayerCardProps {
   player: Player;
@@ -39,8 +39,8 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-500">
-            <span className="text-4xl font-bold text-white">
+          <div className={`w-full h-full flex items-center justify-center ${getPlayerGradient(player.name, player.position)}`}>
+            <span className="text-4xl font-bold text-white drop-shadow-lg">
               {getInitials(player.name)}
             </span>
           </div>
