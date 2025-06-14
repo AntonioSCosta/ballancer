@@ -7,7 +7,6 @@ import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Users, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import BulkSelection from "@/components/BulkSelection";
 
 const TeamGenerator = () => {
   const navigate = useNavigate();
@@ -32,10 +31,6 @@ const TeamGenerator = () => {
       newSelected.add(playerId);
     }
     setSelectedPlayers(newSelected);
-  };
-
-  const handleBulkSelection = (playerIds: string[]) => {
-    setSelectedPlayers(new Set(playerIds));
   };
 
   const handleEditPlayer = (playerId: string) => {
@@ -86,14 +81,6 @@ const TeamGenerator = () => {
             </Button>
           </div>
         </div>
-
-        {filteredPlayers.length > 0 && (
-          <BulkSelection
-            players={filteredPlayers}
-            selectedPlayers={selectedPlayers}
-            onSelectionChange={handleBulkSelection}
-          />
-        )}
 
         {filteredPlayers.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 pb-24">

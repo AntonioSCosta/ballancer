@@ -1,7 +1,7 @@
 
 import { Player } from "./PlayerCard";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { getPlayerGradient, getInitials } from "@/utils/playerCardUtils";
+import { getInitials } from "@/utils/playerCardUtils";
 
 interface SimplePlayerCardProps {
   player: Player;
@@ -36,7 +36,7 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
               className="object-cover"
             />
           ) : (
-            <AvatarFallback className={`text-white ${getPlayerGradient(player.name, player.position)}`}>
+            <AvatarFallback className="text-white bg-gray-400 dark:bg-gray-600">
               {getInitials(player.name)}
             </AvatarFallback>
           )}

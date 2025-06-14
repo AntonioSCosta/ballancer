@@ -11,37 +11,6 @@ export const getPositionColor = (position: PlayerPosition) => {
   return colors[position];
 };
 
-export const getPlayerGradient = (name: string, position: PlayerPosition) => {
-  // Generate a consistent gradient based on player name and position
-  const gradients = {
-    "Goalkeeper": [
-      "bg-gradient-to-br from-orange-400 to-red-500",
-      "bg-gradient-to-br from-amber-400 to-orange-600",
-      "bg-gradient-to-br from-yellow-400 to-orange-500",
-    ],
-    "Defender": [
-      "bg-gradient-to-br from-blue-400 to-indigo-600",
-      "bg-gradient-to-br from-cyan-400 to-blue-600",
-      "bg-gradient-to-br from-sky-400 to-blue-500",
-    ],
-    "Midfielder": [
-      "bg-gradient-to-br from-purple-400 to-pink-600",
-      "bg-gradient-to-br from-violet-400 to-purple-600",
-      "bg-gradient-to-br from-indigo-400 to-purple-500",
-    ],
-    "Forward": [
-      "bg-gradient-to-br from-emerald-400 to-green-600",
-      "bg-gradient-to-br from-green-400 to-emerald-600",
-      "bg-gradient-to-br from-teal-400 to-green-500",
-    ]
-  };
-
-  // Use name length to pick a consistent gradient
-  const positionGradients = gradients[position];
-  const index = name.length % positionGradients.length;
-  return positionGradients[index];
-};
-
 export const getPlayerStats = (playerId: string): PlayerStats => {
   const stats = localStorage.getItem(`playerStats_${playerId}`);
   return stats ? JSON.parse(stats) : { wins: 0, losses: 0, draws: 0, goals: 0 };
