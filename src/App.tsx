@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { AuthProvider } from "@/components/AuthProvider";
 import CreatePlayer from "./pages/CreatePlayer";
 import TeamGenerator from "./pages/TeamGenerator";
 import GeneratedTeams from "./pages/GeneratedTeams";
@@ -18,22 +19,24 @@ const queryClient = new QueryClient();
 const App = () => (
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="pt-16">
-          <Navigation />
-          <ThemeSwitcher />
-          <Routes>
-            <Route path="/" element={<CreatePlayer />} />
-            <Route path="/generator" element={<TeamGenerator />} />
-            <Route path="/generated-teams" element={<GeneratedTeams />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <Toaster />
-          <Sonner />
-        </div>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <div className="pt-16">
+            <Navigation />
+            <ThemeSwitcher />
+            <Routes>
+              <Route path="/" element={<CreatePlayer />} />
+              <Route path="/generator" element={<TeamGenerator />} />
+              <Route path="/generated-teams" element={<GeneratedTeams />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <Toaster />
+            <Sonner />
+          </div>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </BrowserRouter>
 );
