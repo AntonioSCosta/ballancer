@@ -2,9 +2,7 @@
 import { Player } from "./PlayerCard";
 import { motion } from "framer-motion";
 import { determinePlayerPosition } from "@/utils/positionUtils";
-import { useState } from "react";
-import { Button } from "./ui/button";
-import { Edit2, Check } from "lucide-react";
+import { shortenPlayerName } from "@/utils/nameUtils";
 
 interface FootballFieldProps {
   players: Player[];
@@ -14,41 +12,33 @@ interface FootballFieldProps {
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
-    "Goalkeeper": { x: "45%", y: "10%" },
-    "Defender": { x: "0", y: "35%" },
-    "Midfielder": { x: "0", y: "55%" },
-    "Forward": { x: "0", y: "75%" }
+    "Goalkeeper": { x: "50%", y: "8%" },
+    "Defender": { x: "50%", y: "30%" },
+    "Midfielder": { x: "50%", y: "55%" },
+    "Forward": { x: "50%", y: "80%" }
   };
 
-  // Calculate horizontal spacing based on the number of players
   let position_x;
-  let position_offset;
-
-  position_offset =0;
 
   if (totalInPosition === 1) {
-    position_x = "45%"; // Center the player if there's only one
-  } //else {
-    // Use 80% of the field width for distribution, starting at 10%
-    //const spacingPercentage = 90 / (totalInPosition + 1);
-   // position_x = `${ ((index + 1) * spacingPercentage)}%`;
-   if (totalInPosition === 2) {
-    const positions = [22.5, 72.5]; 
-    position_x = `${ position_offset + positions[index]}%`;
-  } 
-  if (totalInPosition === 3) {
-    const positions = [22.5, 45, 72.5]; 
-    position_x = `${position_offset  + positions[index]}%`;
-  } 
-  if (totalInPosition === 4) {
-    const positions = [11.25, 33.75, 56.25, 82.75]; 
-    position_x = `${position_offset + positions[index]}%`; 
-  } 
-  if (totalInPosition === 5) {
-    const spacingPercentage = 100 / (totalInPosition + 1);
-    position_x = `${position_offset+ ((index + 1) * spacingPercentage)}%`;
-  } 
-  
+    position_x = "50%"; // Center the player if there's only one
+  } else if (totalInPosition === 2) {
+    const positions = [30, 70]; // Better spacing for 2 players
+    position_x = `${positions[index]}%`;
+  } else if (totalInPosition === 3) {
+    const positions = [25, 50, 75]; // Better spacing for 3 players
+    position_x = `${positions[index]}%`;
+  } else if (totalInPosition === 4) {
+    const positions = [20, 40, 60, 80]; // Better spacing for 4 players
+    position_x = `${positions[index]}%`;
+  } else if (totalInPosition === 5) {
+    const positions = [15, 32.5, 50, 67.5, 85]; // Better spacing for 5 players
+    position_x = `${positions[index]}%`;
+  } else {
+    // Fallback for more than 5 players
+    const spacingPercentage = 80 / (totalInPosition + 1);
+    position_x = `${10 + ((index + 1) * spacingPercentage)}%`;
+  }
 
   return {
     x: position_x,
@@ -74,7 +64,8 @@ const getPlayersInPosition = (players: Player[], targetPosition: string, neededD
 };
 
 const formatPlayerName = (name: string) => {
-  const nameParts = name.split(" ");
+  const shortName = shortenPlayerName(name);
+  const nameParts = shortName.split(" ");
   return nameParts.map((part, i) => (
     <div key={i}>{part}</div>
   ));
@@ -119,11 +110,11 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="absolute z-10"
+              className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2"
               style={{ left: defaultCoords.x, top: defaultCoords.y }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
-                <div className="text-white text-xs font-medium mb-1 text-center">
+                <div className="text-white text-xs font-medium mb-1 text-center leading-tight">
                   {formatPlayerName(player.name)}
                 </div>
                 <div 
