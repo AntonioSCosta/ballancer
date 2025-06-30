@@ -198,7 +198,7 @@ const TeamGenerator = () => {
                 ? "No players available. Start by creating some players!"
                 : "No players found matching your search."}
             </p>
-          </div>
+          </motion.div>
         )}
       </div>
 
