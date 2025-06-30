@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/components/PlayerCard";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
@@ -12,6 +12,9 @@ import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/u
 import type { Team } from "@/utils/teamDistribution";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamsComparison from "@/components/TeamsComparison";
+import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
+import { handleTeamGenerationError } from "@/utils/teamGenerationErrorHandler";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -19,59 +22,171 @@ const GeneratedTeams = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [showResultDialog, setShowResultDialog] = useState(false);
   const [playerGoals, setPlayerGoals] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!location.state?.selectedPlayerIds) {
-      navigate("/generator");
-      return;
-    }
+    const generateTeams = () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    const storedPlayers = localStorage.getItem("players");
-    if (!storedPlayers) {
-      navigate("/generator");
-      return;
-    }
+        if (!location.state?.selectedPlayerIds) {
+          throw new Error("No players selected");
+        }
 
-    const allPlayers: Player[] = JSON.parse(storedPlayers);
-    const selectedPlayers = allPlayers.filter((p) =>
-      location.state.selectedPlayerIds.includes(p.id)
-    );
-    
-    const distributedTeams = distributePlayersByPosition(selectedPlayers);
-    setTeams(distributedTeams);
+        const storedPlayers = localStorage.getItem("players");
+        if (!storedPlayers) {
+          throw new Error("No players found in storage");
+        }
 
-    const initialGoals: Record<string, number> = {};
-    selectedPlayers.forEach(player => {
-      initialGoals[player.id] = 0;
-    });
-    setPlayerGoals(initialGoals);
+        const allPlayers: Player[] = JSON.parse(storedPlayers);
+        const selectedPlayers = allPlayers.filter((p) =>
+          location.state.selectedPlayerIds.includes(p.id)
+        );
+
+        if (selectedPlayers.length === 0) {
+          throw new Error("Selected players not found");
+        }
+
+        if (selectedPlayers.length < 10) {
+          throw new Error("Not enough players selected for team generation");
+        }
+        
+        const distributedTeams = distributePlayersByPosition(selectedPlayers);
+        if (!distributedTeams || distributedTeams.length !== 2) {
+          throw new Error("Failed to generate balanced teams");
+        }
+
+        setTeams(distributedTeams);
+
+        const initialGoals: Record<string, number> = {};
+        selectedPlayers.forEach(player => {
+          initialGoals[player.id] = 0;
+        });
+        setPlayerGoals(initialGoals);
+
+      } catch (err) {
+        console.error("Team generation error:", err);
+        const errorMessage = err instanceof Error ? err.message : "Failed to generate teams";
+        setError(errorMessage);
+        ErrorHandler.handle(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    generateTeams();
   }, [location.state, navigate]);
 
   const handleRegenerateTeams = () => {
-    const storedPlayers = localStorage.getItem("players");
-    if (!storedPlayers) return;
+    try {
+      if (!location.state?.selectedPlayerIds) {
+        ErrorHandler.handle("No players selected for regeneration");
+        return;
+      }
 
-    const allPlayers: Player[] = JSON.parse(storedPlayers);
-    const selectedPlayers = allPlayers.filter((p) =>
-      location.state.selectedPlayerIds.includes(p.id)
-    );
-    
-    const distributedTeams = distributePlayersByPosition(selectedPlayers);
-    setTeams(distributedTeams);
+      const storedPlayers = localStorage.getItem("players");
+      if (!storedPlayers) {
+        handleStorageError("load players for regeneration");
+        return;
+      }
+
+      const allPlayers: Player[] = JSON.parse(storedPlayers);
+      const selectedPlayers = allPlayers.filter((p) =>
+        location.state.selectedPlayerIds.includes(p.id)
+      );
+      
+      const distributedTeams = distributePlayersByPosition(selectedPlayers);
+      setTeams(distributedTeams);
+      ErrorHandler.success("Teams regenerated successfully");
+    } catch (err) {
+      handleTeamGenerationError(err as Error);
+    }
   };
 
   const handleGoalChange = (playerId: string, goals: number) => {
-    setPlayerGoals(prev => ({
-      ...prev,
-      [playerId]: Math.max(0, goals)
-    }));
+    try {
+      setPlayerGoals(prev => ({
+        ...prev,
+        [playerId]: Math.max(0, goals)
+      }));
+    } catch (err) {
+      ErrorHandler.handle("Failed to update goal count");
+    }
   };
 
   const handleSaveResult = (winner: number) => {
-    if (saveMatchResult(teams, winner, playerGoals)) {
-      setShowResultDialog(false);
+    try {
+      if (saveMatchResult(teams, winner, playerGoals)) {
+        setShowResultDialog(false);
+        ErrorHandler.success("Match result saved successfully");
+      }
+    } catch (err) {
+      handleStorageError("save match result", err as Error);
     }
   };
+
+  const handleShare = () => {
+    try {
+      shareTeamsToWhatsApp(teams);
+    } catch (err) {
+      ErrorHandler.handle("Failed to share teams");
+    }
+  };
+
+  const handleCopy = () => {
+    try {
+      copyTeamsToClipboard(teams);
+      ErrorHandler.success("Teams copied to clipboard");
+    } catch (err) {
+      ErrorHandler.handle("Failed to copy teams to clipboard");
+    }
+  };
+
+  const handleBackToGenerator = () => {
+    try {
+      navigate("/generator");
+    } catch (err) {
+      ErrorHandler.handle("Failed to navigate back");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container max-w-2xl mx-auto py-4 px-4 md:py-8">
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner size="lg" message="Generating teams..." />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container max-w-2xl mx-auto py-4 px-4 md:py-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              Team Generation Failed
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {error}
+            </p>
+            <div className="space-y-2">
+              <Button onClick={handleBackToGenerator}>
+                Back to Team Generator
+              </Button>
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Try Again
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Transform teams for TeamsComparison component
   const transformedTeams = teams.map((team, index) => ({
@@ -91,7 +206,7 @@ const GeneratedTeams = () => {
         <div className="flex items-center justify-between">
           <Button 
             variant="ghost" 
-            onClick={() => navigate("/generator")}
+            onClick={handleBackToGenerator}
             className="p-2"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -104,8 +219,8 @@ const GeneratedTeams = () => {
         
         <TeamActions
           onRegenerateTeams={handleRegenerateTeams}
-          onShareWhatsApp={() => shareTeamsToWhatsApp(teams)}
-          onCopyTeams={() => copyTeamsToClipboard(teams)}
+          onShareWhatsApp={handleShare}
+          onCopyTeams={handleCopy}
           teams={teams}
         />
 

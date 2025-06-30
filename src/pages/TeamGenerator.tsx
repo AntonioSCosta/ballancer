@@ -1,21 +1,52 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { PlayerCard, Player } from "@/components/PlayerCard";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus } from "lucide-react";
+import { Users, UserPlus, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { validateTeamGeneration, handleTeamGenerationError } from "@/utils/teamGenerationErrorHandler";
+import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const TeamGenerator = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [players] = useState<Player[]>(() => {
-    const storedPlayers = localStorage.getItem("players");
-    return storedPlayers ? JSON.parse(storedPlayers) : [];
-  });
+  const [players, setPlayers] = useState<Player[]>([]);
   const [selectedPlayers, setSelectedPlayers] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadPlayers = () => {
+      try {
+        setLoading(true);
+        const storedPlayers = localStorage.getItem("players");
+        if (storedPlayers) {
+          const parsedPlayers = JSON.parse(storedPlayers);
+          if (Array.isArray(parsedPlayers)) {
+            setPlayers(parsedPlayers);
+          } else {
+            throw new Error("Invalid player data format");
+          }
+        } else {
+          setPlayers([]);
+        }
+        setError(null);
+      } catch (err) {
+        console.error("Failed to load players:", err);
+        setError("Failed to load players from storage");
+        handleStorageError("load players", err as Error);
+        setPlayers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPlayers();
+  }, []);
 
   const filteredPlayers = players.filter(
     (player) =>
@@ -24,32 +55,85 @@ const TeamGenerator = () => {
   );
 
   const togglePlayerSelection = (playerId: string) => {
-    const newSelected = new Set(selectedPlayers);
-    if (newSelected.has(playerId)) {
-      newSelected.delete(playerId);
-    } else {
-      newSelected.add(playerId);
+    try {
+      const newSelected = new Set(selectedPlayers);
+      if (newSelected.has(playerId)) {
+        newSelected.delete(playerId);
+      } else {
+        newSelected.add(playerId);
+      }
+      setSelectedPlayers(newSelected);
+    } catch (err) {
+      ErrorHandler.handle("Failed to update player selection");
     }
-    setSelectedPlayers(newSelected);
   };
 
   const handleEditPlayer = (playerId: string) => {
-    navigate(`/create-player?edit=${playerId}`);
+    try {
+      navigate(`/create-player?edit=${playerId}`);
+    } catch (err) {
+      ErrorHandler.handle("Failed to navigate to player editor");
+    }
   };
 
   const handleGenerateTeams = () => {
-    if (selectedPlayers.size < 10) {
-      toast.error("Please select at least 10 players");
-      return;
+    try {
+      const selectedPlayersList = players.filter(p => selectedPlayers.has(p.id));
+      
+      if (!validateTeamGeneration(selectedPlayersList)) {
+        return;
+      }
+
+      navigate("/generated-teams", {
+        state: { selectedPlayerIds: Array.from(selectedPlayers) },
+      });
+    } catch (err) {
+      handleTeamGenerationError(err as Error);
     }
-    navigate("/generated-teams", {
-      state: { selectedPlayerIds: Array.from(selectedPlayers) },
-    });
   };
 
   const handleCreatePlayer = () => {
-    navigate("/");
+    try {
+      navigate("/");
+    } catch (err) {
+      ErrorHandler.handle("Failed to navigate to player creation");
+    }
   };
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="flex items-center justify-center h-64">
+          <LoadingSpinner size="lg" message="Loading players..." />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              Unable to Load Players
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              {error}
+            </p>
+            <Button onClick={handleRetry}>
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -114,7 +198,7 @@ const TeamGenerator = () => {
                 ? "No players available. Start by creating some players!"
                 : "No players found matching your search."}
             </p>
-          </motion.div>
+          </div>
         )}
       </div>
 
