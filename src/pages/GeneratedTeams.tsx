@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
-import { Player } from "@/components/PlayerCard";
+import { Player } from "@/types/player";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
 import TeamActions from "@/components/TeamActions";
 import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/utils/teamResultUtils";

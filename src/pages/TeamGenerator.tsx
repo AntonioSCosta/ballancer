@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { PlayerCard, Player } from "@/components/PlayerCard";
+import { PlayerCard } from "@/components/PlayerCard";
+import { Player } from "@/types/player";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Users, UserPlus, AlertTriangle } from "lucide-react";
