@@ -1,4 +1,5 @@
 
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -51,13 +52,19 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
       </div>
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <div className="max-w-[80%]">
+          <div className="max-w-[70%]">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 truncate">
               {player.name}
             </h3>
-            <span className="text-sm text-primary font-medium">
-              {player.position}
-            </span>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-primary font-medium">
+                {player.position}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">•</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Rating: {Math.round(player.rating)}
+              </span>
+            </div>
           </div>
           <div className="flex gap-2">
             <button
@@ -91,3 +98,4 @@ export const PlayerCard = ({ player, className = "" }: PlayerCardProps) => {
 };
 
 export type { Player, PlayerPosition };
+
