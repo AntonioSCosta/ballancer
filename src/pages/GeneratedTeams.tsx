@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { ArrowLeft, AlertTriangle, CheckCircle } from "lucide-react";
 import { FootballField } from "@/components/FootballField";
 import { Player } from "@/types/player";
 import { distributePlayersByPosition } from "@/utils/teamDistribution";
@@ -15,6 +15,7 @@ import TeamsComparison from "@/components/TeamsComparison";
 import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
 import { handleTeamGenerationError } from "@/utils/teamGenerationErrorHandler";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { toast } from "sonner";
 
 const GeneratedTeams = () => {
   const location = useLocation();
@@ -24,6 +25,7 @@ const GeneratedTeams = () => {
   const [playerGoals, setPlayerGoals] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   useEffect(() => {
     const generateTeams = () => {
@@ -65,6 +67,15 @@ const GeneratedTeams = () => {
           initialGoals[player.id] = 0;
         });
         setPlayerGoals(initialGoals);
+        
+        // Show success animation
+        setShowSuccessAnimation(true);
+        setTimeout(() => setShowSuccessAnimation(false), 3000);
+        
+        // Success feedback
+        toast.success("🎉 Teams Generated Successfully!", {
+          description: `Created ${distributedTeams.length} balanced teams with ${selectedPlayers.length} players`
+        });
 
       } catch (err) {
         console.error("Team generation error:", err);
@@ -202,6 +213,46 @@ const GeneratedTeams = () => {
       exit={{ opacity: 0 }}
       className="container max-w-2xl mx-auto py-4 px-4 md:py-8"
     >
+      {/* Success Animation Overlay */}
+      {showSuccessAnimation && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50"
+        >
+          <motion.div
+            initial={{ y: 20 }}
+            animate={{ y: 0 }}
+            className="bg-card border rounded-lg shadow-xl p-8 text-center max-w-sm mx-4"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring" }}
+            >
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            </motion.div>
+            <motion.h2
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-xl font-bold text-foreground mb-2"
+            >
+              Teams Generated!
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-muted-foreground text-sm"
+            >
+              Your balanced teams are ready to play!
+            </motion.p>
+          </motion.div>
+        </motion.div>
+      )}
+
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <Button 
