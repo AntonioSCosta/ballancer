@@ -12,32 +12,31 @@ interface FootballFieldProps {
 
 const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
   const basePositions = {
-    "Goalkeeper": { x: "50%", y: "8%" },
-    "Defender": { x: "50%", y: "30%" },
+    "Goalkeeper": { x: "50%", y: "12%" },
+    "Defender": { x: "50%", y: "28%" },
     "Midfielder": { x: "50%", y: "55%" },
-    "Forward": { x: "50%", y: "80%" }
+    "Forward": { x: "50%", y: "78%" }
   };
 
   let position_x;
 
   if (totalInPosition === 1) {
-    position_x = "50%"; // Center the player if there's only one
+    position_x = "50%";
   } else if (totalInPosition === 2) {
-    const positions = [30, 70]; // Better spacing for 2 players
+    const positions = [35, 65];
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 3) {
-    const positions = [25, 50, 75]; // Better spacing for 3 players
+    const positions = [25, 50, 75];
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 4) {
-    const positions = [20, 40, 60, 80]; // Better spacing for 4 players
+    const positions = [20, 40, 60, 80];
     position_x = `${positions[index]}%`;
   } else if (totalInPosition === 5) {
-    const positions = [15, 32.5, 50, 67.5, 85]; // Better spacing for 5 players
+    const positions = [15, 32.5, 50, 67.5, 85];
     position_x = `${positions[index]}%`;
   } else {
-    // Fallback for more than 5 players
-    const spacingPercentage = 80 / (totalInPosition + 1);
-    position_x = `${10 + ((index + 1) * spacingPercentage)}%`;
+    const spacingPercentage = 70 / (totalInPosition + 1);
+    position_x = `${15 + ((index + 1) * spacingPercentage)}%`;
   }
 
   return {
@@ -81,17 +80,39 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
-    <div className={`relative w-full aspect-[2/2.25] bg-emerald-600 rounded-xl overflow-hidden border-4 border-white/20 football-field ${rotate ? 'transform rotate-180' : ''}`}>
+    <div className={`relative w-full aspect-[3/4] bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30 ${rotate ? 'transform rotate-180' : ''}`}>
+      {/* Field base with subtle pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
+      
+      {/* Field markings */}
       <div className="absolute inset-0">
-        <div className="absolute w-full h-full border-2 border-white/40" />
-        <div className="absolute h-[33%] w-[56%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
-        <div className="absolute h-[15%] w-[25%] top-0 left-1/2 -translate-x-1/2 border-2 border-white/40" />
-        <div className="absolute bottom-0 left-0 right-0 border-2 border-white/40" />
-        <div className="absolute h-[25%] aspect-square -bottom-[12.5%] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full" />
-        <div className="absolute h-[33%] aspect-square top-[10px] left-1/2 -translate-x-1/2 border-2 border-white/40 rounded-full 
-                      [clip-path:polygon(22%_33%,22%_100%,78%_100%,78%_33%)]" />
-        <div className="absolute h-[5%] w-[3%] top-0 left-0 border-b-2 border-r-2 border-white/40 rounded-br-full" />
-        <div className="absolute h-[5%] w-[3%] top-0 right-0 border-b-2 border-l-2 border-white/40 rounded-bl-full" />
+        {/* Outer boundary */}
+        <div className="absolute inset-2 border-2 border-white/70 rounded-lg" />
+        
+        {/* Center circle */}
+        <div className="absolute w-20 h-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-white/70 rounded-full" />
+        <div className="absolute w-1 h-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full" />
+        
+        {/* Center line */}
+        <div className="absolute w-full h-0.5 top-1/2 left-0 bg-white/70 -translate-y-1/2" />
+        
+        {/* Penalty areas */}
+        <div className="absolute w-16 h-12 top-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-t-0" />
+        <div className="absolute w-16 h-12 bottom-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-b-0" />
+        
+        {/* Goal areas */}
+        <div className="absolute w-8 h-6 top-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-t-0" />
+        <div className="absolute w-8 h-6 bottom-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-b-0" />
+        
+        {/* Penalty spots */}
+        <div className="absolute w-1 h-1 top-8 left-1/2 -translate-x-1/2 bg-white rounded-full" />
+        <div className="absolute w-1 h-1 bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full" />
+        
+        {/* Corner arcs */}
+        <div className="absolute w-3 h-3 top-2 left-2 border-2 border-white/70 rounded-full border-r-0 border-b-0" />
+        <div className="absolute w-3 h-3 top-2 right-2 border-2 border-white/70 rounded-full border-l-0 border-b-0" />
+        <div className="absolute w-3 h-3 bottom-2 left-2 border-2 border-white/70 rounded-full border-r-0 border-t-0" />
+        <div className="absolute w-3 h-3 bottom-2 right-2 border-2 border-white/70 rounded-full border-l-0 border-t-0" />
       </div>
 
       {[
@@ -114,12 +135,17 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               style={{ left: defaultCoords.x, top: defaultCoords.y }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
-                <div className="text-white text-xs font-medium mb-1 text-center leading-tight">
+                <div className="text-white text-[10px] font-semibold mb-1 text-center leading-tight drop-shadow-lg">
                   {formatPlayerName(player.name)}
                 </div>
-                <div 
-                  className={`w-4 h-4 rounded-full border border-white/40 ${getPositionColor(assignedPosition)}`}
-                />
+                <div className="relative">
+                  <div 
+                    className={`w-6 h-6 rounded-full border-2 border-white/90 ${getPositionColor(assignedPosition)} shadow-lg flex items-center justify-center`}
+                  >
+                    <div className="w-2 h-2 bg-white/20 rounded-full" />
+                  </div>
+                  <div className="absolute -bottom-0.5 -left-0.5 w-7 h-1 bg-black/20 rounded-full blur-sm" />
+                </div>
               </div>
             </motion.div>
           );
