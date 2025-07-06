@@ -80,39 +80,48 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
   const forwards = getPlayersInPosition(players, "Forward", currentDefenders, currentMidfielders);
 
   return (
-    <div className={`relative w-full aspect-[3/4] bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/30 ${rotate ? 'transform rotate-180' : ''}`}>
-      {/* Field base with subtle pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
+    <div className={`relative w-full aspect-[2/3] bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 rounded-xl overflow-hidden shadow-xl border-2 border-white/20 ${rotate ? 'transform rotate-180' : ''}`}>
+      {/* Field texture */}
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.02)_50%,transparent_50%)] bg-[length:4px_4px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(255,255,255,0.02)_50%,transparent_50%)] bg-[length:4px_4px]" />
       
       {/* Field markings */}
       <div className="absolute inset-0">
         {/* Outer boundary */}
-        <div className="absolute inset-2 border-2 border-white/70 rounded-lg" />
+        <div className="absolute inset-3 border-2 border-white/80 rounded" />
         
         {/* Center circle */}
-        <div className="absolute w-20 h-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-white/70 rounded-full" />
-        <div className="absolute w-1 h-1 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full" />
+        <div className="absolute w-16 h-16 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-2 border-white/80 rounded-full" />
+        <div className="absolute w-1.5 h-1.5 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full" />
         
         {/* Center line */}
-        <div className="absolute w-full h-0.5 top-1/2 left-0 bg-white/70 -translate-y-1/2" />
+        <div className="absolute w-full h-0.5 top-1/2 left-0 bg-white/80 -translate-y-1/2" />
         
-        {/* Penalty areas */}
-        <div className="absolute w-16 h-12 top-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-t-0" />
-        <div className="absolute w-16 h-12 bottom-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-b-0" />
+        {/* Penalty areas (18-yard box) */}
+        <div className="absolute w-20 h-14 top-3 left-1/2 -translate-x-1/2 border-2 border-white/80 border-t-0" />
+        <div className="absolute w-20 h-14 bottom-3 left-1/2 -translate-x-1/2 border-2 border-white/80 border-b-0" />
         
-        {/* Goal areas */}
-        <div className="absolute w-8 h-6 top-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-t-0" />
-        <div className="absolute w-8 h-6 bottom-2 left-1/2 -translate-x-1/2 border-2 border-white/70 border-b-0" />
+        {/* Goal areas (6-yard box) */}
+        <div className="absolute w-10 h-6 top-3 left-1/2 -translate-x-1/2 border-2 border-white/80 border-t-0" />
+        <div className="absolute w-10 h-6 bottom-3 left-1/2 -translate-x-1/2 border-2 border-white/80 border-b-0" />
+        
+        {/* Penalty arcs */}
+        <div className="absolute w-8 h-4 top-[68px] left-1/2 -translate-x-1/2 border-2 border-white/80 rounded-b-full border-t-0" />
+        <div className="absolute w-8 h-4 bottom-[68px] left-1/2 -translate-x-1/2 border-2 border-white/80 rounded-t-full border-b-0" />
         
         {/* Penalty spots */}
-        <div className="absolute w-1 h-1 top-8 left-1/2 -translate-x-1/2 bg-white rounded-full" />
-        <div className="absolute w-1 h-1 bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full" />
+        <div className="absolute w-1.5 h-1.5 top-[60px] left-1/2 -translate-x-1/2 bg-white rounded-full" />
+        <div className="absolute w-1.5 h-1.5 bottom-[60px] left-1/2 -translate-x-1/2 bg-white rounded-full" />
         
         {/* Corner arcs */}
-        <div className="absolute w-3 h-3 top-2 left-2 border-2 border-white/70 rounded-full border-r-0 border-b-0" />
-        <div className="absolute w-3 h-3 top-2 right-2 border-2 border-white/70 rounded-full border-l-0 border-b-0" />
-        <div className="absolute w-3 h-3 bottom-2 left-2 border-2 border-white/70 rounded-full border-r-0 border-t-0" />
-        <div className="absolute w-3 h-3 bottom-2 right-2 border-2 border-white/70 rounded-full border-l-0 border-t-0" />
+        <div className="absolute w-4 h-4 top-3 left-3 border-2 border-white/80 rounded-full border-r-0 border-b-0" />
+        <div className="absolute w-4 h-4 top-3 right-3 border-2 border-white/80 rounded-full border-l-0 border-b-0" />
+        <div className="absolute w-4 h-4 bottom-3 left-3 border-2 border-white/80 rounded-full border-r-0 border-t-0" />
+        <div className="absolute w-4 h-4 bottom-3 right-3 border-2 border-white/80 rounded-full border-l-0 border-t-0" />
+        
+        {/* Goals */}
+        <div className="absolute w-8 h-2 top-1 left-1/2 -translate-x-1/2 bg-white/60 rounded-b" />
+        <div className="absolute w-8 h-2 bottom-1 left-1/2 -translate-x-1/2 bg-white/60 rounded-t" />
       </div>
 
       {[
