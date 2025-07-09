@@ -12,6 +12,7 @@ import { saveMatchResult, shareTeamsToWhatsApp, copyTeamsToClipboard } from "@/u
 import type { Team } from "@/utils/teamDistribution";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TeamsComparison from "@/components/TeamsComparison";
+import TeamLineup from "@/components/TeamLineup";
 import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
 import { handleTeamGenerationError } from "@/utils/teamGenerationErrorHandler";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -275,11 +276,24 @@ const GeneratedTeams = () => {
           teams={teams}
         />
 
-        <Tabs defaultValue="tactical" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="lineup" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="lineup">Team Lineup</TabsTrigger>
             <TabsTrigger value="tactical">Tactical View</TabsTrigger>
-            <TabsTrigger value="comparison">Team Comparison</TabsTrigger>
+            <TabsTrigger value="comparison">Comparison</TabsTrigger>
           </TabsList>
+          <TabsContent value="lineup">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {teams.map((team, index) => (
+                <TeamLineup
+                  key={index}
+                  players={team.players}
+                  teamName={`Team ${index + 1}`}
+                  teamRating={team.rating}
+                />
+              ))}
+            </div>
+          </TabsContent>
           <TabsContent value="tactical">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {teams.map((team, index) => (

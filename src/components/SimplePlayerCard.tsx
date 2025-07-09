@@ -1,6 +1,6 @@
 
 import { Player } from "./PlayerCard";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import PlayerPhotoDisplay from "./PlayerPhotoDisplay";
 import { getInitials } from "@/utils/playerCardUtils";
 
 interface SimplePlayerCardProps {
@@ -28,19 +28,11 @@ const SimplePlayerCard = ({ player }: SimplePlayerCardProps) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3">
-        <Avatar className={`h-12 w-12 border-2 border-white shadow-lg ${getPositionColor(player.position)}`}>
-          {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
-            <AvatarImage 
-              src={player.photo} 
-              alt={player.name}
-              className="object-cover"
-            />
-          ) : (
-            <AvatarFallback className="text-white bg-gray-400 dark:bg-gray-600">
-              {getInitials(player.name)}
-            </AvatarFallback>
-          )}
-        </Avatar>
+        <PlayerPhotoDisplay 
+          player={player} 
+          size="md" 
+          showPosition={true}
+        />
         <div className="flex-1">
           <h4 className="font-medium text-gray-900 dark:text-gray-100">{player.name}</h4>
           <div className="flex items-center gap-2">

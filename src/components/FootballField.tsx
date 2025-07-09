@@ -152,12 +152,25 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
                   {formatPlayerName(player.name)}
                 </div>
                 <div className="relative">
-                  <div 
-                    className={`w-6 h-6 rounded-full border-2 border-white/90 ${getPositionColor(assignedPosition)} shadow-lg flex items-center justify-center`}
-                  >
-                    <div className="w-2 h-2 bg-white/20 rounded-full" />
-                  </div>
-                  <div className="absolute -bottom-0.5 -left-0.5 w-7 h-1 bg-black/20 rounded-full blur-sm" />
+                  {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
+                    <div className="relative">
+                      <img 
+                        src={player.photo} 
+                        alt={player.name}
+                        className="w-8 h-8 rounded-full border-2 border-white shadow-lg object-cover"
+                      />
+                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border border-white/80 ${getPositionColor(assignedPosition)}`} />
+                    </div>
+                  ) : (
+                    <div 
+                      className={`w-8 h-8 rounded-full border-2 border-white/90 ${getPositionColor(assignedPosition)} shadow-lg flex items-center justify-center`}
+                    >
+                      <span className="text-white text-[10px] font-bold">
+                        {player.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="absolute -bottom-0.5 -left-0.5 w-9 h-1 bg-black/20 rounded-full blur-sm" />
                 </div>
               </div>
             </motion.div>
