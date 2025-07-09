@@ -277,9 +277,8 @@ const GeneratedTeams = () => {
         />
 
         <Tabs defaultValue="lineup" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="lineup">Team Lineup</TabsTrigger>
-            <TabsTrigger value="tactical">Tactical View</TabsTrigger>
             <TabsTrigger value="comparison">Comparison</TabsTrigger>
           </TabsList>
           <TabsContent value="lineup">
@@ -291,28 +290,6 @@ const GeneratedTeams = () => {
                   teamName={`Team ${index + 1}`}
                   teamRating={team.rating}
                 />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="tactical">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {teams.map((team, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.2 }}
-                  className="overflow-x-auto"
-                >
-                  <div className="mb-2 text-center text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    Team {index + 1} - Rating: {team.rating}
-                  </div>
-                  <FootballField 
-                    players={team.players} 
-                    teamName={`Team ${index + 1}`}
-                    rotate={index === 1}
-                  />
-                </motion.div>
               ))}
             </div>
           </TabsContent>
