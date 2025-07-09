@@ -140,8 +140,12 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1 }}
-              className="absolute z-10 transform -translate-x-1/2 -translate-y-1/2"
-              style={{ left: defaultCoords.x, top: defaultCoords.y }}
+              className="absolute z-10"
+              style={{ 
+                left: defaultCoords.x, 
+                top: defaultCoords.y,
+                transform: 'translate(-50%, -50%)'
+              }}
             >
               <div className={`relative flex flex-col items-center ${rotate ? 'transform rotate-180' : ''}`}>
                 <div className="text-white text-[10px] font-semibold mb-1 text-center leading-tight drop-shadow-lg">
