@@ -149,9 +149,20 @@ const CreatePlayer = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate player name length
+    if (name.trim().length === 0) {
+      toast.error("Player name is required");
+      return;
+    }
+    
+    if (name.length > 30) {
+      toast.error("Player name cannot exceed 30 characters");
+      return;
+    }
+    
     const playerData = {
       id: playerToEdit?.id || uuidv4(),
-      name,
+      name: name.trim(),
       position,
       secondaryPosition,
       photo,
@@ -204,15 +215,32 @@ const CreatePlayer = () => {
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Name
-                </label>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Name
+                  </label>
+                  <span className={`text-xs ${name.length > 30 ? 'text-red-500' : name.length > 25 ? 'text-yellow-500' : 'text-gray-500 dark:text-gray-400'}`}>
+                    {name.length}/30
+                  </span>
+                </div>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter player name"
+                  maxLength={30}
                   required
+                  className={name.length > 30 ? 'border-red-500 focus:border-red-500' : ''}
                 />
+                {name.length > 25 && name.length <= 30 && (
+                  <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                    {30 - name.length} characters remaining
+                  </p>
+                )}
+                {name.length > 30 && (
+                  <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                    Name cannot exceed 30 characters
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
