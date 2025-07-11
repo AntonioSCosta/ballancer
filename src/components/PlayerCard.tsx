@@ -5,6 +5,7 @@ import type { Player, PlayerPosition } from "@/types/player";
 import { AttributeBar } from "./player/AttributeBar";
 import { PlayerStatsDisplay } from "./player/PlayerStats";
 import { getPlayerStats, calculateWinRate, getInitials, getAttributes } from "@/utils/playerCardUtils";
+import { User } from "lucide-react";
 interface PlayerCardProps {
   player: Player;
   onEdit?: () => void;
@@ -36,10 +37,8 @@ export const PlayerCard = ({
     y: 20
   }} className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}>
       <div className="relative aspect-square overflow-hidden">
-        {player.photo && player.photo !== "https://via.placeholder.com/300" ? <img src={player.photo} alt={player.name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/60">
-            <span className="text-4xl font-bold text-muted-foreground/70">
-              {getInitials(player.name)}
-            </span>
+        {player.photo && player.photo !== "https://via.placeholder.com/300" ? <img src={player.photo} alt={player.name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center bg-muted/50">
+            <User className="w-16 h-16 text-muted-foreground" />
           </div>}
         <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded-full shadow-lg backdrop-blur-sm border border-white/20">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
