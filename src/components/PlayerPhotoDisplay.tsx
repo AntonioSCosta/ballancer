@@ -1,6 +1,7 @@
 import { Player } from "@/types/player";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { getInitials } from "@/utils/playerCardUtils";
+import { User } from "lucide-react";
 
 interface PlayerPhotoDisplayProps {
   player: Player;
@@ -49,8 +50,8 @@ const PlayerPhotoDisplay = ({
             className="object-cover"
           />
         ) : (
-          <AvatarFallback className="bg-gradient-to-br from-muted to-muted/80 text-muted-foreground font-semibold">
-            {getInitials(player.name)}
+          <AvatarFallback className="bg-muted/50 text-muted-foreground">
+            <User className="h-1/2 w-1/2" />
           </AvatarFallback>
         )}
       </Avatar>
