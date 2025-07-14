@@ -8,15 +8,25 @@ interface FootballFieldProps {
   players: Player[];
   teamName: string;
   rotate?: boolean;
+  inverted?: boolean;
 }
 
-const getPositionCoordinates = (position: string, index: number, totalInPosition: number) => {
-  const basePositions = {
+const getPositionCoordinates = (position: string, index: number, totalInPosition: number, inverted: boolean = false) => {
+  const normalPositions = {
     "Goalkeeper": { x: "50%", y: "12%" },
     "Defender": { x: "50%", y: "28%" },
     "Midfielder": { x: "50%", y: "55%" },
     "Forward": { x: "50%", y: "78%" }
   };
+
+  const invertedPositions = {
+    "Goalkeeper": { x: "50%", y: "78%" },
+    "Defender": { x: "50%", y: "55%" },
+    "Midfielder": { x: "50%", y: "28%" },
+    "Forward": { x: "50%", y: "12%" }
+  };
+
+  const basePositions = inverted ? invertedPositions : normalPositions;
 
   let position_x;
 
@@ -70,7 +80,7 @@ const formatPlayerName = (name: string) => {
   ));
 };
 
-export const FootballField = ({ players, rotate = false }: FootballFieldProps) => {
+export const FootballField = ({ players, rotate = false, inverted = false }: FootballFieldProps) => {
   const currentDefenders = players.filter(p => p.position === "Defender").length;
   const currentMidfielders = players.filter(p => p.position === "Midfielder").length;
 
@@ -131,7 +141,7 @@ export const FootballField = ({ players, rotate = false }: FootballFieldProps) =
         { players: forwards, position: "Forward" }
       ].map(({ players: positionPlayers, position }) => (
         positionPlayers.map((player, index) => {
-          const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length);
+          const defaultCoords = getPositionCoordinates(position, index, positionPlayers.length, inverted);
           const assignedPosition = determinePlayerPosition(player, currentDefenders, currentMidfielders);
 
           return (

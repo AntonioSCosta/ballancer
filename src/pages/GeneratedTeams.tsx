@@ -289,6 +289,7 @@ const GeneratedTeams = () => {
                   players={team.players}
                   teamName={`Team ${index + 1}`}
                   teamRating={team.rating}
+                  inverted={index === 0} // Invert the first team so teams face each other
                 />
               ))}
             </div>
