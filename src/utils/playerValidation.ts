@@ -14,8 +14,8 @@ export const validatePlayer = (player: Partial<Player>): ValidationResult => {
     errors.push('Player name is required');
   } else if (player.name.trim().length < 2) {
     errors.push('Player name must be at least 2 characters long');
-  } else if (player.name.trim().length > 50) {
-    errors.push('Player name must be less than 50 characters');
+  } else if (player.name.trim().length > 30) {
+    errors.push('Player name must be less than 30 characters');
   }
 
   // Position validation

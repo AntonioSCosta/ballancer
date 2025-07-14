@@ -18,12 +18,26 @@ import { v4 as uuidv4 } from "uuid";
 import PlayerPhotoUpload from "@/components/PlayerPhotoUpload";
 import PlayerAttributes from "@/components/PlayerAttributes";
 import { calculateRating, getDefaultAttributes } from "@/utils/playerUtils";
+import { StorageUtils } from "@/utils/storageUtils";
+import { StorageHealthCheck } from "@/components/StorageHealthCheck";
 
 const MAX_WIDTH = 300;
 const MAX_HEIGHT = 300;
 
 const compressImage = (file: File): Promise<string> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      reject(new Error("Image file is too large. Please use an image smaller than 10MB."));
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      reject(new Error("Please select a valid image file."));
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -49,9 +63,22 @@ const compressImage = (file: File): Promise<string> => {
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
-        resolve(compressedDataUrl);
+        
+        // Check final size
+        if (compressedDataUrl.length > 500000) { // 500KB
+          const smallerDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+          resolve(smallerDataUrl);
+        } else {
+          resolve(compressedDataUrl);
+        }
+      };
+      img.onerror = () => {
+        reject(new Error("Invalid image file. Please try a different image."));
       };
       img.src = e.target?.result as string;
+    };
+    reader.onerror = () => {
+      reject(new Error("Failed to read image file."));
     };
     reader.readAsDataURL(file);
   });
@@ -123,11 +150,12 @@ const CreatePlayer = () => {
   };
 
   const handleDelete = (playerId: string) => {
-    const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
+    const existingPlayers = StorageUtils.getPlayers();
     const updatedPlayers = existingPlayers.filter((p: Player) => p.id !== playerId);
-    localStorage.setItem("players", JSON.stringify(updatedPlayers));
-    setCreatedPlayers(prev => prev.filter(p => p.id !== playerId));
-    toast.success("Player deleted successfully!");
+    if (StorageUtils.savePlayers(updatedPlayers)) {
+      setCreatedPlayers(prev => prev.filter(p => p.id !== playerId));
+      toast.success("Player deleted successfully!");
+    }
   };
 
   const handleAttributeChange = (attr: string, value: number[]) => {
@@ -155,8 +183,20 @@ const CreatePlayer = () => {
       return;
     }
     
-    if (name.length > 30) {
+    if (name.trim().length > 30) {
       toast.error("Player name cannot exceed 30 characters");
+      return;
+    }
+
+    // Check for duplicate names and prepare data
+    const allPlayers = StorageUtils.getPlayers();
+    const isDuplicate = allPlayers.some((p: Player) => 
+      p.name.toLowerCase().trim() === name.toLowerCase().trim() && 
+      (!playerToEdit || p.id !== playerToEdit.id)
+    );
+    
+    if (isDuplicate) {
+      toast.error("A player with this name already exists");
       return;
     }
     
@@ -169,27 +209,21 @@ const CreatePlayer = () => {
       attributes,
       rating: calculateRating(attributes, position),
     };
-
-    try {
-      const existingPlayers = JSON.parse(localStorage.getItem("players") || "[]");
-      
-      if (playerToEdit) {
-        const updatedPlayers = existingPlayers.map((p: Player) =>
-          p.id === playerToEdit.id ? playerData : p
-        );
-        localStorage.setItem("players", JSON.stringify(updatedPlayers));
+    if (playerToEdit) {
+      const updatedPlayers = allPlayers.map((p: Player) =>
+        p.id === playerToEdit.id ? playerData : p
+      );
+      if (StorageUtils.savePlayers(updatedPlayers)) {
         toast.success("Player updated successfully!");
         navigate("/generator");
-      } else {
-        const newPlayers = [...existingPlayers, playerData];
-        localStorage.setItem("players", JSON.stringify(newPlayers));
+      }
+    } else {
+      const newPlayers = [...allPlayers, playerData];
+      if (StorageUtils.savePlayers(newPlayers)) {
         setCreatedPlayers(prev => [...prev, playerData]);
         toast.success("Player created successfully!");
         resetForm();
       }
-    } catch (error) {
-      console.error("Error saving player:", error);
-      toast.error("Error saving player. Please try using a smaller photo.");
     }
   };
 
@@ -209,6 +243,8 @@ const CreatePlayer = () => {
           {playerToEdit ? "Edit Player" : "Create Players"}
         </h1>
       </div>
+
+      <StorageHealthCheck />
 
       <div className="grid lg:grid-cols-5 gap-8">
         <div className="lg:col-span-2">

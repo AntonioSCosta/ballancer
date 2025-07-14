@@ -23,6 +23,21 @@ export const validateTeamGeneration = (players: Player[]): boolean => {
     return false;
   }
 
+  // Check if players are valid
+  const invalidPlayers = players.filter(p => 
+    !p || !p.id || !p.name || !p.position || !p.attributes || !p.rating
+  );
+  
+  if (invalidPlayers.length > 0) {
+    ErrorHandler.handle({
+      type: ErrorType.VALIDATION,
+      message: 'Invalid player data detected',
+      details: `${invalidPlayers.length} players have missing or corrupted data`,
+      action: 'Please check your player data and try again'
+    });
+    return false;
+  }
+
   // Check for balanced positions
   const positions = players.reduce((acc, player) => {
     acc[player.position] = (acc[player.position] || 0) + 1;

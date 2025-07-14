@@ -12,6 +12,8 @@ import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { analyzePositionBalance } from "@/utils/positionAnalysis";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { StorageUtils } from "@/utils/storageUtils";
+import { StorageHealthCheck } from "@/components/StorageHealthCheck";
 
 const TeamGenerator = () => {
   const navigate = useNavigate();
@@ -25,17 +27,21 @@ const TeamGenerator = () => {
     const loadPlayers = () => {
       try {
         setLoading(true);
-        const storedPlayers = localStorage.getItem("players");
-        if (storedPlayers) {
-          const parsedPlayers = JSON.parse(storedPlayers);
-          if (Array.isArray(parsedPlayers)) {
-            setPlayers(parsedPlayers);
-          } else {
-            throw new Error("Invalid player data format");
-          }
-        } else {
-          setPlayers([]);
+        
+        // Clean up any corrupted player data
+        StorageUtils.cleanupInvalidPlayers();
+        
+        // Load valid players
+        const allPlayers = StorageUtils.getPlayers();
+        const { valid, invalid } = StorageUtils.validatePlayerData(allPlayers);
+        
+        if (invalid.length > 0) {
+          console.warn(`Found ${invalid.length} invalid players during load`);
+          // Save only valid players back
+          StorageUtils.savePlayers(valid);
         }
+        
+        setPlayers(valid);
         setError(null);
       } catch (err) {
         console.error("Failed to load players:", err);
@@ -152,6 +158,8 @@ const TeamGenerator = () => {
       className="container mx-auto px-3 py-4 bg-background min-h-screen relative"
     >
       <div className="space-y-4 pb-32">
+        <StorageHealthCheck />
+        
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-xl md:text-2xl font-bold text-foreground">
