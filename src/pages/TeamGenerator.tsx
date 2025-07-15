@@ -5,7 +5,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Player } from "@/types/player";
 import { SearchBar } from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, AlertTriangle, Info } from "lucide-react";
+import { Users, UserPlus, AlertTriangle, Info, Database, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { validateTeamGeneration, handleTeamGenerationError } from "@/utils/teamGenerationErrorHandler";
 import { ErrorHandler, handleStorageError } from "@/utils/errorHandler";
@@ -14,6 +14,8 @@ import { analyzePositionBalance } from "@/utils/positionAnalysis";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { StorageUtils } from "@/utils/storageUtils";
 import { StorageHealthCheck } from "@/components/StorageHealthCheck";
+import { generateSamplePlayers } from "@/utils/samplePlayers";
+import { Link } from "react-router-dom";
 
 const TeamGenerator = () => {
   const navigate = useNavigate();
@@ -115,6 +117,39 @@ const TeamGenerator = () => {
     }
   };
 
+  const handlePopulateDatabase = () => {
+    const samplePlayers = generateSamplePlayers();
+    const existingPlayers = StorageUtils.getPlayers();
+    
+    // Filter out players with duplicate names
+    const newPlayers = samplePlayers.filter(samplePlayer => 
+      !existingPlayers.some(existing => 
+        existing.name.toLowerCase() === samplePlayer.name.toLowerCase()
+      )
+    );
+    
+    if (newPlayers.length === 0) {
+      toast.info("All sample players already exist in your database");
+      return;
+    }
+    
+    const allPlayers = [...existingPlayers, ...newPlayers];
+    if (StorageUtils.savePlayers(allPlayers)) {
+      setPlayers(allPlayers);
+      toast.success(`Added ${newPlayers.length} sample players to your database!`);
+    }
+  };
+
+  const handleClearDatabase = () => {
+    if (window.confirm("Are you sure you want to delete all players? This action cannot be undone.")) {
+      if (StorageUtils.savePlayers([])) {
+        setPlayers([]);
+        setSelectedPlayers(new Set());
+        toast.success("All players deleted successfully!");
+      }
+    }
+  };
+
   const handleRetry = () => {
     window.location.reload();
   };
@@ -177,15 +212,39 @@ const TeamGenerator = () => {
               placeholder="Search players..."
               className="flex-1"
             />
-            <Button 
-              onClick={handleCreatePlayer} 
-              variant="outline" 
-              className="shrink-0 h-11 px-4"
-            >
-              <UserPlus className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Create Player</span>
-              <span className="sm:hidden">Add</span>
-            </Button>
+            <div className="flex gap-2">
+              {players.length === 0 && (
+                <Button 
+                  onClick={handlePopulateDatabase}
+                  variant="outline" 
+                  className="shrink-0 h-11 px-3"
+                >
+                  <Database className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Sample Players</span>
+                  <span className="sm:hidden">Sample</span>
+                </Button>
+              )}
+              {players.length > 0 && (
+                <Button 
+                  onClick={handleClearDatabase}
+                  variant="outline" 
+                  className="shrink-0 h-11 px-3 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" />
+                  <span className="hidden sm:inline">Clear All</span>
+                  <span className="sm:hidden">Clear</span>
+                </Button>
+              )}
+              <Button 
+                onClick={handleCreatePlayer} 
+                variant="outline" 
+                className="shrink-0 h-11 px-4"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Create Player</span>
+                <span className="sm:hidden">Add</span>
+              </Button>
+            </div>
           </div>
 
           {/* Selection Summary */}
@@ -251,11 +310,37 @@ const TeamGenerator = () => {
             animate={{ opacity: 1 }}
             className="text-center py-8 bg-card rounded-lg shadow-md border border-border"
           >
-            <p className="text-muted-foreground text-sm">
-              {players.length === 0
-                ? "No players available. Start by creating some players!"
-                : "No players found matching your search."}
-            </p>
+            {players.length === 0 ? (
+              <div className="space-y-4">
+                <Users className="w-12 h-12 text-muted-foreground mx-auto" />
+                <div>
+                  <p className="text-muted-foreground text-sm mb-3">
+                    No players in your database yet. Get started quickly!
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                    <Button
+                      onClick={handlePopulateDatabase}
+                      className="text-sm"
+                    >
+                      <Database className="w-4 h-4 mr-2" />
+                      Add 22 Sample Players
+                    </Button>
+                    <Button
+                      onClick={handleCreatePlayer}
+                      variant="outline"
+                      className="text-sm"
+                    >
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Create Custom Player
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">
+                No players found matching your search.
+              </p>
+            )}
           </motion.div>
         )}
       </div>
