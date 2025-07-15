@@ -24,16 +24,16 @@ export const Navigation = () => {
         <DropdownMenuTrigger className="p-2 rounded-lg bg-white dark:bg-secondary dark:hover:bg-secondary/80 shadow-lg hover:bg-gray-50 transition-colors">
           <Menu className="w-6 h-6 text-gray-700 dark:text-gray-100" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-48 mt-2 dark:bg-secondary">
+        <DropdownMenuContent className="w-48 mt-2 bg-popover dark:bg-popover border border-border shadow-lg">
           {menuItems.map((item) => (
-            <DropdownMenuItem key={item.path} className="p-0">
+            <DropdownMenuItem key={item.path} className="p-0 focus:bg-accent dark:focus:bg-accent">
               <Link
                 to={item.path}
-                className={`w-full px-4 py-2 text-sm flex items-center ${
+                className={`w-full px-4 py-2 text-sm flex items-center transition-colors ${
                   location.pathname === item.path
-                    ? "text-primary font-medium dark:text-primary-foreground"
-                    : "text-gray-700 dark:text-gray-100"
-                } hover:bg-accent dark:hover:bg-accent/20`}
+                    ? "text-primary bg-accent/50 font-medium dark:text-primary dark:bg-accent/30"
+                    : "text-foreground hover:text-foreground"
+                } hover:bg-accent dark:hover:bg-accent/50`}
               >
                 {item.icon}
                 {item.label}
