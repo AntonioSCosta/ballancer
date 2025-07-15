@@ -212,18 +212,16 @@ const TeamGenerator = () => {
               placeholder="Search players..."
               className="flex-1"
             />
-            <div className="flex gap-2">
-              {players.length === 0 && (
-                <Button 
-                  onClick={handlePopulateDatabase}
-                  variant="outline" 
-                  className="shrink-0 h-11 px-3"
-                >
-                  <Database className="w-4 h-4 mr-1" />
-                  <span className="hidden sm:inline">Sample Players</span>
-                  <span className="sm:hidden">Sample</span>
-                </Button>
-              )}
+          <div className="flex gap-2">
+              <Button 
+                onClick={handlePopulateDatabase}
+                variant="outline" 
+                className="shrink-0 h-11 px-3"
+              >
+                <Database className="w-4 h-4 mr-1" />
+                <span className="hidden sm:inline">Add Sample Players</span>
+                <span className="sm:hidden">Sample</span>
+              </Button>
               {players.length > 0 && (
                 <Button 
                   onClick={handleClearDatabase}

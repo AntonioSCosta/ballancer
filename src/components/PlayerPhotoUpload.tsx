@@ -1,7 +1,9 @@
 
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Edit } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import ImageCropDialog from "./ImageCropDialog";
 
 interface PlayerPhotoUploadProps {
   photo: string;
@@ -12,17 +14,43 @@ interface PlayerPhotoUploadProps {
 
 const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhotoUploadProps) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [rawImageUrl, setRawImageUrl] = useState<string | null>(null);
+  const [showCropDialog, setShowCropDialog] = useState(false);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Create an immediate preview
       const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
-      
-      // Call the parent's onPhotoChange handler
-      onPhotoChange(e);
+      setRawImageUrl(objectUrl);
+      setShowCropDialog(true);
     }
+  };
+
+  const handleCroppedImageSave = (croppedImage: string) => {
+    setPreviewUrl(croppedImage);
+    
+    // Create a proper mock event for the parent handler
+    const file = dataURLtoFile(croppedImage, 'cropped-image.jpg');
+    const mockEvent = {
+      target: {
+        files: [file]
+      }
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    
+    onPhotoChange(mockEvent);
+  };
+
+  const dataURLtoFile = (dataurl: string, filename: string): File => {
+    const arr = dataurl.split(',');
+    const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   };
 
   // Determine which image to show: preview, uploaded photo, or placeholder
@@ -55,6 +83,33 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
             </div>
           )}
         </label>
+
+        <div className="flex gap-2">
+          <label htmlFor="photo-upload">
+            <Button type="button" variant="outline" size="sm" className="cursor-pointer">
+              <ImagePlus className="w-4 h-4 mr-1" />
+              {hasPhoto || previewUrl ? 'Change' : 'Upload'}
+            </Button>
+          </label>
+          
+          {(hasPhoto || previewUrl) && (
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                if (displayImage && displayImage !== "https://via.placeholder.com/300") {
+                  setRawImageUrl(displayImage);
+                  setShowCropDialog(true);
+                }
+              }}
+            >
+              <Edit className="w-4 h-4 mr-1" />
+              Adjust
+            </Button>
+          )}
+        </div>
+
         <Input
           type="file"
           accept="image/*"
@@ -63,6 +118,13 @@ const PlayerPhotoUpload = ({ photo, hasPhoto, name, onPhotoChange }: PlayerPhoto
           id="photo-upload"
         />
       </div>
+
+      <ImageCropDialog
+        open={showCropDialog}
+        onOpenChange={setShowCropDialog}
+        imageUrl={rawImageUrl || ""}
+        onSave={handleCroppedImageSave}
+      />
     </div>
   );
 };
