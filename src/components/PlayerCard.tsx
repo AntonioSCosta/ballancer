@@ -35,7 +35,11 @@ export const PlayerCard = ({
   }} exit={{
     opacity: 0,
     y: 20
-  }} whileHover={{ y: -5 }} transition={{ duration: 0.2 }} className={`bg-card rounded-xl shadow-elegant border border-border hover:shadow-glow hover:border-primary/20 overflow-hidden transition-all duration-300 ${className}`}>
+  }} whileHover={{
+    y: -5
+  }} transition={{
+    duration: 0.2
+  }} className={`bg-card rounded-xl shadow-elegant border border-border hover:shadow-glow hover:border-primary/20 overflow-hidden transition-all duration-300 ${className}`}>
       <div className="relative aspect-square overflow-hidden">
         {player.photo && player.photo !== "https://via.placeholder.com/300" ? <img src={player.photo} alt={player.name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center bg-muted/50">
             <User className="w-32 h-32 text-muted-foreground" />
@@ -54,20 +58,10 @@ export const PlayerCard = ({
             <h3 className="text-xl font-bold text-card-foreground truncate mb-2">
               {player.name}
             </h3>
-            <div className="flex items-center gap-2">
-              <div className="px-2 py-1 bg-accent/10 rounded text-xs font-medium text-accent-foreground">
-                W: {winRate}%
-              </div>
-              <div className="px-2 py-1 bg-primary/10 rounded text-xs font-medium text-primary">
-                {stats.goals || 0} goals
-              </div>
-            </div>
+            
           </div>
           <div className="flex gap-2">
-            <button 
-              onClick={handleEdit} 
-              className="w-9 h-9 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent-foreground hover:text-accent border border-accent/20 transition-all duration-200 flex items-center justify-center group"
-            >
+            <button onClick={handleEdit} className="w-9 h-9 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent-foreground hover:text-accent border border-accent/20 transition-all duration-200 flex items-center justify-center group">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:scale-110 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
               </svg>
