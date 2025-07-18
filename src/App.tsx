@@ -77,6 +77,7 @@ const App = () => (
               <ThemeSwitcher />
               <Routes>
                 <Route path="/" element={<CreatePlayer />} />
+                <Route path="/create-player" element={<CreatePlayer />} />
                 <Route path="/generator" element={<TeamGenerator />} />
                 <Route path="/generated-teams" element={<GeneratedTeams />} />
                 <Route path="/help" element={<Help />} />
