@@ -20,6 +20,7 @@ import PlayerAttributes from "@/components/PlayerAttributes";
 import { calculateRating, getDefaultAttributes } from "@/utils/playerUtils";
 import { StorageUtils } from "@/utils/storageUtils";
 import { StorageHealthCheck } from "@/components/StorageHealthCheck";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const MAX_WIDTH = 300;
 const MAX_HEIGHT = 300;
@@ -87,6 +88,7 @@ const compressImage = (file: File): Promise<string> => {
 const CreatePlayer = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const playerToEdit = location.state?.player as Player | undefined;
 
   const [createdPlayers, setCreatedPlayers] = useState<Player[]>([]);
@@ -236,18 +238,18 @@ const CreatePlayer = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="container max-w-7xl py-8 px-4"
+      className={`container max-w-7xl ${isMobile ? 'py-6 px-3' : 'py-8 px-4'}`}
     >
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+      <div className={`flex justify-between items-center ${isMobile ? 'mb-6' : 'mb-8'}`}>
+        <h1 className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-gray-900 dark:text-gray-100`}>
           {playerToEdit ? "Edit Player" : "Create Players"}
         </h1>
       </div>
 
       <StorageHealthCheck />
 
-      <div className="grid lg:grid-cols-5 gap-8">
-        <div className="lg:col-span-2">
+      <div className={`grid ${isMobile ? 'grid-cols-1 gap-6' : 'lg:grid-cols-5 gap-8'}`}>
+        <div className={isMobile ? '' : 'lg:col-span-2'}>
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="space-y-6">
               <div>
@@ -342,8 +344,8 @@ const CreatePlayer = () => {
           </form>
         </div>
 
-        <div className="lg:col-span-3">
-          <div className="sticky top-20">
+        <div className={isMobile ? '' : 'lg:col-span-3'}>
+          <div className={isMobile ? '' : 'sticky top-20'}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 Created Players ({createdPlayers.length})
@@ -355,7 +357,7 @@ const CreatePlayer = () => {
                 </Button>
               )}
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className={`grid ${isMobile ? 'grid-cols-1' : 'sm:grid-cols-2 lg:grid-cols-3'} gap-4`}>
               <AnimatePresence>
                 {createdPlayers.map((player) => (
                   <motion.div

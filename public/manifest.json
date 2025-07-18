@@ -15,5 +15,8 @@
     }
   ],
   "prefer_related_applications": false,
-  "orientation": "any"
+  "orientation": "portrait-primary",
+  "categories": ["sports", "games", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
 }
