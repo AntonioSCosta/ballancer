@@ -42,19 +42,17 @@ const PlayerPhotoDisplay = ({
 
   return (
     <div className={`relative ${className}`}>
-      <Avatar className={`${sizeClasses[size]} border-2 border-white shadow-lg`}>
+      <div className={`${sizeClasses[size]} border-2 border-white shadow-lg rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center`}>
         {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
-          <AvatarImage 
+          <img 
             src={player.photo} 
             alt={player.name}
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <AvatarFallback className="bg-muted/50 text-muted-foreground">
-            <User className="h-1/2 w-1/2" />
-          </AvatarFallback>
+          <User className="h-1/2 w-1/2 text-muted-foreground" />
         )}
-      </Avatar>
+      </div>
       
       {showPosition && (
         <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} rounded-full border-2 border-white ${getPositionColor(player.position)} flex items-center justify-center shadow-md`}>

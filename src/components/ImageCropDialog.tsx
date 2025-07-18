@@ -28,7 +28,7 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size for circular crop
+    // Set canvas size for square crop
     const size = 300;
     canvas.width = size;
     canvas.height = size;
@@ -38,11 +38,6 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
 
     // Save context
     ctx.save();
-
-    // Create circular clipping path
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-    ctx.clip();
 
     // Move to center for transformations
     ctx.translate(size / 2, size / 2);
@@ -69,11 +64,9 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
     ctx.restore();
 
     // Draw border
-    ctx.beginPath();
-    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
     ctx.strokeStyle = '#e5e7eb';
     ctx.lineWidth = 2;
-    ctx.stroke();
+    ctx.strokeRect(0, 0, size, size);
   }, [scale, rotation, position]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -83,10 +76,12 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    setPosition({
+    const newPosition = {
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y
-    });
+    };
+    setPosition(newPosition);
+    setTimeout(drawImage, 0);
   };
 
   const handleMouseUp = () => {
@@ -121,7 +116,7 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                className="border-2 border-dashed border-border rounded-full cursor-move"
+                className="border-2 border-dashed border-border rounded-lg cursor-move"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
@@ -149,7 +144,10 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
               </div>
               <Slider
                 value={[scale]}
-                onValueChange={(value) => setScale(value[0])}
+                onValueChange={(value) => {
+                  setScale(value[0]);
+                  setTimeout(drawImage, 0);
+                }}
                 min={0.5}
                 max={3}
                 step={0.1}
@@ -166,7 +164,10 @@ const ImageCropDialog = ({ open, onOpenChange, imageUrl, onSave }: ImageCropDial
               </div>
               <Slider
                 value={[rotation]}
-                onValueChange={(value) => setRotation(value[0])}
+                onValueChange={(value) => {
+                  setRotation(value[0]);
+                  setTimeout(drawImage, 0);
+                }}
                 min={-180}
                 max={180}
                 step={5}

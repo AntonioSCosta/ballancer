@@ -36,11 +36,11 @@ export const PlayerCard = ({
     opacity: 0,
     y: 20
   }} className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden ${className}`}>
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative aspect-square overflow-hidden rounded-lg">
         {player.photo && player.photo !== "https://via.placeholder.com/300" ? <img src={player.photo} alt={player.name} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" /> : <div className="w-full h-full flex items-center justify-center bg-muted/50">
             <User className="w-32 h-32 text-muted-foreground" />
           </div>}
-        <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded-full shadow-lg backdrop-blur-sm border border-white/20">
+        <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded shadow-lg backdrop-blur-sm border border-white/20">
           <span className="text-sm font-medium">{Math.round(player.rating)}</span>
         </div>
         {/* Position indicator */}
