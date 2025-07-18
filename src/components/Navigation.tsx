@@ -1,5 +1,5 @@
 
-import { Menu, HelpCircle, Settings, UsersRound } from "lucide-react";
+import { Menu, HelpCircle, Settings, UsersRound, UserPlus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ export const Navigation = () => {
 
   // Define navigation menu items
   const menuItems = [
+    { path: "/create-player", label: "Create Player", icon: <UserPlus className="w-4 h-4 mr-2" /> },
     { path: "/generator", label: "Team Generator", icon: <UsersRound className="w-4 h-4 mr-2" /> },
     { path: "/settings", label: "Settings", icon: <Settings className="w-4 h-4 mr-2" /> },
     { path: "/help", label: "Help", icon: <HelpCircle className="w-4 h-4 mr-2" /> },
