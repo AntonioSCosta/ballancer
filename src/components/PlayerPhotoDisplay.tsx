@@ -18,12 +18,12 @@ const PlayerPhotoDisplay = ({
 }: PlayerPhotoDisplayProps) => {
   const getPositionColor = (position: string) => {
     const colors = {
-      "Goalkeeper": "border-orange-500 bg-orange-500",
-      "Defender": "border-blue-500 bg-blue-500", 
-      "Midfielder": "border-purple-500 bg-purple-500",
-      "Forward": "border-emerald-500 bg-emerald-500"
+      "Goalkeeper": "bg-gradient-to-br from-orange-400 to-orange-600 border-orange-300",
+      "Defender": "bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300", 
+      "Midfielder": "bg-gradient-to-br from-purple-400 to-purple-600 border-purple-300",
+      "Forward": "bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-300"
     };
-    return colors[position as keyof typeof colors] || "border-gray-500 bg-gray-500";
+    return colors[position as keyof typeof colors] || "bg-gradient-to-br from-gray-400 to-gray-600 border-gray-300";
   };
 
   const sizeClasses = {
@@ -41,22 +41,27 @@ const PlayerPhotoDisplay = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <div className={`${sizeClasses[size]} border-2 border-white shadow-lg rounded-lg overflow-hidden bg-muted/50 flex items-center justify-center`}>
+    <div className={`relative group ${className}`}>
+      <div className={`${sizeClasses[size]} border-2 border-white/60 shadow-lg rounded-xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/60 flex items-center justify-center transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 backdrop-blur-sm`}>
         {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
           <img 
             src={player.photo} 
             alt={player.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           />
         ) : (
-          <User className="h-1/2 w-1/2 text-muted-foreground" />
+          <div className="w-full h-full bg-gradient-to-br from-muted/40 to-muted/80 flex items-center justify-center">
+            <User className="h-1/2 w-1/2 text-muted-foreground/70" />
+          </div>
         )}
+        
+        {/* Subtle overlay for better badge visibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       
       {showPosition && (
-        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} rounded-full border-2 border-white ${getPositionColor(player.position)} flex items-center justify-center shadow-md`}>
-          <span className="text-white font-bold">
+        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} rounded-full border-2 border-white/90 ${getPositionColor(player.position)} flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl`}>
+          <span className="text-white font-bold drop-shadow-sm">
             {player.position[0]}
           </span>
         </div>
@@ -64,7 +69,7 @@ const PlayerPhotoDisplay = ({
       
       {/* Rating badge for larger sizes */}
       {(size === "lg" || size === "xl") && (
-        <div className="absolute -top-1 -left-1 bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full text-xs font-semibold shadow-md">
+        <div className="absolute -top-1 -left-1 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl backdrop-blur-sm">
           {Math.round(player.rating)}
         </div>
       )}
