@@ -42,7 +42,7 @@ const PlayerPhotoDisplay = ({
 
   return (
     <div className={`relative group ${className}`}>
-      <div className={`${sizeClasses[size]} border-2 border-white/60 shadow-lg rounded-xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/60 flex items-center justify-center transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 backdrop-blur-sm`}>
+      <div className={`${sizeClasses[size]} shadow-lg rounded-xl overflow-hidden bg-gradient-to-br from-muted/30 to-muted/60 flex items-center justify-center transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 backdrop-blur-sm`}>
         {player.photo && player.photo !== "https://via.placeholder.com/300" ? (
           <img 
             src={player.photo} 
@@ -60,7 +60,7 @@ const PlayerPhotoDisplay = ({
       </div>
       
       {showPosition && (
-        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} rounded-full border-2 border-white/90 ${getPositionColor(player.position)} flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl`}>
+        <div className={`absolute -bottom-1 -right-1 ${badgeSizes[size]} rounded-full ${getPositionColor(player.position)} flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl`}>
           <span className="text-white font-bold drop-shadow-sm">
             {player.position[0]}
           </span>
@@ -69,7 +69,7 @@ const PlayerPhotoDisplay = ({
       
       {/* Rating badge for larger sizes */}
       {(size === "lg" || size === "xl") && (
-        <div className="absolute -top-1 -left-1 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-bold shadow-lg border border-white/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl backdrop-blur-sm">
+        <div className="absolute -top-1 -left-1 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-bold shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl backdrop-blur-sm">
           {Math.round(player.rating)}
         </div>
       )}
