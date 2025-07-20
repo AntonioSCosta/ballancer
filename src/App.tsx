@@ -13,7 +13,7 @@ import NotFound from "./pages/NotFound";
 import Help from "./pages/Help";
 import Settings from "./pages/Settings";
 import ErrorBoundary from "./components/ErrorBoundary";
-import LoadingSpinner from "./components/LoadingSpinner";
+import AppLoadingScreen from "./components/AppLoadingScreen";
 import { useAppInitialization } from "./hooks/useAppInitialization";
 import { Button } from "./components/ui/button";
 import { AlertTriangle, Wifi, WifiOff } from "lucide-react";
@@ -24,11 +24,7 @@ const AppInitializer = ({ children }: { children: React.ReactNode }) => {
   const { isLoading, isOnline, hasError, errorMessage, retry } = useAppInitialization();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <LoadingSpinner size="lg" message="Initializing application..." />
-      </div>
-    );
+    return <AppLoadingScreen />;
   }
 
   if (hasError) {
