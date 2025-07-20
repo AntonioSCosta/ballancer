@@ -62,11 +62,11 @@ const PlayerPhotoUpload = ({
       <div className="flex flex-col items-center gap-4">
         <label htmlFor="photo-upload" className="cursor-pointer group relative">
           {hasPhoto || previewUrl ? <div className="relative">
-              <img src={displayImage} alt="Player Photo" className="w-32 h-32 object-cover rounded-full border-2 border-primary group-hover:opacity-80 transition-opacity" />
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-full transition-all duration-200">
+              <img src={displayImage} alt="Player Photo" className="w-32 h-32 object-cover rounded-lg border-2 border-primary group-hover:opacity-80 transition-opacity" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-all duration-200">
                 <ImagePlus className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-            </div> : <div className="w-32 h-32 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-full border-2 border-gray-300 dark:border-gray-600 group-hover:bg-gray-300 dark:group-hover:bg-gray-600 transition-colors">
+            </div> : <div className="w-32 h-32 flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-lg border-2 border-gray-300 dark:border-gray-600 group-hover:bg-gray-300 dark:group-hover:bg-gray-600 transition-colors">
               <ImagePlus className="w-8 h-8 text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors" />
             </div>}
         </label>
