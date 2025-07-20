@@ -9,11 +9,6 @@
   "scope": "/",
   "icons": [
     {
-      "src": "/src/assets/logo.webp",
-      "sizes": "512x512",
-      "type": "image/webp"
-    },
-    {
       "src": "favicon.ico",
       "sizes": "64x64",
       "type": "image/x-icon"
